@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26659951d2864c0c86d1406a27fc9a4f, type: 3}
+  m_Name: MovementStats
+  m_EditorClassIdentifier: 
+  <MaxSpeed>k__BackingField: 10
+  <Acceleration>k__BackingField: 7.5
+  <Deceleration>k__BackingField: 15
+  <AirAcceleration>k__BackingField: 5
+  <AirDeceleration>k__BackingField: 10
+  <JumpHeight>k__BackingField: 2
+  <JumpHeightCompensationFactor>k__BackingField: 1.025
+  <TimeTillJumpApex>k__BackingField: 0.25
+  <ApexThreshold>k__BackingField: 1.4
+  <ApexHangTime>k__BackingField: 0.075
+  <JumpBufferTime>k__BackingField: 0.125
+  <JumpCoyoteTime>k__BackingField: 0.1
+  <TimeForUpwardsCancel>k__BackingField: 0.027
+  <GravityReleaseMultiplier>k__BackingField: 2
+  <MaxFallSpeed>k__BackingField: 25
