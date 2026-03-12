@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26659951d2864c0c86d1406a27fc9a4f, type: 3}
   m_Name: MovementStats
   m_EditorClassIdentifier: 
-  <MaxSpeed>k__BackingField: 10
-  <Acceleration>k__BackingField: 7.5
-  <Deceleration>k__BackingField: 15
+  <MaxSpeed>k__BackingField: 7.5
+  <Acceleration>k__BackingField: 5
+  <Deceleration>k__BackingField: 10
   <AirAcceleration>k__BackingField: 5
   <AirDeceleration>k__BackingField: 10
-  <JumpHeight>k__BackingField: 2
+  <JumpHeight>k__BackingField: 1.5
   <JumpHeightCompensationFactor>k__BackingField: 1.025
-  <TimeTillJumpApex>k__BackingField: 0.25
+  <TimeTillJumpApex>k__BackingField: 0.3
   <ApexThreshold>k__BackingField: 1.4
   <ApexHangTime>k__BackingField: 0.075
   <JumpBufferTime>k__BackingField: 0.125
   <JumpCoyoteTime>k__BackingField: 0.1
   <TimeForUpwardsCancel>k__BackingField: 0.027
-  <GravityReleaseMultiplier>k__BackingField: 4
+  <GravityReleaseMultiplier>k__BackingField: 2
   <MaxFallSpeed>k__BackingField: 15

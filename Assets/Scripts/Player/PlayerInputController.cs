@@ -25,18 +25,52 @@ public class PlayerInputController : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        controls.Player.Enable();
+        controls.Player.Move.performed += HandleMove;
+        controls.Player.Jump.performed += HandleJumpPressed;
+        controls.Player.Jump.canceled += HandleJumpReleased;
+        controls.Player.Interact.performed += HandleInteract;
+        controls.Player.Escape.performed += HandleEscape;
 
-        controls.Player.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
-        controls.Player.Jump.performed += ctx => OnJumpPressed?.Invoke();
-        controls.Player.Jump.canceled += ctx => OnJumpReleased?.Invoke();
-        controls.Player.Interact.performed += ctx => OnInteract?.Invoke();
-        controls.Player.Escape.performed += ctx => OnEscape?.Invoke();
+        controls.Player.Enable();
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
-        if (controls != null)
-            controls.Player.Disable();
+        if (!IsOwner)
+            return;
+
+        controls.Player.Move.performed -= HandleMove;
+        controls.Player.Jump.performed -= HandleJumpPressed;
+        controls.Player.Jump.canceled -= HandleJumpReleased;
+        controls.Player.Interact.started -= HandleInteract;
+        controls.Player.Escape.performed -= HandleEscape;
+
+        controls.Player.Disable();
+    }
+
+    private void HandleMove(InputAction.CallbackContext ctx)
+    {
+        OnMove?.Invoke(ctx.ReadValue<Vector2>());
+    }
+
+    private void HandleJumpPressed(InputAction.CallbackContext ctx)
+    {
+        OnJumpPressed?.Invoke();
+    }
+
+    private void HandleJumpReleased(InputAction.CallbackContext ctx)
+    {
+        OnJumpReleased?.Invoke();
+    }
+
+    private void HandleInteract(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("Interact fired");
+        OnInteract?.Invoke();
+    }
+
+    private void HandleEscape(InputAction.CallbackContext ctx)
+    {
+        OnEscape?.Invoke();
     }
 }

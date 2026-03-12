@@ -13,6 +13,7 @@ public class MovementFSM
             { MovementStateType.Walking, new WalkingState(movementContext, movementController.InvokeOnStartWalking) },
             { MovementStateType.Jumping, new JumpingState(movementContext, movementController.InvokeOnInitiateJump, movementController.InvokeOnBumpHead) },
             { MovementStateType.Falling, new FallingState(movementContext, movementController.InvokeOnStartFalling, movementController.InvokeOnLand) },
+            { MovementStateType.Interacting, new InteractionState(movementContext, movementContext.Interaction.OnBeginInteraction, movementContext.Interaction.OnEndInteraction, movementContext.Interaction.OnInteract) }
         };
         Initialize();
     }

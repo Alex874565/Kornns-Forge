@@ -1,5 +1,6 @@
 ﻿public enum MovementStateType
 {
+    Interacting,
     Idle,
     Walking,
     Jumping,

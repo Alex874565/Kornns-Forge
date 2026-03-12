@@ -36,6 +36,9 @@ public class IdleState : MovementState
 
     public override MovementStateType? NextState()
     {
+        if(Ctx.Interaction.IsInteracting)
+            return MovementStateType.Interacting;
+        
         if (Ctx.JumpBufferTimer > 0f &&
             (Ctx.Collision.IsGrounded || Ctx.JumpCoyoteTimer > 0f))
         {

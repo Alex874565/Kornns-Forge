@@ -6,6 +6,7 @@ public class PlayerMovementContext
     public PlayerInputController Input;
     public PlayerCollisionController Collision;
     public PlayerMovementStats Stats;
+    public PlayerInteractionController Interaction;
 
     public Vector2 Velocity;
 

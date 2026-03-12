@@ -2,6 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerMovementContext), typeof(PlayerCollisionController), typeof(PlayerInteractionController))]
 public class PlayerMovementController : NetworkBehaviour
 {
     [Header("References")]
@@ -19,6 +20,8 @@ public class PlayerMovementController : NetworkBehaviour
     private MovementFSM _fsm;
 
     private bool _isFacingRight;
+    
+    public bool IsInteracting { get; set; }
 
     public override void OnNetworkSpawn()
     {
@@ -28,6 +31,7 @@ public class PlayerMovementController : NetworkBehaviour
             Rb = GetComponent<Rigidbody2D>(),
             Input = GetComponent<PlayerInputController>(),
             Collision = GetComponent<PlayerCollisionController>(),
+            Interaction = GetComponent<PlayerInteractionController>(),
             Stats = MovementStats,
             Velocity = Vector2.zero,
         };
@@ -53,14 +57,15 @@ public class PlayerMovementController : NetworkBehaviour
         if (!IsOwner) return;
 
         UpdateTimers();
-        _fsm.Update();
+        
+        _fsm?.Update();
     }
 
     private void FixedUpdate()
     {
         if (!IsOwner) return;
 
-        _fsm.FixedUpdate();
+        _fsm?.FixedUpdate();
     }
 
     private void UpdateTimers()

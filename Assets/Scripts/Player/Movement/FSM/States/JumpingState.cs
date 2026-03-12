@@ -39,14 +39,13 @@ public class JumpingState : MovementState
     {
         HandleAirMovement();
         
-        if (Ctx.Collision.BumpedHead)
+        if (Ctx.Collision.BumpedHead && Ctx.Velocity.y > 0f)
         {
             Ctx.IsFastFalling = true;
             Ctx.FastFallTime = Ctx.Stats.TimeForUpwardsCancel;
-            Ctx.Velocity.y = 0f;
+            Ctx.FastFallReleaseSpeed = 0f;
+            Ctx.Velocity.y = -0.01f;
             _onBumpedHead?.Invoke();
-            ApplyVelocity();
-            return;
         }
 
         if (Ctx.JumpReleased && Ctx.Velocity.y > 0f && !Ctx.IsFastFalling)

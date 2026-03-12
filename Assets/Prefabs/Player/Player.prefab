@@ -66,7 +66,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.063182056, y: -0.81083894}
+  m_Offset: {x: -0.03658873, y: 0.068644196}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -76,7 +76,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.168487, y: 0.3471167}
+  m_Size: {x: 0.5302503, y: 0.09645367}
   m_EdgeRadius: 0
 --- !u!1 &2722732118564383339
 GameObject:
@@ -144,8 +144,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.24, y: 1}
+  m_Offset: {x: 0.0033239126, y: 0.43878803}
+  m_Size: {x: 0.62170804, y: 0.6948392}
   m_Direction: 0
 --- !u!1 &6073786257466259421
 GameObject:
@@ -162,7 +162,9 @@ GameObject:
   - component: {fileID: 7383354135605595074}
   - component: {fileID: 5557256051583512047}
   - component: {fileID: -7175861375119514326}
+  - component: {fileID: -2149446090037716325}
   - component: {fileID: 8381583206622986260}
+  - component: {fileID: 3216625481620399494}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -331,6 +333,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &-2149446090037716325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073786257466259421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81b33ffc07034a47b78e91139d6c187e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!50 &8381583206622986260
 Rigidbody2D:
   serializedVersion: 5
@@ -358,6 +373,23 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &3216625481620399494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073786257466259421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e04094a38e4523bd1442ac0b2b70e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  interactLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  collider: {fileID: 1434221257199668265}
 --- !u!1 &7094042297098144079
 GameObject:
   m_ObjectHideFlags: 0
