@@ -1,84 +1,42 @@
 ﻿using Unity.Netcode;
-using UnityEngine.InputSystem;
-using System;
 using UnityEngine;
+using System;
+using UnityEngine.InputSystem;
 
 public class PlayerInputController : NetworkBehaviour
 {
-    private PlayerInput PlayerInput { get; set; }
-
-    private InputAction _moveAction;
-    private InputAction _jumpAction;
-    private InputAction _interactAction;
-    private InputAction _escapeAction;
+    private InputSystem_Actions controls;
 
     public event Action<Vector2> OnMove;
-    public event Action OnJumpPressed, OnJumpReleased, OnInteract, OnEscape;
-    
-    public Vector2 Movement => _moveAction.ReadValue<Vector2>();
-    
+    public event Action OnJumpPressed;
+    public event Action OnJumpReleased;
+    public event Action OnInteract;
+    public event Action OnEscape;
+
+    public Vector2 Movement => controls.Player.Move.ReadValue<Vector2>();
+
     private void Awake()
     {
-        PlayerInput = GetComponent<PlayerInput>();
-        _moveAction = PlayerInput.actions["Move"];
-        _jumpAction = PlayerInput.actions["Jump"];
-        _interactAction = PlayerInput.actions["Interact"];
-        _escapeAction = PlayerInput.actions["Escape"];
+        controls = new InputSystem_Actions();
     }
-    
+
     public override void OnNetworkSpawn()
     {
-        GetComponent<PlayerInput>().enabled = IsOwner;
-    }
+        if (!IsOwner)
+            return;
 
-    private void OnEnable()
-    {
-        _moveAction.Enable();
-        _jumpAction.Enable();
-        _interactAction.Enable();
-        _escapeAction.Enable();
-        _moveAction.performed += MoveAction;
-        _jumpAction.performed += JumpPressedAction;
-        _jumpAction.canceled += JumpReleasedAction;
-        _interactAction.performed += InteractAction;
-        _escapeAction.performed += EscapeAction;
-    }
+        controls.Player.Enable();
 
-    private void MoveAction(InputAction.CallbackContext context)
-    {
-        OnMove?.Invoke(Movement);
-    }
-    
-    private void JumpPressedAction(InputAction.CallbackContext context)
-    {
-        OnJumpPressed?.Invoke();
-    }
-
-    private void JumpReleasedAction(InputAction.CallbackContext context)
-    {
-        OnJumpReleased?.Invoke();
-    }
-
-    private void InteractAction(InputAction.CallbackContext context)
-    {
-        OnInteract?.Invoke();
-    }
-
-    private void EscapeAction(InputAction.CallbackContext context)
-    {
-        OnEscape?.Invoke();
+        controls.Player.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
+        controls.Player.Jump.performed += ctx => OnJumpPressed?.Invoke();
+        controls.Player.Jump.canceled += ctx => OnJumpReleased?.Invoke();
+        controls.Player.Interact.performed += ctx => OnInteract?.Invoke();
+        controls.Player.Escape.performed += ctx => OnEscape?.Invoke();
     }
 
     private void OnDisable()
     {
-        _moveAction.Disable();
-        _jumpAction.Disable();
-        _interactAction.Disable();
-        _escapeAction.Disable();
-        _moveAction.performed -= MoveAction;
-        _jumpAction.performed -= JumpPressedAction;
-        _jumpAction.canceled -= JumpReleasedAction;
-        _interactAction.performed -= InteractAction;
-        _escapeAction.performed -= EscapeAction;
+        if (controls != null)
+            controls.Player.Disable();
     }
 }

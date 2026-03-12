@@ -25,5 +25,5 @@ MonoBehaviour:
   <JumpBufferTime>k__BackingField: 0.125
   <JumpCoyoteTime>k__BackingField: 0.1
   <TimeForUpwardsCancel>k__BackingField: 0.027
-  <GravityReleaseMultiplier>k__BackingField: 2
-  <MaxFallSpeed>k__BackingField: 25
+  <GravityReleaseMultiplier>k__BackingField: 4
+  <MaxFallSpeed>k__BackingField: 15

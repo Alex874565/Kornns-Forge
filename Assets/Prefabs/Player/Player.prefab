@@ -262,7 +262,7 @@ MonoBehaviour:
   ScaleInterpolationType: 0
   PositionLerpSmoothing: 1
   PositionMaxInterpolationTime: 0.1
-  RotationLerpSmoothing: 1
+  RotationLerpSmoothing: 0
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
   ScaleMaxInterpolationTime: 0.1
@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  movementStats: {fileID: 11400000, guid: 1f8ec772193b07f4eb8a9197e9bd82e6, type: 2}
+  <MovementStats>k__BackingField: {fileID: 11400000, guid: 1f8ec772193b07f4eb8a9197e9bd82e6, type: 2}
 --- !u!114 &5557256051583512047
 MonoBehaviour:
   m_ObjectHideFlags: 0
