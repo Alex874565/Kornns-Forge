@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 3c61945cdc43a234c9c3f25a8e6b6f52
+guid: 6c641bb8f2c964d42aed91d389a60f2e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -347702476747834141
-    second: Tile1_0
-  - first:
-      213: -639764317051121795
-    second: Tile1_1
+      213: 6574086317575624163
+    second: BrokenTiles_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -27,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -77,7 +74,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -103,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tile1_0
+      name: BrokenTiles_0
       rect:
         serializedVersion: 2
         x: 32
@@ -118,14 +115,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3ecfbe98076bc2bf0800000000000000
-      internalID: -347702476747834141
+      spriteID: 3e5d9d1cca8db3b50800000000000000
+      internalID: 6574086317575624163
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_1
+      name: BrokenTiles_1
       rect:
         serializedVersion: 2
         x: 64
@@ -138,16 +135,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d7f82364eb91f17f0800000000000000
-      internalID: -639764317051121795
+      spriteID: 38a9f76fc50174c4092d13f0d267363d
+      internalID: 1688375246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_2
+      name: BrokenTiles_2
       rect:
         serializedVersion: 2
         x: 96
@@ -162,14 +159,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f69662bb03dc5b545876505eff9074ef
-      internalID: 311784629
+      spriteID: 2ad59d6f6ba956143bb236f84786c178
+      internalID: -1090016489
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_3
+      name: BrokenTiles_3
       rect:
         serializedVersion: 2
         x: 128
@@ -184,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76312d845113bec429cef076bd8c853a
-      internalID: 796046767
+      spriteID: 524913033d172cc4abcb5b792ed29883
+      internalID: -1425260270
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_4
+      name: BrokenTiles_4
       rect:
         serializedVersion: 2
         x: 160
@@ -206,14 +203,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d42881a8c9225e4d98ea1b8e7183fe4
-      internalID: -1561965720
+      spriteID: 44aa92e863d6d0e4ca536003a248ccb5
+      internalID: -1743802796
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_5
+      name: BrokenTiles_5
       rect:
         serializedVersion: 2
         x: 192
@@ -228,14 +225,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 68a4bad841efd8440a2210b3e456a4c2
-      internalID: -2127652284
+      spriteID: e03033d80be09ba45ac6c3fe953a7ed0
+      internalID: 192412726
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_6
+      name: BrokenTiles_6
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5f7917e9c3ddd34ab91033db244c99b
+      internalID: -1743182578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrokenTiles_7
       rect:
         serializedVersion: 2
         x: 256
@@ -250,14 +269,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3e90f70aa1a9f9f46942e55d2dce9be5
-      internalID: 370956273
+      spriteID: 488765de2a2fd5645bad0347986528d6
+      internalID: -1880846938
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_7
+      name: BrokenTiles_8
       rect:
         serializedVersion: 2
         x: 288
@@ -272,14 +291,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76ab092a6188b494497ea978d8367f5f
-      internalID: -1447364812
+      spriteID: a57b040aa859a45459be30fc30b14553
+      internalID: -1686643638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_8
+      name: BrokenTiles_9
       rect:
         serializedVersion: 2
         x: 320
@@ -294,14 +313,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67d1e9d1bad46df4394b5930d3013542
-      internalID: 1895861095
+      spriteID: 236535f979bd3944594b9b213cbfc782
+      internalID: -1194715969
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_9
+      name: BrokenTiles_10
       rect:
         serializedVersion: 2
         x: 352
@@ -316,14 +335,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 817f8007374af264ea60a66a92345c81
-      internalID: 696451524
+      spriteID: 491999b5c370d714c9c5c06bf062cff9
+      internalID: 580595707
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_10
+      name: BrokenTiles_11
       rect:
         serializedVersion: 2
         x: 384
@@ -338,14 +357,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bf7c3721131c78049b401395177c6b88
-      internalID: 1235853874
+      spriteID: 439520f7a38c561408a97b91eabe37c4
+      internalID: -661989280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_11
+      name: BrokenTiles_12
       rect:
         serializedVersion: 2
         x: 416
@@ -360,14 +379,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 866d400773f9d2d4bb74aae33ee98320
-      internalID: 652503115
+      spriteID: a25554d16a9f01a48a50f77227385a7c
+      internalID: 21549598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_12
+      name: BrokenTiles_13
       rect:
         serializedVersion: 2
         x: 448
@@ -382,14 +401,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0051cb8024cb49c45838d00a2d4a6c76
-      internalID: 793096449
+      spriteID: 3825862371d9d4d449bb6ccd0c49693b
+      internalID: 662135380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_13
+      name: BrokenTiles_14
       rect:
         serializedVersion: 2
         x: 480
@@ -404,14 +423,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 061fda4ecf1a6c644b1f7a1e545152a4
-      internalID: -1500781123
+      spriteID: 648f484d10b8fa5438bea27fa8bc1132
+      internalID: 458717642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_14
+      name: BrokenTiles_15
       rect:
         serializedVersion: 2
         x: 512
@@ -426,14 +445,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b763c37f3eb26a4cb9f1f0341bf2729
-      internalID: 613518375
+      spriteID: 5bd0f189dfc236642b0a00a113d4d464
+      internalID: -675431001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_15
+      name: BrokenTiles_16
       rect:
         serializedVersion: 2
         x: 544
@@ -448,14 +467,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 29492167a107b5e4cb69eb6ce1ae7080
-      internalID: -657153662
+      spriteID: b4c66f5cb4420fa4d83551382a15276e
+      internalID: 729297479
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_16
+      name: BrokenTiles_17
       rect:
         serializedVersion: 2
         x: 576
@@ -470,14 +489,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4b523b42a8f8e341836a977f3038619
-      internalID: 917935447
+      spriteID: c5050480bdfb667409b7751df1324621
+      internalID: 1572539584
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_17
+      name: BrokenTiles_18
       rect:
         serializedVersion: 2
         x: 608
@@ -492,14 +511,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbd69814ca21d1f4a8cda8912b3b9c35
-      internalID: -637321011
+      spriteID: 4614976ef1cd1364097471c5246d7b34
+      internalID: -16181551
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_18
+      name: BrokenTiles_19
       rect:
         serializedVersion: 2
         x: 640
@@ -514,14 +533,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b994eb90be27d4d429626d157356d2c1
-      internalID: -1848210679
+      spriteID: e2d53c090b7156c4181b15e2876b7230
+      internalID: -290203493
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_19
+      name: BrokenTiles_20
       rect:
         serializedVersion: 2
         x: 672
@@ -536,14 +555,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aab6e731209f033408c2498450a87624
-      internalID: -395106011
+      spriteID: 238542a4a12321740a36d1bd42dd57fa
+      internalID: -446155756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_20
+      name: BrokenTiles_21
       rect:
         serializedVersion: 2
         x: 704
@@ -558,14 +577,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 39e7c6f77a7e02347a01272379841502
-      internalID: 84032860
+      spriteID: 8449a659d85f0664eb9463543ccca5ca
+      internalID: 101712656
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_21
+      name: BrokenTiles_22
       rect:
         serializedVersion: 2
         x: 736
@@ -580,14 +599,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b71390dc829dfe04481c1c46762d86c2
-      internalID: 83206660
+      spriteID: 08dbfbfd03c9cc640a731a41825ea13e
+      internalID: -1131816648
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_22
+      name: BrokenTiles_23
       rect:
         serializedVersion: 2
         x: 768
@@ -602,14 +621,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ab8944c47a262c4bb30ee2782db8972
-      internalID: 985492289
+      spriteID: 5c350ab34b627984e9bbdfd6d74949a3
+      internalID: 1479012894
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile1_23
+      name: BrokenTiles_24
       rect:
         serializedVersion: 2
         x: 800
@@ -624,8 +643,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cad00cfc2716a3d4588cfe2c27b73fa0
-      internalID: -39559515
+      spriteID: defa269ea4b177449859dd99f8132de3
+      internalID: 935747225
       vertices: []
       indices: 
       edges: []
@@ -634,7 +653,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 514f01702d174314a97556e6858dc8aa
+    spriteID: 24fc6326a5484b9478df8eab73bf01d1
     internalID: 0
     vertices: []
     indices: 
@@ -644,30 +663,31 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Tile1_0: -347702476747834141
-      Tile1_1: -639764317051121795
-      Tile1_10: 1235853874
-      Tile1_11: 652503115
-      Tile1_12: 793096449
-      Tile1_13: -1500781123
-      Tile1_14: 613518375
-      Tile1_15: -657153662
-      Tile1_16: 917935447
-      Tile1_17: -637321011
-      Tile1_18: -1848210679
-      Tile1_19: -395106011
-      Tile1_2: 311784629
-      Tile1_20: 84032860
-      Tile1_21: 83206660
-      Tile1_22: 985492289
-      Tile1_23: -39559515
-      Tile1_3: 796046767
-      Tile1_4: -1561965720
-      Tile1_5: -2127652284
-      Tile1_6: 370956273
-      Tile1_7: -1447364812
-      Tile1_8: 1895861095
-      Tile1_9: 696451524
+      BrokenTiles_0: 6574086317575624163
+      BrokenTiles_1: 1688375246
+      BrokenTiles_10: 580595707
+      BrokenTiles_11: -661989280
+      BrokenTiles_12: 21549598
+      BrokenTiles_13: 662135380
+      BrokenTiles_14: 458717642
+      BrokenTiles_15: -675431001
+      BrokenTiles_16: 729297479
+      BrokenTiles_17: 1572539584
+      BrokenTiles_18: -16181551
+      BrokenTiles_19: -290203493
+      BrokenTiles_2: -1090016489
+      BrokenTiles_20: -446155756
+      BrokenTiles_21: 101712656
+      BrokenTiles_22: -1131816648
+      BrokenTiles_23: 1479012894
+      BrokenTiles_24: 935747225
+      BrokenTiles_3: -1425260270
+      BrokenTiles_4: -1743802796
+      BrokenTiles_5: 192412726
+      BrokenTiles_6: -1743182578
+      BrokenTiles_7: -1880846938
+      BrokenTiles_8: -1686643638
+      BrokenTiles_9: -1194715969
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
