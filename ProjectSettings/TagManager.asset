@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
+  - Kornn
   - 
   - 
   - 
@@ -40,6 +40,24 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Back1
+    uniqueID: 1534007781
+    locked: 0
+  - name: Tiles
+    uniqueID: 4237737869
+    locked: 0
+  - name: Interactable
+    uniqueID: 2967076105
+    locked: 0
+  - name: Kornn
+    uniqueID: 43723355
+    locked: 0
+  - name: Walls
+    uniqueID: 490407571
+    locked: 0
+  - name: Intercatbale 2
+    uniqueID: 1214900319
     locked: 0
   m_RenderingLayers:
   - Default
