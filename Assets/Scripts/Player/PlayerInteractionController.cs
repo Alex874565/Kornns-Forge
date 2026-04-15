@@ -3,10 +3,12 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(PlayerInputController), typeof(PlayerStatusController))]
-public class PlayerInteractionController : NetworkBehaviour
+public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
 {
     [SerializeField] private LayerMask interactLayerMask;
     [SerializeField] private new Collider2D collider;
+
+    [SerializeField] private Transform ingredientHoldPoint;
 
     public Action OnBeginInteraction, OnEndInteraction, OnInteract, OnInteractFailed;
     
