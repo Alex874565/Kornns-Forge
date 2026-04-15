@@ -167,7 +167,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 1092}
   - name: Deco
     originalName: 
-    pivot: {x: 0.50786656, y: -0.21229698}
+    pivot: {x: 0.5131087, y: -0.12486544}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -175,8 +175,8 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 2180
-      width: 1589
-      height: 862
+      width: 1869
+      height: 929
     spriteID: b674bacdb1e90f243afa9b15c3505243
     spriteBone: []
     spriteOutline: []
@@ -195,7 +195,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 3050
+      y: 3117
       width: 709
       height: 816
     spriteID: aae163f9e93633c438c133d6c039ac71
@@ -206,7 +206,28 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 3050}
+    uvTransform: {x: 4, y: 3117}
+  - name: Layer 1
+    originalName: 
+    pivot: {x: -3.0078123, y: 0}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 1881
+      y: 2180
+      width: 128
+      height: 159
+    spriteID: 7e551226e8772b247ba1ea976115d8f5
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1881, y: 2180}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 4
@@ -266,7 +287,16 @@ ScriptedImporter:
     layerFlags: 3
     layerType: 0
     blendMode: 0
-    cells: []
+    cells:
+    - name: Layer 1
+      frameIndex: 0
+      additiveSortOrder: 0
+      cellRect:
+        x: 1345
+        y: 0
+        width: 128
+        height: 159
+      spriteId: 7e551226e8772b247ba1ea976115d8f5
     linkedCells: []
     parentIndex: -1
   - layerIndex: 2
@@ -285,10 +315,10 @@ ScriptedImporter:
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 153
-        y: 183
-        width: 1589
-        height: 862
+        x: 1
+        y: 116
+        width: 1869
+        height: 929
       spriteId: b674bacdb1e90f243afa9b15c3505243
     linkedCells: []
     parentIndex: -1
