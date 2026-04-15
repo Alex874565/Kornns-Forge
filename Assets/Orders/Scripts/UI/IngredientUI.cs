@@ -4,13 +4,14 @@ using UnityEngine.UI;
 
 public class IngredientUI : MonoBehaviour
 {
+    [SerializeField] private IconsDatabase iconsDatabase;
     public Image materialIcon;
     public Image processIcon;
 
     public void Setup(OrderRequirement req, int collected)
     {
-        materialIcon.sprite = IconDatabase.Instance.GetMaterialIcon(req.materialType);
-        processIcon.sprite = IconDatabase.Instance.GetProcessIcon(req.state);
+        materialIcon.sprite = iconsDatabase.GetMaterialIcon(req.materialType);
+        processIcon.sprite = iconsDatabase.GetProcessIcon(req.state);
 
         materialIcon.enabled = true;
         processIcon.enabled = true;

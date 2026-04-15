@@ -8,7 +8,7 @@ public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveEl
     
     private int Tiredness { get; set; }
     
-    public NetworkVariable<ElementData> HeldElement { get; private set; } = new ();
+    public NetworkVariable<ElementData> HeldElement { get; private set; } = new (writePerm: NetworkVariableWritePermission.Owner);
     private NetworkVariable<ElementData>.OnValueChangedDelegate OnChangeHeldElementDelegate { get; set; }
 
     public override void OnNetworkSpawn()

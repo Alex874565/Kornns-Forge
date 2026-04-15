@@ -1,12 +1,14 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class TestController : MonoBehaviour
+public class TestController : NetworkBehaviour
 {
     public OrderManager orderManager;
     public OrderData[] testOrders;
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        if (!IsOwner) return;
         Debug.Log("E → Spawn Random Order");
 
         Debug.Log("1 → Melt Gold");
@@ -23,7 +25,8 @@ public class TestController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            SpawnRandomOrder();
+            Debug.Log($"CLIENT pressed E. IsClient={IsClient} IsOwner={IsOwner} IsServer={IsServer} OwnerClientId={OwnerClientId}");
+            SpawnRandomOrderServerRpc();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -62,11 +65,22 @@ public class TestController : MonoBehaviour
         }
     }
 
-    void SpawnRandomOrder()
+    
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    void SpawnRandomOrderServerRpc()
     {
         int index = Random.Range(0, testOrders.Length);
-        OrderData order = testOrders[index];
 
+        SpawnRandomOrderClientRpc(index);
+    }
+    
+    
+    [ClientRpc]
+    void SpawnRandomOrderClientRpc(int index)
+    {
+        Debug.Log($"CLIENT received order index {index}. IsOwner={IsOwner} IsClient={IsClient} IsServer={IsServer}");
+        OrderData order = testOrders[index];
+        
         orderManager.AddOrder(order);
     }
 }

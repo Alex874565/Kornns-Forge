@@ -41,6 +41,7 @@ public class PlayerInteractionController : NetworkBehaviour
         if(!IsOwner) return;
         
         IAmPlayerInteractable interactable = DetectInteractables();
+        Debug.Log("Interact: " + interactable);
         if (interactable != _hoveredInteractable)
         {
             ChangeHoveredInteractable(interactable);
@@ -60,6 +61,7 @@ public class PlayerInteractionController : NetworkBehaviour
             IAmPlayerInteractable interactable = col.GetComponent<IAmPlayerInteractable>();
 
             if (interactable == null) continue;
+            
             return interactable;
         }
 

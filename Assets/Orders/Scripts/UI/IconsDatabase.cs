@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IconDatabase : MonoBehaviour
+[CreateAssetMenu(fileName = "IconDatabase", menuName = "ScriptableObjects/IconsDatabase")]
+public class IconsDatabase : ScriptableObject
 {
-    public static IconDatabase Instance;
+    public static IconsDatabase Instance;
 
     public List<MaterialIcon> materials;
     public List<ProcessIcon> processes;
