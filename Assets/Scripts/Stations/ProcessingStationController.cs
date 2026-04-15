@@ -17,6 +17,8 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
     private readonly NetworkVariable<bool> _isProcessing =  new ();
     private readonly NetworkVariable<float> _processingTime = new ();
 
+    [SerializeField] private SelectedCounterVisual selectedVisual;
+
     public bool InteractOnlyOnce { get; set; }
 
     public override void OnNetworkSpawn()
@@ -121,12 +123,16 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
     {
         Debug.Log("Highlighting " + gameObject.name);
         OnHighlight?.Invoke();
+
+        selectedVisual.Show();
     }
 
     public void UnHighlight()
     {
         Debug.Log("Unhighlight " + gameObject.name);
         OnUnHighlight?.Invoke();
+
+        selectedVisual.Hide();
     }
     
     public void Interact(PlayerStatusController player)
