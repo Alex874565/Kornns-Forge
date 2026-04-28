@@ -3,11 +3,11 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class ProcessingStationController : NetworkBehaviour, IPlayerInteractable, IGiveElement, IReceiveElement
+public class ProcessingStationController : BaseStation, IGiveElement, IReceiveElement
 {
     [SerializeField] private ProcessingStationStats stats;
 
-    public event Action OnHighlight, OnUnHighlight, OnInteract;
+    public event Action OnInteract;
     public event NetworkVariable<StationElementData>.OnValueChangedDelegate OnChangeElement;
     public event NetworkVariable<bool>.OnValueChangedDelegate OnProcessingChanged;
     public event NetworkVariable<float>.OnValueChangedDelegate OnProcessingTimeChanged;
@@ -16,8 +16,6 @@ public class ProcessingStationController : NetworkBehaviour, IPlayerInteractable
 
     private readonly NetworkVariable<bool> _isProcessing =  new ();
     private readonly NetworkVariable<float> _processingTime = new ();
-
-    [SerializeField] private SelectedCounterVisual selectedVisual;
 
     //public bool InteractOnlyOnce { get; set; }
 
@@ -106,7 +104,7 @@ public class ProcessingStationController : NetworkBehaviour, IPlayerInteractable
     
     #region Interaction
     
-    public bool CanInteract(PlayerStatusController player)
+    public override bool CanInteract(PlayerStatusController player)
     {
         // Player takes element
         if (_currentElement.Value.Type != MaterialType.None)
@@ -119,24 +117,8 @@ public class ProcessingStationController : NetworkBehaviour, IPlayerInteractable
         // Player gives element
         return CanReceiveElement(player.HeldElement.Value);
     }
-
-    public void Highlight()
-    {
-        Debug.Log("Highlighting " + gameObject.name);
-        OnHighlight?.Invoke();
-
-        selectedVisual.Show();
-    }
-
-    public void UnHighlight()
-    {
-        Debug.Log("Unhighlight " + gameObject.name);
-        OnUnHighlight?.Invoke();
-
-        selectedVisual.Hide();
-    }
     
-    public void Interact(PlayerStatusController player)
+    public override void Interact(PlayerStatusController player)
     {
         if(!IsOwner) return;
         

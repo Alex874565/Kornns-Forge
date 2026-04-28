@@ -1,77 +1,43 @@
 using System;
 using UnityEngine;
 
-public class MaterialSpawner : MonoBehaviour, IIngredientParent, IPlayerInteractable
+public class MaterialSpawner : BaseStation, IIngredientParent
 {
     [SerializeField] private IngredientSO ingredientSO;
-    [SerializeField] private Transform stationTopPoint;
 
-    private Ingredient ingredient;
-
-    public event Action OnHighlight, OnUnHighlight;
-
-    [SerializeField] private SelectedCounterVisual selectedVisual;
-
-    // public void Interact(PlayerInteractionController playerInteractionController)
-    // {
-    //     Transform ingredientTransform = Instantiate(ingredientSO.prefab, stationTopPoint);
-    //     ingredientTransform.GetComponent<Ingredient>().SetIngredientParent(playerInteractionController);
-
-    // }
-
-    public bool CanInteract(PlayerStatusController player)
+    public override bool CanInteract(PlayerStatusController player)
     {
-        return player.HeldElement.Value.Type == MaterialType.None;
+        return !player.HasIngredient();
     }
 
-    public void Interact(PlayerStatusController player)
+    // public override void Interact(PlayerStatusController player)
+    // {
+    //     Debug.Log("interact " + CanInteract(player));
+    //     if (!CanInteract(player)) return;
+
+    //     Transform ingredientTransform = Instantiate(ingredientSO.prefab).transform;
+    //     Ingredient spawnedIngredient = ingredientTransform.GetComponent<Ingredient>();
+
+    //     spawnedIngredient.SetIngredientParent(player);
+    // }
+
+    // public override void Interact(PlayerStatusController player)
+    // {
+    //     Transform ingredientTransform = Instantiate(ingredientSO.prefab);
+    //     ingredientTransform.GetComponent<Ingredient>().SetIngredientParent(player);
+    // }
+
+    public override void Interact(PlayerStatusController player)
     {
+        Debug.Log("Interacted with material spawner");
         if (!CanInteract(player)) return;
 
         Transform ingredientTransform = Instantiate(ingredientSO.prefab);
-        Ingredient spawnedIngredient = ingredientTransform.GetComponent<Ingredient>();
 
-        spawnedIngredient.SetIngredientParent(player);
-    }
+        Debug.Log("Spawned at: " + ingredientTransform.position);
 
-    public Transform GetIngredientFollowTransform()
-    {
-        return stationTopPoint;
-    }
+        Ingredient ingredient = ingredientTransform.GetComponent<Ingredient>();
 
-    public void SetIngredient(Ingredient ingredient)
-    {
-        this.ingredient = ingredient;
-    }
-
-    public Ingredient GetIngredient()
-    {
-        return ingredient;
-    }
-
-    public void ClearIngredient()
-    {
-        ingredient = null;
-    }
-
-    public bool HasIngredient()
-    {
-        return ingredient != null;
-    }
-
-    public void Highlight()
-    {
-        Debug.Log("Highlighting " + gameObject.name);
-        OnHighlight?.Invoke();
-
-        selectedVisual.Show();
-    }
-
-    public void UnHighlight()
-    {
-        Debug.Log("Unhighlight " + gameObject.name);
-        OnUnHighlight?.Invoke();
-
-        selectedVisual.Hide();
+        ingredient.SetIngredientParent(player);
     }
 }

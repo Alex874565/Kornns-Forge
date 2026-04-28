@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class Ingredient : MonoBehaviour
@@ -11,19 +12,19 @@ public class Ingredient : MonoBehaviour
         return ingredientSO;
     }
 
-    public void SetIngredientParent(IIngredientParent ingredientParent)
+    public void SetIngredientParent(IIngredientParent parent)
     {
-        if (this.ingredientParent != null)
-        {
-            //this.ingredientParent
-        }
+        ingredientParent = parent; // ❗ missing line
 
-        this.ingredientParent = ingredientParent;
+        transform.SetParent(parent.GetIngredientFollowTransform());
+        Debug.Log("Moved ingredient manually to hold point");
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
 
-        //if (ingredientParent)
-        {
-            Debug.LogError ("IIngredientParent already has Ingredient");
-        }
+        parent.SetIngredient(this);
+
+        Debug.Log($"Parenting ingredient to: {parent.GetIngredientFollowTransform().name}");
+        Debug.Log($"IsOwner: {NetworkManager.Singleton.LocalClientId}");
     }
 
     public IIngredientParent GetIngredientParent()

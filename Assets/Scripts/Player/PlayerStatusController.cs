@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 
-public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveElement
+public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveElement, IIngredientParent
 {
     public event Action<MaterialData> OnChangeHeldElement;
     
@@ -10,6 +10,10 @@ public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveEl
     
     public NetworkVariable<MaterialData> HeldElement { get; private set; } = new (writePerm: NetworkVariableWritePermission.Owner);
     private NetworkVariable<MaterialData>.OnValueChangedDelegate OnChangeHeldElementDelegate { get; set; }
+
+    private Ingredient ingredient;
+
+    [SerializeField] private Transform ingredientHoldPoint;
 
     public override void OnNetworkSpawn()
     {        
@@ -42,5 +46,31 @@ public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveEl
         if (!IsOwner) return false;
         
         return HeldElement.Value.Type == MaterialType.None;
+    }
+
+    public Transform GetIngredientFollowTransform()
+    {
+        Debug.Log($"HoldPoint: {ingredientHoldPoint}");
+        return ingredientHoldPoint;
+    }
+
+    public void SetIngredient(Ingredient ingredient)
+    {
+        this.ingredient = ingredient;
+    }
+
+    public Ingredient GetIngredient()
+    {
+        return ingredient;
+    }
+
+    public void ClearIngredient()
+    {
+        ingredient = null;
+    }
+
+    public bool HasIngredient()
+    {
+        return ingredient != null;
     }
 }

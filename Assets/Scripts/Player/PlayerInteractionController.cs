@@ -3,12 +3,10 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(PlayerInputController), typeof(PlayerStatusController))]
-public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
+public class PlayerInteractionController : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactLayerMask;
     [SerializeField] private new Collider2D collider;
-
-    [SerializeField] private Transform ingredientHoldPoint;
 
     public Action OnBeginInteraction, OnEndInteraction, OnInteract, OnInteractFailed;
     
@@ -19,9 +17,9 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
     
     private ContactFilter2D _contactFilter;
     
-    public bool IsInteracting { get; set; }
+    public bool IsInteracting { get; set; } = false;
     //public bool InteractOnlyOnce { get; set; } = true;
-    
+
     public override void OnNetworkSpawn()
     {
         if(!IsOwner) return;
@@ -43,7 +41,6 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
         if(!IsOwner) return;
         
         IPlayerInteractable interactable = DetectInteractables();
-        Debug.Log("Interact: " + interactable);
         if (interactable != _hoveredInteractable)
         {
             ChangeHoveredInteractable(interactable);
@@ -96,6 +93,8 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
             {
                 IsInteracting = true;
                 //InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
+                _hoveredInteractable.Interact(_playerStatusController);
+                IsInteracting = false;
             }
             else
             {
@@ -106,6 +105,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
     
     public void Interact()
     {
+        Debug.Log(IsOwner);
         if(!IsOwner) return;
         
         _hoveredInteractable.Interact(_playerStatusController);

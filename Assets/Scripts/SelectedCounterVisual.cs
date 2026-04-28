@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SelectedCounterVisual : MonoBehaviour
 {
-    [SerializeField] private ProcessingStationController processingStation;
+    [SerializeField] private BaseStation baseStation;
     [SerializeField] private GameObject visualGameObject;
 
     private void Awake()

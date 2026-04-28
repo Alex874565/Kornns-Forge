@@ -9,7 +9,7 @@ public class TestController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
-        Debug.Log("E → Spawn Random Order");
+        Debug.Log("O → Spawn Random Order");
 
         Debug.Log("1 → Melt Gold");
         Debug.Log("2 → Straighten Gold");
@@ -23,9 +23,9 @@ public class TestController : NetworkBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.O))
         {
-            Debug.Log($"CLIENT pressed E. IsClient={IsClient} IsOwner={IsOwner} IsServer={IsServer} OwnerClientId={OwnerClientId}");
+            Debug.Log($"CLIENT pressed O. IsClient={IsClient} IsOwner={IsOwner} IsServer={IsServer} OwnerClientId={OwnerClientId}");
             SpawnRandomOrderServerRpc();
         }
 
