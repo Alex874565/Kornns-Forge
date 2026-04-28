@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractable, IGiveElement, IReceiveElement
+public class ProcessingStationController : NetworkBehaviour, IPlayerInteractable, IGiveElement, IReceiveElement
 {
     [SerializeField] private ProcessingStationStats stats;
 
@@ -19,7 +19,7 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
 
     [SerializeField] private SelectedCounterVisual selectedVisual;
 
-    public bool InteractOnlyOnce { get; set; }
+    //public bool InteractOnlyOnce { get; set; }
 
     public override void OnNetworkSpawn()
     {
@@ -31,7 +31,7 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
         _isProcessing.OnValueChanged += OnProcessingChanged;
         _processingTime.OnValueChanged += OnProcessingTimeChanged;
         
-        InteractOnlyOnce = !stats.IsAutomatic;
+        //InteractOnlyOnce = stats.IsAutomatic;
     }
 
     public void Update()
@@ -79,19 +79,27 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
 
     #region Give/Receive Element
 
-    public void GiveElement(ElementData element, IReceiveElement receiver)
+    public void GiveElement(MaterialData material, IReceiveElement receiver)
     {
-        Debug.Log("Giving element " + element.Type + " from station " + gameObject.name);
-        receiver.ReceiveElement(element);
+        Debug.Log("Giving element " + material.Type + " from station " + gameObject.name);
+        receiver.ReceiveElement(material);
         _currentElement.Value = new StationElementData();
     }
 
-    public void ReceiveElement(ElementData element)
+    public void ReceiveElement(MaterialData material)
     {
-        Debug.Log("Received element " + element.Type + " at station " + gameObject.name);
-        _currentElement.Value = new StationElementData(stats.AcceptedElements.Find(e =>
-            e.Type == element.Type &&
-            e.AcceptedState == element.State));
+        if (CanReceiveElement(material))
+        {
+            Debug.Log("Received element " + material.Type + " at station " + gameObject.name);
+            _currentElement.Value = new StationElementData(stats.AcceptedElements.Find(e =>
+                e.Type == material.Type &&
+                e.AcceptedState == material.State));
+        }
+    }
+
+    public bool CanReceiveElement(MaterialData material)
+    {
+        return (!stats.IsAutomatic || _isProcessing.Value == false) && stats.AcceptedElements.Any(e => e.Type == material.Type && e.AcceptedState == material.State);
     }
 
     #endregion
@@ -100,23 +108,16 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
     
     public bool CanInteract(PlayerStatusController player)
     {
-        if (_isProcessing.Value)
+        // Player takes element
+        if (_currentElement.Value.Type != MaterialType.None)
         {
-            if (stats.IsAutomatic || player.HeldElement.Value.Type != ElementType.None)
-                return false;
-
-            return true;
+            if(stats.IsAutomatic && _isProcessing.Value) return false;
+            
+            return player.CanReceiveElement(new MaterialData(_currentElement.Value.Type, _currentElement.Value.FinishedState));
         }
         
-        if (_currentElement.Value.Type != ElementType.None)
-        {
-            return true;
-        }
-        
-        ElementData offeredElement = player.HeldElement.Value;
-        return stats.AcceptedElements.Any(e =>
-            e.Type == offeredElement.Type &&
-            e.AcceptedState == offeredElement.State);
+        // Player gives element
+        return CanReceiveElement(player.HeldElement.Value);
     }
 
     public void Highlight()
@@ -141,14 +142,14 @@ public class ProcessingStationController : NetworkBehaviour, IAmPlayerInteractab
         
         if (!CanInteract(player)) return;
         
-        if (_currentElement.Value.Type == ElementType.None)
+        if (_currentElement.Value.Type == MaterialType.None)
         {
             player.GiveElement(player.HeldElement.Value, this);
         }
         else
         {
-            ElementData elementToGive = new ElementData(_currentElement.Value.Type, _currentElement.Value.FinishedState);
-            GiveElement(elementToGive, player);   
+            MaterialData materialToGive = new MaterialData(_currentElement.Value.Type, _currentElement.Value.FinishedState);
+            GiveElement(materialToGive, player);   
         }
         
         OnInteract?.Invoke();

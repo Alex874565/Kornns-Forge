@@ -1,4 +1,4 @@
-﻿public interface IAmHighlightable
+﻿public interface IHighlightable
 {
     public abstract void Highlight();
     

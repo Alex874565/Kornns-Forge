@@ -1,4 +1,4 @@
-﻿public enum ElementType
+﻿public enum MaterialType
 {
     None,
     Wood,

@@ -5,17 +5,17 @@ using Unity.Netcode;
 [Serializable]
 public class StationElementData : INetworkSerializable, IEquatable<StationElementData>
 {
-    public ElementType Type;
+    public MaterialType Type;
     public int ProcessingTime;
-    public ElementState AcceptedState;
-    public ElementState FinishedState;
+    public MaterialState AcceptedState;
+    public MaterialState FinishedState;
 
     public StationElementData()
     {
-        Type = ElementType.None;
+        Type = MaterialType.None;
     }
     
-    public StationElementData(ElementType type, int processingTime, ElementState acceptedState, ElementState finishedState)
+    public StationElementData(MaterialType type, int processingTime, MaterialState acceptedState, MaterialState finishedState)
     {
         Type = type;
         ProcessingTime = processingTime;

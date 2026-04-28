@@ -10,7 +10,7 @@ public class OrderManager : MonoBehaviour
     public System.Action OnOrdersUpdated;
 
     /* This function can be called after the furnance finishes to melt one metal for example */
-    public void AddItem(ItemType item, MaterialType material, MaterialProcess state)
+    public void AddItem(ItemType item, MaterialType material, Process state)
     {
         CollectedItem newItem = new CollectedItem
         {

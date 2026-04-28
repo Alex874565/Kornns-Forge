@@ -1,6 +1,6 @@
-﻿public interface IAmPlayerInteractable : IAmHighlightable
+﻿public interface IPlayerInteractable : IHighlightable
 {
-    public abstract bool InteractOnlyOnce { get; set; }
+    //public abstract bool InteractOnlyOnce { get; set; }
 
     public abstract bool CanInteract(PlayerStatusController playerStatusController);
     

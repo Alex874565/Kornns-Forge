@@ -31,27 +31,27 @@ public class TestController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            orderManager.AddItem(ItemType.Material, MaterialType.Gold, MaterialProcess.Melt);
+            orderManager.AddItem(ItemType.Material, MaterialType.Gold, Process.Melt);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            orderManager.AddItem(ItemType.Material, MaterialType.Gold, MaterialProcess.Straighten);
+            orderManager.AddItem(ItemType.Material, MaterialType.Gold, Process.Straighten);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            orderManager.AddItem(ItemType.Material, MaterialType.Wood, MaterialProcess.Chop);
+            orderManager.AddItem(ItemType.Material, MaterialType.Wood, Process.Chop);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            orderManager.AddItem(ItemType.Material, MaterialType.Iron, MaterialProcess.Melt);
+            orderManager.AddItem(ItemType.Material, MaterialType.Iron, Process.Melt);
         }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            orderManager.AddItem(ItemType.Material, MaterialType.Iron, MaterialProcess.Straighten);
+            orderManager.AddItem(ItemType.Material, MaterialType.Iron, Process.Straighten);
         }
 
         if (Input.GetKeyDown(KeyCode.G))

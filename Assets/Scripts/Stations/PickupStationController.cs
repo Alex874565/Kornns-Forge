@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class PickupStationController : NetworkBehaviour, IAmPlayerInteractable, IGiveElement
+public class PickupStationController : NetworkBehaviour, IPlayerInteractable, IGiveElement
 {
     [SerializeField] private PickupStationStats stats;
     
@@ -10,9 +10,9 @@ public class PickupStationController : NetworkBehaviour, IAmPlayerInteractable, 
 
     public bool InteractOnlyOnce { get; set; } = true;
 
-    public void GiveElement(ElementData element, IReceiveElement receiver)
+    public void GiveElement(MaterialData material, IReceiveElement receiver)
     {
-        receiver.ReceiveElement(element);
+        receiver.ReceiveElement(material);
     }
     
     #region Interaction
@@ -40,8 +40,8 @@ public class PickupStationController : NetworkBehaviour, IAmPlayerInteractable, 
         if(!CanInteract(playerStatusController)) return;
 
         Debug.Log("Interacting with pickup station " + gameObject.name);
-        ElementData elementToGive = stats.HeldElement;
-        GiveElement(stats.HeldElement, playerStatusController);
+        MaterialData materialToGive = stats.HeldMaterial;
+        GiveElement(stats.HeldMaterial, playerStatusController);
         UnHighlight();
         OnInteract?.Invoke();
     }

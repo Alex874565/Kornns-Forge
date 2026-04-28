@@ -12,7 +12,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
 
     public Action OnBeginInteraction, OnEndInteraction, OnInteract, OnInteractFailed;
     
-    private IAmPlayerInteractable _hoveredInteractable;
+    private IPlayerInteractable _hoveredInteractable;
     
     private PlayerInputController _playerInputController;
     private PlayerStatusController _playerStatusController;
@@ -20,7 +20,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
     private ContactFilter2D _contactFilter;
     
     public bool IsInteracting { get; set; }
-    public bool InteractOnlyOnce { get; set; } = true;
+    //public bool InteractOnlyOnce { get; set; } = true;
     
     public override void OnNetworkSpawn()
     {
@@ -42,7 +42,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
     {
         if(!IsOwner) return;
         
-        IAmPlayerInteractable interactable = DetectInteractables();
+        IPlayerInteractable interactable = DetectInteractables();
         Debug.Log("Interact: " + interactable);
         if (interactable != _hoveredInteractable)
         {
@@ -50,7 +50,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
         }
     }
 
-    private IAmPlayerInteractable DetectInteractables()
+    private IPlayerInteractable DetectInteractables()
     {
         Collider2D[] results  = new Collider2D[2];
         int count = collider.Overlap(_contactFilter, results);
@@ -60,7 +60,7 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
             Collider2D col = results[i];
             if (col == null) continue;
 
-            IAmPlayerInteractable interactable = col.GetComponent<IAmPlayerInteractable>();
+            IPlayerInteractable interactable = col.GetComponent<IPlayerInteractable>();
 
             if (interactable == null) continue;
             
@@ -70,11 +70,11 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
         return null;
     }
     
-    private void ChangeHoveredInteractable(IAmPlayerInteractable amPlayerInteractable)
+    private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
     {
         _hoveredInteractable?.UnHighlight();
 
-        _hoveredInteractable = amPlayerInteractable;
+        _hoveredInteractable = playerInteractable;
         
         if(_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
             return;
@@ -88,14 +88,14 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
         if(IsInteracting)
         {
             IsInteracting = false;
-            InteractOnlyOnce = false;
+            //InteractOnlyOnce = false;
         }
         else
         {
             if (_hoveredInteractable != null && _hoveredInteractable.CanInteract(_playerStatusController))
             {
                 IsInteracting = true;
-                InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
+                //InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
             }
             else
             {
@@ -110,10 +110,10 @@ public class PlayerInteractionController : NetworkBehaviour, IIngredientParent
         
         _hoveredInteractable.Interact(_playerStatusController);
 
-        if (InteractOnlyOnce)
-        {
-            IsInteracting = false;
-            InteractOnlyOnce = true;
-        }
+        //if (InteractOnlyOnce)
+        //{
+        //    IsInteracting = false;
+        //    InteractOnlyOnce = true;
+        //}
     }
 }

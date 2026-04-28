@@ -4,12 +4,12 @@ using System;
 
 public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveElement
 {
-    public event Action<ElementData> OnChangeHeldElement;
+    public event Action<MaterialData> OnChangeHeldElement;
     
     private int Tiredness { get; set; }
     
-    public NetworkVariable<ElementData> HeldElement { get; private set; } = new (writePerm: NetworkVariableWritePermission.Owner);
-    private NetworkVariable<ElementData>.OnValueChangedDelegate OnChangeHeldElementDelegate { get; set; }
+    public NetworkVariable<MaterialData> HeldElement { get; private set; } = new (writePerm: NetworkVariableWritePermission.Owner);
+    private NetworkVariable<MaterialData>.OnValueChangedDelegate OnChangeHeldElementDelegate { get; set; }
 
     public override void OnNetworkSpawn()
     {        
@@ -20,20 +20,27 @@ public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveEl
             OnChangeHeldElement?.Invoke(newElement);
         };
         HeldElement.OnValueChanged += OnChangeHeldElementDelegate;
-        HeldElement.Value = new ElementData();
+        HeldElement.Value = new MaterialData();
     }
     
-    public void GiveElement(ElementData element, IReceiveElement player)
+    public void GiveElement(MaterialData material, IReceiveElement receiver)
     {
         if(!IsOwner) return;
-        Debug.Log("Giving " + element);
-        HeldElement.Value = new ElementData();
+        Debug.Log("Giving " + material);
+        HeldElement.Value = new MaterialData();
     }
 
-    public void ReceiveElement(ElementData element)
+    public void ReceiveElement(MaterialData material)
     {
         if (!IsOwner) return;
-        Debug.Log("Receiving " + element);
-        HeldElement.Value = new ElementData(element);
+        Debug.Log("Receiving " + material);
+        HeldElement.Value = new MaterialData(material);
+    }
+
+    public bool CanReceiveElement(MaterialData material)
+    {
+        if (!IsOwner) return false;
+        
+        return HeldElement.Value.Type == MaterialType.None;
     }
 }

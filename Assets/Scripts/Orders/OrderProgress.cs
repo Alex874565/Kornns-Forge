@@ -43,7 +43,7 @@ public class OrderProgress
         return true;
     }
 
-    public bool NeedsItem(ItemType type, MaterialType mat, MaterialProcess proc)
+    public bool NeedsItem(ItemType type, MaterialType mat, Process proc)
     {
         foreach (var req in order.requirements)
         {

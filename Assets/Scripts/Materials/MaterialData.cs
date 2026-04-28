@@ -1,27 +1,27 @@
 ﻿using Unity.Netcode;
 using System;
 
-public class ElementData : INetworkSerializable, IEquatable<ElementData>
+public class MaterialData : INetworkSerializable, IEquatable<MaterialData>
 {
-    public ElementType Type;
-    public ElementState State;
+    public MaterialType Type;
+    public MaterialState State;
     
-    public ElementData(ElementType type, ElementState state)
+    public MaterialData(MaterialType type, MaterialState state)
     {
         Type = type;
         State = state;
     }
 
-    public ElementData(ElementData other)
+    public MaterialData(MaterialData other)
     {
         Type = other.Type;
         State = other.State;
     }
 
-    public ElementData()
+    public MaterialData()
     {
-        Type = ElementType.None;
-        State = ElementState.Raw;
+        Type = MaterialType.None;
+        State = MaterialState.Raw;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -30,7 +30,7 @@ public class ElementData : INetworkSerializable, IEquatable<ElementData>
         serializer.SerializeValue(ref State);
     }
 
-    public bool Equals(ElementData other)
+    public bool Equals(MaterialData other)
     {
         return Type == other.Type && State == other.State;
     }

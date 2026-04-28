@@ -1,4 +1,4 @@
-﻿public enum ElementState
+﻿public enum MaterialState
 {
     Raw,
     Melted,
