@@ -20,6 +20,8 @@ public class PlayerInteractionController : NetworkBehaviour
     public bool IsInteracting { get; set; } = false;
     //public bool InteractOnlyOnce { get; set; } = true;
 
+    private BaseStation selectedStation;
+
     public override void OnNetworkSpawn()
     {
         if(!IsOwner) return;
@@ -27,6 +29,7 @@ public class PlayerInteractionController : NetworkBehaviour
         _playerStatusController = GetComponent<PlayerStatusController>();
         
         _playerInputController.OnInteract += InteractClick;
+        _playerInputController.OnInteractAlternate += InteractAlternateClick;
         
         _contactFilter = new ContactFilter2D();
         _contactFilter.SetLayerMask(interactLayerMask);
@@ -72,10 +75,13 @@ public class PlayerInteractionController : NetworkBehaviour
         _hoveredInteractable?.UnHighlight();
 
         _hoveredInteractable = playerInteractable;
-        
-        if(_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
+
+        // 🔥 THIS WAS MISSING
+        selectedStation = playerInteractable as BaseStation;
+
+        if (_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
             return;
-        
+
         _hoveredInteractable.Highlight();
     }
 
@@ -100,6 +106,15 @@ public class PlayerInteractionController : NetworkBehaviour
             {
                 OnInteractFailed?.Invoke();
             }
+        }
+    }
+
+    public void InteractAlternateClick()
+    {
+        Debug.Log("InteractAlternateClicked");
+        if (selectedStation != null )
+        {
+            selectedStation.InteractAlternate(_playerStatusController);
         }
     }
     

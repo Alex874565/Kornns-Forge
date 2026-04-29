@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d327844647a21b1419230f835eaf9ab8, type: 3}
-  m_Name: GoldOre
+  m_Name: GoldIngot
   m_EditorClassIdentifier: 
-  prefab: {fileID: 542483656882917983, guid: a6a80382c818462448e985cfb8ed4f0d, type: 3}
-  sprite: {fileID: -1994067193690870337, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
-  objectName: Gold Ore
+  prefab: {fileID: 542483656882917983, guid: e4eb6215cad65c74f8e0531ec73635f8, type: 3}
+  sprite: {fileID: -4381812301800334281, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+  objectName: Gold Ingot

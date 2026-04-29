@@ -21,6 +21,11 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
         Debug.LogError("BaseStation.Interact();");
     }
 
+    public virtual void InteractAlternate(PlayerStatusController playerStatusController)
+    {
+        Debug.LogError("BaseStation.InteractAlternate();");
+    }
+
     public void Highlight()
     {
         Debug.Log("Highlighting " + gameObject.name);

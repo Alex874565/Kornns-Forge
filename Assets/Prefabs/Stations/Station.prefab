@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c27b6a04212d4e4cbc6fa9be3063e39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  processingStation: {fileID: -1635898131869042037}
+  baseStation: {fileID: 0}
   visualGameObject: {fileID: 3720561241371100718}
 --- !u!1 &608333111417010327
 GameObject:
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3498943020
+  GlobalObjectIdHash: 1030271274
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -168,8 +168,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  stats: {fileID: 11400000, guid: f5f262d33b692a04cadc2b039f6d361b, type: 2}
+  stationTopPoint: {fileID: 0}
   selectedVisual: {fileID: 2938071339951260982}
+  stats: {fileID: 11400000, guid: f5f262d33b692a04cadc2b039f6d361b, type: 2}
 --- !u!1 &617238550302010095
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,7 +196,7 @@ Transform:
   m_GameObject: {fileID: 617238550302010095}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
