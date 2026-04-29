@@ -4,6 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Crafting/Recipe")]
 public class CraftingRecipeSO : ScriptableObject
 {
-    public List<IngredientSO> ingredients = new();
-    public IngredientSO result;
+    public string recipeName;
+
+    public OrderData resultOrder;
+
+    public List<OrderRequirement> requirements = new();
 }

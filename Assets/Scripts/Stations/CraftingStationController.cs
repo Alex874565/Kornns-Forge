@@ -1,30 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
-public class CraftingStationController : NetworkBehaviour
+public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 {
+    [Header("Setup")]
     [SerializeField] private int maxIngredients = 3;
-    [SerializeField] private List<OrderData> availableOrders;
+    [SerializeField] private CraftingRecipeDatabaseSO recipeDatabase;
+
+    [Header("UI")]
+    [SerializeField] private CraftingStationUI craftingUI;
 
     public List<Ingredient> CurrentIngredients { get; private set; } = new();
 
-    public OrderData CurrentOrderPreview { get; private set; }
+    public CraftingRecipeSO CurrentRecipePreview { get; private set; }
     public OrderData CraftedOrder { get; private set; }
 
     public event Action OnCraftingChanged;
 
     private void Awake()
     {
+        CurrentIngredients.Clear();
+
         for (int i = 0; i < maxIngredients; i++)
             CurrentIngredients.Add(null);
+    }
+
+    // ---------------- INTERACTION ----------------
+
+    public void Interact(PlayerStatusController player)
+    {
+        if (!IsOwner) return;
+
+        if (craftingUI == null)
+        {
+            Debug.LogWarning("Crafting UI not assigned!");
+            return;
+        }
+
+        craftingUI.Show(this, player);
+    }
+
+    public bool CanInteract(PlayerStatusController player)
+    {
+        return true;
+    }
+
+    public void Highlight()
+    {
+        return;
+    }
+
+    public void UnHighlight()
+    {
+        return;
+        
     }
 
     // ---------------- SLOT LOGIC ----------------
 
     public void ToggleIngredientSlot(int index, PlayerStatusController player)
     {
+        if (index < 0 || index >= CurrentIngredients.Count) return;
         if (CraftedOrder != null) return;
 
         if (CurrentIngredients[index] == null)
@@ -38,111 +76,79 @@ public class CraftingStationController : NetworkBehaviour
 
     private void PlaceIngredient(int index, PlayerStatusController player)
     {
+        if (player == null) return;
         if (!player.HasIngredient()) return;
 
-        Ingredient ing = player.GetIngredient();
-        CurrentIngredients[index] = ing;
+        Ingredient ingredient = player.GetIngredient();
+        if (ingredient == null) return;
+
+        CurrentIngredients[index] = ingredient;
 
         player.ClearIngredient();
-        ing.gameObject.SetActive(false);
+        ingredient.gameObject.SetActive(false);
     }
 
     private void RemoveIngredient(int index, PlayerStatusController player)
     {
+        if (player == null) return;
         if (player.HasIngredient()) return;
 
-        Ingredient ing = CurrentIngredients[index];
-        if (ing == null) return;
+        Ingredient ingredient = CurrentIngredients[index];
+        if (ingredient == null) return;
 
         CurrentIngredients[index] = null;
 
-        ing.gameObject.SetActive(true);
-        player.SetIngredient(ing);
+        ingredient.gameObject.SetActive(true);
+        player.SetIngredient(ingredient);
     }
 
     // ---------------- MATCHING ----------------
 
     private void UpdatePreview()
     {
-        CurrentOrderPreview = GetMatchingOrder();
-    }
-
-    private OrderData GetMatchingOrder()
-    {
-        foreach (var order in availableOrders)
-        {
-            if (Matches(order))
-                return order;
-        }
-
-        return null;
-    }
-
-    private bool Matches(OrderData order)
-    {
-        List<IngredientSO> input = new();
-
-        foreach (var ing in CurrentIngredients)
-        {
-            if (ing != null)
-                input.Add(ing.GetIngredientSO());
-        }
-
-        List<IngredientSO> required = new();
-
-        foreach (var req in order.requirements)
-        {
-            for (int i = 0; i < req.quantity; i++)
-                required.Add(req.ingredient);
-        }
-
-        if (input.Count != required.Count)
-            return false;
-
-        foreach (var r in required)
-        {
-            if (input.FindAll(i => i == r).Count !=
-                required.FindAll(i => i == r).Count)
-                return false;
-        }
-
-        return true;
+        CurrentRecipePreview = recipeDatabase != null
+            ? recipeDatabase.GetMatchingRecipe(CurrentIngredients)
+            : null;
     }
 
     // ---------------- CRAFT ----------------
 
     public void Craft()
     {
-        if (CurrentOrderPreview == null) return;
+        if (CurrentRecipePreview == null) return;
         if (CraftedOrder != null) return;
 
-        foreach (var ing in CurrentIngredients)
+        foreach (Ingredient ingredient in CurrentIngredients)
         {
-            if (ing != null)
-                Destroy(ing.gameObject);
+            if (ingredient != null)
+                Destroy(ingredient.gameObject);
         }
 
         for (int i = 0; i < CurrentIngredients.Count; i++)
             CurrentIngredients[i] = null;
 
-        CraftedOrder = CurrentOrderPreview;
-        CurrentOrderPreview = null;
+        CraftedOrder = CurrentRecipePreview.resultOrder;
+        CurrentRecipePreview = null;
 
         OnCraftingChanged?.Invoke();
     }
 
     public void TakeCraftedResult(PlayerStatusController player)
     {
+        if (player == null) return;
         if (CraftedOrder == null) return;
-        if (player.HasIngredient()) return;
+        if (player.IsHoldingSomething()) return;
+        if (CraftedOrder.prefab == null)
+        {
+            Debug.LogError($"Order prefab missing on {CraftedOrder.orderName}");
+            return;
+        }
 
-        Debug.Log("Crafted: " + CraftedOrder.orderName);
-
-        // Optional: reward player
-        // player.AddMoney(CraftedOrder.reward);
+        Order.SpawnOrder(CraftedOrder, player, CraftedOrder.prefab);
 
         CraftedOrder = null;
 
+        UpdatePreview();
         OnCraftingChanged?.Invoke();
     }
 
@@ -150,9 +156,12 @@ public class CraftingStationController : NetworkBehaviour
 
     public Ingredient GetIngredient(int index)
     {
+        if (index < 0 || index >= CurrentIngredients.Count)
+            return null;
+
         return CurrentIngredients[index];
     }
 
-    public bool HasPreview() => CurrentOrderPreview != null;
+    public bool HasPreview() => CurrentRecipePreview != null;
     public bool HasCrafted() => CraftedOrder != null;
 }

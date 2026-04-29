@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  ingredientHoldPoint: {fileID: 4621436792920838646}
+  holdPoint: {fileID: 4621436792920838646}
 --- !u!50 &8381583206622986260
 Rigidbody2D:
   serializedVersion: 5

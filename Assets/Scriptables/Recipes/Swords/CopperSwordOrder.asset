@@ -12,20 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26d7cda0b96e6246a180b05ee8a39d3, type: 3}
   m_Name: CopperSwordOrder
   m_EditorClassIdentifier: 
+  prefab: {fileID: 2557834597547689182, guid: f686eb1959dbf5b4bb8a70aa04f92a78, type: 3}
   resultIcon: {fileID: 6150881297002022117, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
   orderName: Copper Sword Order
   description: I need a copper sword
   reward: 150
   requirements:
-  - itemType: 0
-    materialType: 3
-    state: 0
+  - ingredient: {fileID: 0}
     quantity: 1
-  - itemType: 0
-    materialType: 3
-    state: 1
+  - ingredient: {fileID: 0}
     quantity: 1
-  - itemType: 0
-    materialType: 5
-    state: 2
+  - ingredient: {fileID: 0}
     quantity: 1

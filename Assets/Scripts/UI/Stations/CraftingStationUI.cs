@@ -11,9 +11,13 @@ public class CraftingStationUI : MonoBehaviour
     [SerializeField] private List<Button> materialButtons;
     [SerializeField] private Button resultButton;
     [SerializeField] private Button craftButton;
-
+    [SerializeField] private Button closeButton;
+    
     public void Show(CraftingStationController s, PlayerStatusController p)
     {
+        if (station != null)
+            station.OnCraftingChanged -= Refresh;
+
         station = s;
         player = p;
 
@@ -24,44 +28,60 @@ public class CraftingStationUI : MonoBehaviour
 
         gameObject.SetActive(true);
     }
-
+    
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+    
     private void SetupButtons()
     {
+        closeButton.onClick.RemoveAllListeners();
+        closeButton.onClick.AddListener(Hide);
+        
         for (int i = 0; i < materialButtons.Count; i++)
         {
             int index = i;
+            Button button = materialButtons[index];
 
-            materialButtons[i].onClick.RemoveAllListeners();
-            materialButtons[i].onClick.AddListener(() =>
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
             {
                 station.ToggleIngredientSlot(index, player);
             });
 
-            AddHover(materialButtons[i],
+            AddHover(
+                button,
                 () => HoverMaterial(index),
-                () => ClearText(materialButtons[i]));
+                () => ClearText(button)
+            );
         }
 
         craftButton.onClick.RemoveAllListeners();
-        craftButton.onClick.AddListener(() => station.Craft());
+        craftButton.onClick.AddListener(() =>
+        {
+            station.Craft();
+        });
 
         resultButton.onClick.RemoveAllListeners();
-        resultButton.onClick.AddListener(() => station.TakeCraftedResult(player));
+        resultButton.onClick.AddListener(() =>
+        {
+            station.TakeCraftedResult(player);
+        });
 
-        AddHover(resultButton,
+        AddHover(
+            resultButton,
             HoverResult,
-            () => ClearText(resultButton));
+            () => ClearText(resultButton)
+        );
     }
-
-    // ---------------- HOVER ----------------
 
     private void HoverMaterial(int index)
     {
-        var text = materialButtons[index].GetComponentInChildren<TextMeshProUGUI>();
-
+        TextMeshProUGUI text = materialButtons[index].GetComponentInChildren<TextMeshProUGUI>();
         if (text == null) return;
 
-        var ing = station.GetIngredient(index);
+        Ingredient ing = station.GetIngredient(index);
 
         if (ing == null && player.HasIngredient())
             text.text = "Add";
@@ -73,8 +93,7 @@ public class CraftingStationUI : MonoBehaviour
 
     private void HoverResult()
     {
-        var text = resultButton.GetComponentInChildren<TextMeshProUGUI>();
-
+        TextMeshProUGUI text = resultButton.GetComponentInChildren<TextMeshProUGUI>();
         if (text == null) return;
 
         if (station.HasCrafted() && !player.HasIngredient())
@@ -83,25 +102,28 @@ public class CraftingStationUI : MonoBehaviour
             text.text = "";
     }
 
-    private void ClearText(Button b)
+    private void ClearText(Button button)
     {
-        var text = b.GetComponentInChildren<TextMeshProUGUI>();
-        if (text != null) text.text = "";
+        TextMeshProUGUI text = button.GetComponentInChildren<TextMeshProUGUI>();
+        if (text != null)
+            text.text = "";
     }
 
-    private void AddHover(Button b, System.Action enter, System.Action exit)
+    private void AddHover(Button button, System.Action enter, System.Action exit)
     {
-        var h = b.GetComponent<UIHoverHandler>();
-        if (h == null) h = b.gameObject.AddComponent<UIHoverHandler>();
+        UIHoverHandler hover = button.GetComponent<UIHoverHandler>();
 
-        h.OnHoverEnter += enter;
-        h.OnHoverExit += exit;
+        if (hover == null)
+            hover = button.gameObject.AddComponent<UIHoverHandler>();
+
+        hover.OnHoverEnter += enter;
+        hover.OnHoverExit += exit;
     }
-
-    // ---------------- UI REFRESH ----------------
 
     private void Refresh()
     {
+        if (station == null) return;
+
         RefreshSlots();
         RefreshResult();
         RefreshCraft();
@@ -111,19 +133,19 @@ public class CraftingStationUI : MonoBehaviour
     {
         for (int i = 0; i < materialButtons.Count; i++)
         {
-            var img = materialButtons[i].GetComponent<Image>();
-            var ing = station.GetIngredient(i);
+            Image image = materialButtons[i].GetComponent<Image>();
+            Ingredient ing = station.GetIngredient(i);
 
             if (ing != null)
             {
-                img.sprite = ing.GetIngredientSO().sprite;
-                img.color = Color.white;
+                image.sprite = ing.GetIngredientSO().sprite;
             }
             else
             {
-                img.sprite = null;
-                img.color = new Color(1, 1, 1, 0);
+                image.sprite = null; // or keep a default sprite (see below)
             }
+
+            image.color = Color.white; // ✅ always visible
 
             ClearText(materialButtons[i]);
         }
@@ -131,24 +153,24 @@ public class CraftingStationUI : MonoBehaviour
 
     private void RefreshResult()
     {
-        var img = resultButton.GetComponent<Image>();
+        Image image = resultButton.GetComponent<Image>();
 
         if (station.HasCrafted())
         {
-            img.sprite = station.CraftedOrder.resultIcon;
-            img.color = Color.white;
+            image.sprite = station.CraftedOrder.resultIcon;
+            image.color = Color.white;
             resultButton.interactable = true;
         }
         else if (station.HasPreview())
         {
-            img.sprite = station.CurrentOrderPreview.resultIcon;
-            img.color = Color.white;
+            image.sprite = station.CurrentRecipePreview.resultOrder.resultIcon;
+            image.color = Color.white;
             resultButton.interactable = false;
         }
         else
         {
-            img.sprite = null;
-            img.color = new Color(1, 1, 1, 0);
+            image.sprite = null;
+            image.color = new Color(1, 1, 1, 0);
             resultButton.interactable = false;
         }
 
@@ -158,7 +180,13 @@ public class CraftingStationUI : MonoBehaviour
     private void RefreshCraft()
     {
         craftButton.interactable =
-            station.HasPreview() && !station.HasCrafted();
+            station.HasPreview() &&
+            !station.HasCrafted();
+    }
+    
+    public void Open(CraftingStationController station, PlayerStatusController player)
+    {
+        Show(station, player);
     }
 
     private void OnDisable()
