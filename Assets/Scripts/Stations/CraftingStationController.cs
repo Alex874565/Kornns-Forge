@@ -1,105 +1,158 @@
-﻿using UnityEngine;
-using System;
-using Unity.Netcode;
+﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using Unity.Netcode;
 
-public class CraftingStationController : NetworkBehaviour, IPlayerInteractable, IHighlightable, IReceiveElement, IGiveElement
+public class CraftingStationController : NetworkBehaviour
 {
-    [SerializeField] private int maxElements;
-    [SerializeField] private List<MaterialData> acceptedElements = new();
-    
-    private CraftingStationUI craftingStationUI;
-    
-    private readonly List<MaterialData> _currentElements = new(3);
+    [SerializeField] private int maxIngredients = 3;
+    [SerializeField] private List<OrderData> availableOrders;
 
-    public event Action<MaterialData> OnReceiveElement;
-    public event Action<MaterialData> OnGiveElement;
+    public List<Ingredient> CurrentIngredients { get; private set; } = new();
 
-    public event Action OnHighlight;
-    public event Action OnUnHighlight;
-    public event Action<CraftingStationController, PlayerStatusController> OnInteract;
+    public OrderData CurrentOrderPreview { get; private set; }
+    public OrderData CraftedOrder { get; private set; }
 
-    //public bool InteractOnlyOnce { get; set; } = true;
+    public event Action OnCraftingChanged;
 
-    private void OnNetworkSpawn()
+    private void Awake()
     {
-        CraftingStationUI craftingStationUI = FindFirstObjectByType<CraftingStationUI>();
-    }
-    
-    #region Crafting
-
-    public void GetCraftResult(MaterialData material)
-    {
-        
+        for (int i = 0; i < maxIngredients; i++)
+            CurrentIngredients.Add(null);
     }
 
-    #endregion
-    
-    #region Give/Receive Element
-    
-    public void ReceiveElement(MaterialData material)
+    // ---------------- SLOT LOGIC ----------------
+
+    public void ToggleIngredientSlot(int index, PlayerStatusController player)
     {
-        if (CanReceiveElement(material))
-        {
-            _currentElements.Add(material);
-            OnReceiveElement?.Invoke(material);
-        }
+        if (CraftedOrder != null) return;
+
+        if (CurrentIngredients[index] == null)
+            PlaceIngredient(index, player);
         else
+            RemoveIngredient(index, player);
+
+        UpdatePreview();
+        OnCraftingChanged?.Invoke();
+    }
+
+    private void PlaceIngredient(int index, PlayerStatusController player)
+    {
+        if (!player.HasIngredient()) return;
+
+        Ingredient ing = player.GetIngredient();
+        CurrentIngredients[index] = ing;
+
+        player.ClearIngredient();
+        ing.gameObject.SetActive(false);
+    }
+
+    private void RemoveIngredient(int index, PlayerStatusController player)
+    {
+        if (player.HasIngredient()) return;
+
+        Ingredient ing = CurrentIngredients[index];
+        if (ing == null) return;
+
+        CurrentIngredients[index] = null;
+
+        ing.gameObject.SetActive(true);
+        player.SetIngredient(ing);
+    }
+
+    // ---------------- MATCHING ----------------
+
+    private void UpdatePreview()
+    {
+        CurrentOrderPreview = GetMatchingOrder();
+    }
+
+    private OrderData GetMatchingOrder()
+    {
+        foreach (var order in availableOrders)
         {
-            Debug.Log("Element " + material.Type + " " + material.State + " is not accepted by this crafting station!");
+            if (Matches(order))
+                return order;
         }
+
+        return null;
     }
 
-    public bool CanReceiveElement(MaterialData material)
+    private bool Matches(OrderData order)
     {
-        return IsElementAccepted(material);
+        List<IngredientSO> input = new();
+
+        foreach (var ing in CurrentIngredients)
+        {
+            if (ing != null)
+                input.Add(ing.GetIngredientSO());
+        }
+
+        List<IngredientSO> required = new();
+
+        foreach (var req in order.requirements)
+        {
+            for (int i = 0; i < req.quantity; i++)
+                required.Add(req.ingredient);
+        }
+
+        if (input.Count != required.Count)
+            return false;
+
+        foreach (var r in required)
+        {
+            if (input.FindAll(i => i == r).Count !=
+                required.FindAll(i => i == r).Count)
+                return false;
+        }
+
+        return true;
     }
 
-    public void GiveElement(MaterialData material, IReceiveElement receiver)
+    // ---------------- CRAFT ----------------
+
+    public void Craft()
     {
-        _currentElements.Remove(material);
-        receiver.ReceiveElement(material);
-        OnGiveElement?.Invoke(material);
+        if (CurrentOrderPreview == null) return;
+        if (CraftedOrder != null) return;
+
+        foreach (var ing in CurrentIngredients)
+        {
+            if (ing != null)
+                Destroy(ing.gameObject);
+        }
+
+        for (int i = 0; i < CurrentIngredients.Count; i++)
+            CurrentIngredients[i] = null;
+
+        CraftedOrder = CurrentOrderPreview;
+        CurrentOrderPreview = null;
+
+        OnCraftingChanged?.Invoke();
     }
-    
-    #endregion
-    
-    #region Interaction
-    
-    public void Highlight()
+
+    public void TakeCraftedResult(PlayerStatusController player)
     {
-        Debug.Log("Crafting station highlighted!");
-        OnHighlight.Invoke();
+        if (CraftedOrder == null) return;
+        if (player.HasIngredient()) return;
+
+        Debug.Log("Crafted: " + CraftedOrder.orderName);
+
+        // Optional: reward player
+        // player.AddMoney(CraftedOrder.reward);
+
+        CraftedOrder = null;
+
+        OnCraftingChanged?.Invoke();
     }
 
-    public void UnHighlight()
+    // ---------------- HELPERS ----------------
+
+    public Ingredient GetIngredient(int index)
     {
-        Debug.Log("Crafting station unhighlighted!");
-        OnUnHighlight.Invoke();
+        return CurrentIngredients[index];
     }
 
-    public bool CanInteract(PlayerStatusController playerStatusController)
-    {
-        return CanReceiveElement(playerStatusController.HeldElement.Value);
-    }
-
-    public void Interact(PlayerStatusController playerStatusController)
-    {
-        if (!IsOwner) return;
-        if (!CanInteract(playerStatusController)) return;
-
-        OnInteract?.Invoke(this, playerStatusController);
-    }
-    
-    #endregion
-
-    #region Helpers
-
-    private bool IsElementAccepted(MaterialData material)
-    {
-        return acceptedElements.Exists(e => e.Equals(material)) && _currentElements.Count < 3;
-    }
-
-    #endregion
-
+    public bool HasPreview() => CurrentOrderPreview != null;
+    public bool HasCrafted() => CraftedOrder != null;
 }

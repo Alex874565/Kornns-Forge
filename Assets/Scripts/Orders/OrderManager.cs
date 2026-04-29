@@ -1,70 +1,69 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class OrderManager : MonoBehaviour
 {
-    public List<OrderProgress> activeOrders = new List<OrderProgress>();
+    public List<OrderProgress> activeOrders = new();
 
-    /* Event to which the UI subscribes to */
     public System.Action OnOrdersUpdated;
 
-    /* This function can be called after the furnance finishes to melt one metal for example */
-    public void AddItem(ItemType item, MaterialType material, Process state)
+    public void AddItem(IngredientSO ingredient)
     {
-        CollectedItem newItem = new CollectedItem
-        {
-            itemType = item,
-            materialType = material,
-            state = state
-        };
+        if (ingredient == null) return;
 
-        /* Find first order that needs this item */
-        foreach (var progress in activeOrders)
+        foreach (OrderProgress progress in activeOrders)
         {
-            if (progress.NeedsItem(item, material, state))
+            if (progress.TryAddItem(ingredient))
             {
-                progress.collectedItems.Add(newItem);
                 OnOrdersUpdated?.Invoke();
                 return;
             }
         }
+
+        Debug.Log($"No active order needs {ingredient.objectName}");
     }
 
     private void Update()
     {
+        bool changed = false;
+
         for (int i = activeOrders.Count - 1; i >= 0; i--)
         {
-            var order = activeOrders[i];
+            OrderProgress order = activeOrders[i];
+
             order.UpdateTimer(Time.deltaTime);
 
             if (order.IsExpired())
             {
                 Debug.Log($"Order expired: {order.order.orderName}");
                 activeOrders.RemoveAt(i);
-                OnOrdersUpdated?.Invoke();
+                changed = true;
             }
         }
+
+        if (changed)
+            OnOrdersUpdated?.Invoke();
     }
 
     public void TryCraft()
     {
-        foreach (var progress in activeOrders)
+        foreach (OrderProgress progress in activeOrders)
         {
             if (progress.crafted) continue;
 
             if (progress.IsComplete())
             {
-                progress.crafted = true;
+                progress.MarkCrafted();
+
                 Debug.Log($"Crafted {progress.order.orderName}!");
                 OnOrdersUpdated?.Invoke();
                 return;
             }
         }
+
         Debug.Log("No complete order to craft.");
     }
-    
-    /* Delivers the first crafter order from the list */
+
     public void TryDeliver()
     {
         for (int i = 0; i < activeOrders.Count; i++)
@@ -75,17 +74,24 @@ public class OrderManager : MonoBehaviour
                 return;
             }
         }
+
+        Debug.Log("No crafted order to deliver.");
     }
 
     private void Deliver(OrderProgress progress)
     {
+        if (progress == null) return;
+
         Debug.Log($"Delivered {progress.order.orderName}! Reward: {progress.order.reward}");
+
         activeOrders.Remove(progress);
         OnOrdersUpdated?.Invoke();
     }
 
     public void AddOrder(OrderData order)
     {
+        if (order == null) return;
+
         activeOrders.Add(new OrderProgress(order, 60f));
         OnOrdersUpdated?.Invoke();
     }

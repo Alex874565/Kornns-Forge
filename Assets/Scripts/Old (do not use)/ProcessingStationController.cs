@@ -111,11 +111,12 @@ public class ProcessingStationController : BaseStation, IGiveElement, IReceiveEl
         {
             if(stats.IsAutomatic && _isProcessing.Value) return false;
             
-            return player.CanReceiveElement(new MaterialData(_currentElement.Value.Type, _currentElement.Value.FinishedState));
+            //return player.CanReceiveElement(new MaterialData(_currentElement.Value.Type, _currentElement.Value.FinishedState));
         }
         
         // Player gives element
-        return CanReceiveElement(player.HeldElement.Value);
+        //return CanReceiveElement(player.HeldElement.Value);
+        return false;
     }
     
     public override void Interact(PlayerStatusController player)
@@ -126,12 +127,12 @@ public class ProcessingStationController : BaseStation, IGiveElement, IReceiveEl
         
         if (_currentElement.Value.Type == MaterialType.None)
         {
-            player.GiveElement(player.HeldElement.Value, this);
+            //player.GiveElement(player.HeldElement.Value, this);
         }
         else
         {
             MaterialData materialToGive = new MaterialData(_currentElement.Value.Type, _currentElement.Value.FinishedState);
-            GiveElement(materialToGive, player);   
+            //GiveElement(materialToGive, player);   
         }
         
         OnInteract?.Invoke();

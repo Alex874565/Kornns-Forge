@@ -41,7 +41,7 @@ public class PickupStationController : NetworkBehaviour, IPlayerInteractable, IG
 
         Debug.Log("Interacting with pickup station " + gameObject.name);
         MaterialData materialToGive = stats.HeldMaterial;
-        GiveElement(stats.HeldMaterial, playerStatusController);
+        //GiveElement(stats.HeldMaterial, playerStatusController);
         UnHighlight();
         OnInteract?.Invoke();
     }
