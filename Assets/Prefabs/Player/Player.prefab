@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1784044128790330220}
   - component: {fileID: 2301944561710172375}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7395909313599273629}
   - component: {fileID: 1434221257199668265}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: -2149446090037716325}
   - component: {fileID: 8381583206622986260}
   - component: {fileID: 3216625481620399494}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -392,6 +392,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   collider: {fileID: 1434221257199668265}
+  throwForce: 100
+  throwAngle: 45
 --- !u!1 &7094042297098144079
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,7 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6224399434196931596}
   - component: {fileID: 7293001293364618257}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -488,7 +490,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4621436792920838646}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: IngredientHoldPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3685481594806104898}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Colliders
   m_TagString: Untagged
   m_Icon: {fileID: 0}

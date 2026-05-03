@@ -1,11 +1,19 @@
 ﻿using UnityEngine;
 
-public class Order : MonoBehaviour
+public class Order : MonoBehaviour, IThrowable
 {
     [SerializeField] private OrderData orderData;
+    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Collider2D coll;
 
     private PlayerStatusController playerParent;
 
+    private void Awake()
+    {
+        if(rb == null) rb = GetComponent<Rigidbody2D>();
+        if (coll == null) coll = GetComponent<Collider2D>();
+    }
+    
     public OrderData GetOrderData()
     {
         return orderData;
@@ -34,6 +42,10 @@ public class Order : MonoBehaviour
         transform.SetParent(parent.GetIngredientFollowTransform());
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
+        
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
 
     public void DestroySelf()
@@ -53,5 +65,27 @@ public class Order : MonoBehaviour
         order.SetOrderParent(parent);
 
         return order;
+    }
+
+    public void ThrowSelf(Vector2 direction, float force, float angle)
+    {
+        if (direction == Vector2.zero) return;
+
+        if (playerParent != null)
+        {
+            playerParent.ClearOrder();
+            playerParent = null;
+        }
+
+        transform.SetParent(null);
+
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        // 🔥 Rotate direction by angle
+        Vector2 angledDirection = Quaternion.Euler(0, 0, angle) * direction.normalized;
+
+        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
     }
 }

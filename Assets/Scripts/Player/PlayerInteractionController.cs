@@ -1,12 +1,17 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using System;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(PlayerInputController), typeof(PlayerStatusController))]
 public class PlayerInteractionController : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactLayerMask;
     [SerializeField] private new Collider2D collider;
+    
+    [Header("Throw")]
+    [SerializeField] private float throwForce = 10f;
+    [SerializeField] private float throwAngle = 45f;
 
     public Action OnBeginInteraction, OnEndInteraction, OnInteract, OnInteractFailed;
     
@@ -30,6 +35,7 @@ public class PlayerInteractionController : NetworkBehaviour
         
         _playerInputController.OnInteract += InteractClick;
         _playerInputController.OnInteractAlternate += InteractAlternateClick;
+        _playerInputController.OnThrow += Throw;
         
         _contactFilter = new ContactFilter2D();
         _contactFilter.SetLayerMask(interactLayerMask);
@@ -37,6 +43,16 @@ public class PlayerInteractionController : NetworkBehaviour
         _contactFilter.useTriggers = true;
         
         OnInteract += Interact;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!IsOwner) return;
+        _playerInputController.OnInteract -= InteractClick;
+        _playerInputController.OnInteractAlternate -= InteractAlternateClick;
+        _playerInputController.OnThrow -= Throw;
+        
+        OnInteract -= Interact;
     }
 
     private void FixedUpdate()
@@ -85,7 +101,7 @@ public class PlayerInteractionController : NetworkBehaviour
         _hoveredInteractable.Highlight();
     }
 
-    public void InteractClick()
+    private void InteractClick()
     {
         Debug.Log("Interact");
         if(IsInteracting)
@@ -109,7 +125,7 @@ public class PlayerInteractionController : NetworkBehaviour
         }
     }
 
-    public void InteractAlternateClick()
+    private void InteractAlternateClick()
     {
         Debug.Log("InteractAlternateClicked");
         if (selectedStation != null )
@@ -118,7 +134,7 @@ public class PlayerInteractionController : NetworkBehaviour
         }
     }
     
-    public void Interact()
+    private void Interact()
     {
         Debug.Log(IsOwner);
         if(!IsOwner) return;
@@ -130,5 +146,20 @@ public class PlayerInteractionController : NetworkBehaviour
         //    IsInteracting = false;
         //    InteractOnlyOnce = true;
         //}
+    }
+
+    private void Throw()
+    {
+        if(IsInteracting) return;
+        
+        if(_playerStatusController.HasIngredient())
+        {
+            _playerStatusController.GetIngredient().ThrowSelf(transform.right, throwForce, throwAngle);
+            _playerStatusController.ClearIngredient();
+        }else if (_playerStatusController.HasOrder())
+        {
+            _playerStatusController.GetOrder().ThrowSelf(transform.right, throwForce, throwAngle);
+            _playerStatusController.ClearOrder();
+        }
     }
 }

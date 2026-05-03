@@ -453,9 +453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3101e9f9c0517894e84b85ff4da45da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconsDatabase: {fileID: 11400000, guid: 201476112b1a67943b0329d35860acb4, type: 2}
-  materialIcon: {fileID: 254578975351508834}
-  processIcon: {fileID: 3855643267225826125}
+  ingredientIcon: {fileID: 0}
+  amountText: {fileID: 0}
 --- !u!1 &5738406418874262469
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,9 +545,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3101e9f9c0517894e84b85ff4da45da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconsDatabase: {fileID: 11400000, guid: 201476112b1a67943b0329d35860acb4, type: 2}
-  materialIcon: {fileID: 9221769095670596821}
-  processIcon: {fileID: 6002488549935785963}
+  ingredientIcon: {fileID: 0}
+  amountText: {fileID: 0}
 --- !u!1 &7213635085029664538
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,9 +733,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3101e9f9c0517894e84b85ff4da45da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconsDatabase: {fileID: 11400000, guid: 201476112b1a67943b0329d35860acb4, type: 2}
-  materialIcon: {fileID: 6139336370258795964}
-  processIcon: {fileID: 4141373364915221163}
+  ingredientIcon: {fileID: 0}
+  amountText: {fileID: 0}
 --- !u!1 &7330983469419464163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1107,7 +1104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resultIcon: {fileID: 5377009805449780428}
   ingredientsParent: {fileID: 6042203058697492256}
-  ingredientPrefab: {fileID: 5738406418874262469}
+  ingredientPrefab: {fileID: 2516835715736110443}
   timerBar: {fileID: 2527787070260792155}
 --- !u!1 &8997680347228635515
 GameObject:
