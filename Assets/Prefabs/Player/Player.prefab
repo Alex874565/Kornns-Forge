@@ -390,7 +390,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   interactLayerMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   collider: {fileID: 1434221257199668265}
   throwForce: 100
   throwAngle: 45

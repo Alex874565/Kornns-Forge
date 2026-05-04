@@ -25,8 +25,11 @@ public class PlayerInteractionController : NetworkBehaviour
     public bool IsInteracting { get; set; } = false;
     //public bool InteractOnlyOnce { get; set; } = true;
 
-    private BaseStation selectedStation;
+    private BaseStation _selectedStation;
 
+    private int _interactableLayer;
+    private int _itemLayer;
+    
     public override void OnNetworkSpawn()
     {
         if(!IsOwner) return;
@@ -41,6 +44,9 @@ public class PlayerInteractionController : NetworkBehaviour
         _contactFilter.SetLayerMask(interactLayerMask);
         _contactFilter.useLayerMask = true;
         _contactFilter.useTriggers = true;
+        
+        _interactableLayer = LayerMask.NameToLayer("Interactable");
+        _itemLayer = LayerMask.NameToLayer("Item");
         
         OnInteract += Interact;
     }
@@ -68,22 +74,33 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private IPlayerInteractable DetectInteractables()
     {
-        Collider2D[] results  = new Collider2D[2];
+        Collider2D[] results = new Collider2D[8];
         int count = collider.Overlap(_contactFilter, results);
+
+        IPlayerInteractable fallback = null;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D col = results[i];
             if (col == null) continue;
 
-            IPlayerInteractable interactable = col.GetComponent<IPlayerInteractable>();
-
+            IPlayerInteractable interactable = col.GetComponentInParent<IPlayerInteractable>();
             if (interactable == null) continue;
-            
-            return interactable;
+
+            // ✅ Priority layer
+            if (col.gameObject.layer == _itemLayer)
+            {
+                return interactable;
+            }
+
+            // 🟡 Save fallback (e.g. Item)
+            if (fallback == null)
+            {
+                fallback = interactable;
+            }
         }
 
-        return null;
+        return fallback;
     }
     
     private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
@@ -93,7 +110,7 @@ public class PlayerInteractionController : NetworkBehaviour
         _hoveredInteractable = playerInteractable;
 
         // 🔥 THIS WAS MISSING
-        selectedStation = playerInteractable as BaseStation;
+        _selectedStation = playerInteractable as BaseStation;
 
         if (_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
             return;
@@ -128,9 +145,9 @@ public class PlayerInteractionController : NetworkBehaviour
     private void InteractAlternateClick()
     {
         Debug.Log("InteractAlternateClicked");
-        if (selectedStation != null )
+        if (_selectedStation != null )
         {
-            selectedStation.InteractAlternate(_playerStatusController);
+            _selectedStation.InteractAlternate(_playerStatusController);
         }
     }
     

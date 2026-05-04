@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Order : MonoBehaviour, IThrowable
+public class Order : MonoBehaviour, IThrowable, IPlayerInteractable
 {
     [SerializeField] private OrderData orderData;
     [SerializeField] private Rigidbody2D rb;
@@ -83,9 +83,41 @@ public class Order : MonoBehaviour, IThrowable
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
-        // 🔥 Rotate direction by angle
-        Vector2 angledDirection = Quaternion.Euler(0, 0, angle) * direction.normalized;
+        float xSign = Mathf.Sign(direction.x);
+
+        Vector2 angledDirection = new Vector2(
+            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
+            Mathf.Sin(angle * Mathf.Deg2Rad)
+        ).normalized;
 
         rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
     }
+    
+    #region Interaction
+    
+    public void Highlight()
+    {
+        return;
+    }
+
+    public void UnHighlight()
+    {
+        return;
+    }
+
+    public void Interact(PlayerStatusController playerStatusController)
+    {
+        Debug.Log($"Interacting {gameObject.name}");
+        if (CanInteract(playerStatusController))
+        {
+            SetOrderParent(playerStatusController);
+        }
+    }
+
+    public bool CanInteract(PlayerStatusController playerStatusController)
+    {
+        return !playerStatusController.HasIngredient() && playerParent == null;
+    }
+    
+    #endregion
 }

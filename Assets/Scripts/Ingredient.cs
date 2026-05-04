@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Ingredient : MonoBehaviour, IThrowable
+public class Ingredient : MonoBehaviour, IThrowable, IPlayerInteractable
 {
     [SerializeField] private IngredientSO ingredientSO;
     [SerializeField] private Rigidbody2D rb;
@@ -82,14 +82,47 @@ public class Ingredient : MonoBehaviour, IThrowable
             ingredientParent.ClearIngredient();
             ingredientParent = null;
         }
-        
+
         transform.SetParent(null);
-        
+
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        
-        Vector2 angledDirection = Quaternion.Euler(0, 0, angle) * direction.normalized;
-        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
+
+        float xSign = Mathf.Sign(direction.x);
+        Vector2 angledDirection = new Vector2(
+            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
+            Mathf.Sin(angle * Mathf.Deg2Rad)
+        );
+
+        rb.AddForce(angledDirection.normalized * force, ForceMode2D.Impulse);
     }
+
+    #region Interaction
+    
+    public void Highlight()
+    {
+        return;
+    }
+
+    public void UnHighlight()
+    {
+        return;
+    }
+
+    public void Interact(PlayerStatusController playerStatusController)
+    {
+        Debug.Log($"Interacting {gameObject.name}");
+        if (CanInteract(playerStatusController))
+        {
+            SetIngredientParent(playerStatusController);
+        }
+    }
+
+    public bool CanInteract(PlayerStatusController playerStatusController)
+    {
+        return !playerStatusController.HasIngredient() && ingredientParent == null;
+    }
+    
+    #endregion
 }
