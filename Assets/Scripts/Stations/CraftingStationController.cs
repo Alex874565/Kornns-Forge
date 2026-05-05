@@ -31,6 +31,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     public void Interact(PlayerStatusController player)
     {
+        Debug.Log("CRAFTING INTERACT CALLED");
         if (!IsOwner) return;
 
         if (craftingUI == null)

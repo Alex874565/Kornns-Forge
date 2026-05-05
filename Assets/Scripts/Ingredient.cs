@@ -230,7 +230,6 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
     public bool CanInteract(PlayerStatusController playerStatusController)
     {
         return playerStatusController != null &&
-               !playerStatusController.IsHoldingSomething() &&
-               ingredientParent == null;
+            !playerStatusController.IsHoldingSomething();
     }
 }

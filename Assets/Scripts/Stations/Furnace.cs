@@ -109,6 +109,8 @@ public class Furnace : BaseStation
             {
                 //player isn t carrying anything
                 GetIngredient().SetIngredientParent(playerStatusController);
+
+                state = State.Idle;
             }
         }
     }

@@ -48,7 +48,6 @@ public class PlayerInteractionController : NetworkBehaviour
         _interactableLayer = LayerMask.NameToLayer("Interactable");
         _itemLayer = LayerMask.NameToLayer("Item");
         
-        OnInteract += Interact;
     }
 
     public override void OnNetworkDespawn()
@@ -58,7 +57,6 @@ public class PlayerInteractionController : NetworkBehaviour
         _playerInputController.OnInteractAlternate -= InteractAlternateClick;
         _playerInputController.OnThrow -= Throw;
         
-        OnInteract -= Interact;
     }
 
     private void FixedUpdate()
@@ -77,34 +75,36 @@ public class PlayerInteractionController : NetworkBehaviour
         Collider2D[] results = new Collider2D[8];
         int count = collider.Overlap(_contactFilter, results);
 
-        IPlayerInteractable fallback = null;
+        IPlayerInteractable itemFallback = null;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D col = results[i];
+            //Debug.Log("Checking: " + col.name);
             if (col == null) continue;
 
             IPlayerInteractable interactable = col.GetComponentInParent<IPlayerInteractable>();
             if (interactable == null) continue;
 
-            // ✅ Priority layer
-            if (col.gameObject.layer == _itemLayer)
+            // ✅ PRIORITY: stations first
+            if (interactable is BaseStation)
             {
                 return interactable;
             }
 
-            // 🟡 Save fallback (e.g. Item)
-            if (fallback == null)
+            // 🟡 fallback: item
+            if (itemFallback == null)
             {
-                fallback = interactable;
+                itemFallback = interactable;
             }
         }
 
-        return fallback;
+        return itemFallback;
     }
     
     private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
     {
+        Debug.Log("Hovered: " + playerInteractable);
         _hoveredInteractable?.UnHighlight();
 
         _hoveredInteractable = playerInteractable;
@@ -120,6 +120,7 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private void InteractClick()
     {
+        Debug.Log("Hovered interactable = " + _hoveredInteractable);
         Debug.Log("Interact");
         if(IsInteracting)
         {
@@ -132,7 +133,10 @@ public class PlayerInteractionController : NetworkBehaviour
             {
                 IsInteracting = true;
                 //InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
-                _hoveredInteractable.Interact(_playerStatusController);
+                if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
+                {
+                    InteractServerRpc(station.NetworkObjectId);
+                }
                 IsInteracting = false;
             }
             else
@@ -142,27 +146,15 @@ public class PlayerInteractionController : NetworkBehaviour
         }
     }
 
-    private void InteractAlternateClick()
+    public void InteractAlternateClick()
     {
-        Debug.Log("InteractAlternateClicked");
-        if (_selectedStation != null )
-        {
-            _selectedStation.InteractAlternate(_playerStatusController);
-        }
-    }
-    
-    private void Interact()
-    {
-        Debug.Log(IsOwner);
-        if(!IsOwner) return;
-        
-        _hoveredInteractable.Interact(_playerStatusController);
+        Debug.Log("ALT CLICK");
 
-        //if (InteractOnlyOnce)
-        //{
-        //    IsInteracting = false;
-        //    InteractOnlyOnce = true;
-        //}
+        if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
+        {
+            Debug.Log("Sending ALT RPC to: " + station.name);
+            InteractAlternateServerRpc(station.NetworkObjectId);
+        }
     }
 
     private void Throw()
@@ -178,5 +170,46 @@ public class PlayerInteractionController : NetworkBehaviour
             _playerStatusController.GetOrder().ThrowSelf(transform.right, throwForce, throwAngle);
             _playerStatusController.ClearOrder();
         }
+    }
+
+    [ServerRpc]
+    private void InteractServerRpc(ulong stationId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+            .TryGetValue(stationId, out NetworkObject netObj))
+            return;
+
+        BaseStation station = netObj.GetComponent<BaseStation>();
+        if (station == null) return;
+
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+
+        if (playerObj == null) return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        station.Interact(player);
+    }
+
+    [ServerRpc]
+    private void InteractAlternateServerRpc(ulong stationId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+            .TryGetValue(stationId, out NetworkObject netObj))
+            return;
+
+        BaseStation station = netObj.GetComponent<BaseStation>();
+        if (station == null) return;
+
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+        if (playerObj == null) return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        station.InteractAlternate(player);
     }
 }
