@@ -75,31 +75,40 @@ public class PlayerInteractionController : NetworkBehaviour
         Collider2D[] results = new Collider2D[8];
         int count = collider.Overlap(_contactFilter, results);
 
-        IPlayerInteractable itemFallback = null;
+        IPlayerInteractable stationFallback = null;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D col = results[i];
-            //Debug.Log("Checking: " + col.name);
             if (col == null) continue;
 
-            IPlayerInteractable interactable = col.GetComponentInParent<IPlayerInteractable>();
+            IPlayerInteractable interactable =
+                col.GetComponentInParent<IPlayerInteractable>();
+
             if (interactable == null) continue;
 
-            // ✅ PRIORITY: stations first
-            if (interactable is BaseStation)
+            // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
+            if (interactable is Ingredient ingredient)
             {
-                return interactable;
+                IIngredientParent parent = ingredient.GetIngredientParent();
+
+                if (parent is Component parentComponent &&
+                    parentComponent.gameObject.layer == _interactableLayer)
+                {
+                    continue;
+                }
+
+                return ingredient;
             }
 
-            // 🟡 fallback: item
-            if (itemFallback == null)
+            // PRIORITY 2: anything on Interactable layer
+            if (col.gameObject.layer == _interactableLayer && stationFallback == null)
             {
-                itemFallback = interactable;
+                stationFallback = interactable;
             }
         }
 
-        return itemFallback;
+        return stationFallback;
     }
     
     private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
@@ -120,30 +129,38 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private void InteractClick()
     {
-        Debug.Log("Hovered interactable = " + _hoveredInteractable);
-        Debug.Log("Interact");
-        if(IsInteracting)
+        if (IsInteracting)
         {
             IsInteracting = false;
-            //InteractOnlyOnce = false;
+            return;
+        }
+
+        if (_hoveredInteractable == null ||
+            !_hoveredInteractable.CanInteract(_playerStatusController))
+        {
+            OnInteractFailed?.Invoke();
+            return;
+        }
+
+        IsInteracting = true;
+
+        // Client-only interaction, no RPC
+        if (_hoveredInteractable is CraftingStationController craftingStation)
+        {
+            craftingStation.OpenUIClientOnly(_playerStatusController);
+        }
+        else if (_hoveredInteractable is Component component &&
+                 component.gameObject.layer == _interactableLayer &&
+                 component.TryGetComponent(out NetworkObject networkObject))
+        {
+            InteractServerRpc(networkObject.NetworkObjectId);
         }
         else
         {
-            if (_hoveredInteractable != null && _hoveredInteractable.CanInteract(_playerStatusController))
-            {
-                IsInteracting = true;
-                //InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
-                if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
-                {
-                    InteractServerRpc(station.NetworkObjectId);
-                }
-                IsInteracting = false;
-            }
-            else
-            {
-                OnInteractFailed?.Invoke();
-            }
+            _hoveredInteractable.Interact(_playerStatusController);
         }
+
+        IsInteracting = false;
     }
 
     public void InteractAlternateClick()

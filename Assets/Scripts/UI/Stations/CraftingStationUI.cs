@@ -47,7 +47,7 @@ public class CraftingStationUI : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                station.ToggleIngredientSlot(index, player);
+                station.RequestToggleIngredientSlot(index, player);
             });
 
             AddHover(
@@ -60,13 +60,12 @@ public class CraftingStationUI : MonoBehaviour
         craftButton.onClick.RemoveAllListeners();
         craftButton.onClick.AddListener(() =>
         {
-            station.Craft();
+            station.RequestCraft(player);
         });
-
         resultButton.onClick.RemoveAllListeners();
         resultButton.onClick.AddListener(() =>
         {
-            station.TakeCraftedResult(player);
+            station.RequestTakeCraftedResult(player);
         });
 
         AddHover(
@@ -96,7 +95,7 @@ public class CraftingStationUI : MonoBehaviour
         TextMeshProUGUI text = resultButton.GetComponentInChildren<TextMeshProUGUI>();
         if (text == null) return;
 
-        if (station.HasCrafted() && !player.HasIngredient())
+        if (station.HasCrafted() && !player.IsHoldingSomething())
             text.text = "Take";
         else
             text.text = "";
