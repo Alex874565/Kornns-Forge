@@ -31,7 +31,8 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
         Debug.Log("Highlighting " + gameObject.name);
         OnHighlight?.Invoke();
 
-        selectedVisual.Show();
+        if(selectedVisual != null)
+            selectedVisual.Show();
     }
 
     public void UnHighlight()
@@ -39,7 +40,8 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
         Debug.Log("Unhighlight " + gameObject.name);
         OnUnHighlight?.Invoke();
 
-        selectedVisual.Hide();
+        if(selectedVisual != null)
+            selectedVisual.Hide();
     }
 
     public Transform GetIngredientFollowTransform()

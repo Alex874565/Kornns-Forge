@@ -13,9 +13,13 @@ public class OrderProgress
     public float timeRemaining;
     public float maxTime;
 
-    public OrderProgress(OrderData order, float duration)
+    public int points;
+
+    public OrderProgress(OrderData order, float duration, int points)
     {
         this.order = order;
+        this.points = points;
+
         maxTime = duration;
         timeRemaining = duration;
     }

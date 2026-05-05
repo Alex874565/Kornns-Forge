@@ -12,7 +12,7 @@ public class OrderData : ScriptableObject
 
     [Header("Information")]
     public string orderName;
-    public string description;
+    public int timeToComplete;
     public int reward;
 
     [Header("Requirements")]

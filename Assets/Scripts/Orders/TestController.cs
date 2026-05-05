@@ -73,6 +73,6 @@ public class TestController : NetworkBehaviour
             return;
 
         OrderData order = testOrders[index];
-        orderManager.AddOrder(order);
+        orderManager.AddOrder(order, order.timeToComplete, order.reward);
     }
 }

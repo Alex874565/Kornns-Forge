@@ -88,11 +88,24 @@ public class OrderManager : MonoBehaviour
         OnOrdersUpdated?.Invoke();
     }
 
-    public void AddOrder(OrderData order)
+    public void AddOrder(OrderData order, float timer, int points)
     {
         if (order == null) return;
 
-        activeOrders.Add(new OrderProgress(order, 60f));
+        activeOrders.Add(new OrderProgress(order, timer, points));
+        OnOrdersUpdated?.Invoke();
+    }
+    
+    public IReadOnlyList<OrderProgress> GetActiveOrders()
+    {
+        return activeOrders;
+    }
+
+    public void CompleteOrder(OrderProgress orderProgress)
+    {
+        if (orderProgress == null) return;
+
+        activeOrders.Remove(orderProgress);
         OnOrdersUpdated?.Invoke();
     }
 }
