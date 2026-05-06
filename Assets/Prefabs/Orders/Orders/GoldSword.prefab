@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 6150881297002022117, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
+  m_Sprite: {fileID: -1128947775675819744, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 8777750914950124683}
   - component: {fileID: 3549096810074672896}
   m_Layer: 8
-  m_Name: CopperSword
+  m_Name: GoldSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 120889966
+  GlobalObjectIdHash: 1697581017
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  orderData: {fileID: 11400000, guid: 9da5d229acd34e0408cc166d8f9641f4, type: 2}
+  orderData: {fileID: 11400000, guid: b5cd7964cdd375549b87972a001c1fe4, type: 2}
   rb: {fileID: 8777750914950124683}
   coll: {fileID: 3549096810074672896}
 --- !u!50 &8777750914950124683

@@ -290,7 +290,7 @@ MonoBehaviour:
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
-  SlerpPosition: 0
+  SlerpPosition: 1
 --- !u!114 &7383354135605595074
 MonoBehaviour:
   m_ObjectHideFlags: 0

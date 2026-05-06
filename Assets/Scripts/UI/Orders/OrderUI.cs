@@ -55,15 +55,20 @@ public class OrderUI : MonoBehaviour
         if (ingredientsParent == null || ingredientPrefab == null)
             return;
 
-        foreach (Transform child in ingredientsParent)
-            Destroy(child.gameObject);
+        for (int i = ingredientsParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(ingredientsParent.GetChild(i).gameObject);
+        }
 
+        if (progress == null || progress.order == null)
+            return;
+        
         foreach (OrderRequirement req in progress.order.requirements)
         {
             IngredientUI ui = Instantiate(ingredientPrefab, ingredientsParent);
+            ui.gameObject.SetActive(true);
 
             int collected = progress.GetCollectedCount(req);
-
             ui.Setup(req, collected);
         }
     }

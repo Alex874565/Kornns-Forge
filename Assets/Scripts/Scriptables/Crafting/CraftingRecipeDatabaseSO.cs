@@ -25,12 +25,12 @@ public class CraftingRecipeDatabaseSO : ScriptableObject
 
     private bool RecipeMatches(CraftingRecipeSO recipe, List<IngredientSO> input)
     {
-        if (recipe == null || recipe.requirements == null)
+        if (recipe == null || recipe.resultOrder.requirements == null)
             return false;
 
         List<IngredientSO> required = new();
 
-        foreach (OrderRequirement req in recipe.requirements)
+        foreach (OrderRequirement req in recipe.resultOrder.requirements)
         {
             if (req == null || req.ingredient == null)
                 continue;

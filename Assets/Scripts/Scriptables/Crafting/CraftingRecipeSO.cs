@@ -7,6 +7,4 @@ public class CraftingRecipeSO : ScriptableObject
     public string recipeName;
 
     public OrderData resultOrder;
-
-    public List<OrderRequirement> requirements = new();
 }
