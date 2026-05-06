@@ -210,5 +210,5 @@ MonoBehaviour:
   m_Name: OrderTimelineClip(Clone)
   m_EditorClassIdentifier: 
   order: {fileID: 11400000, guid: b5cd7964cdd375549b87972a001c1fe4, type: 2}
-  orderTimer: 30
+  orderTimer: 60
   points: 100

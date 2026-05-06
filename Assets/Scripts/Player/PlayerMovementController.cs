@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(PlayerMovementContext), typeof(PlayerCollisionController), typeof(PlayerInteractionController))]
 public class PlayerMovementController : NetworkBehaviour
@@ -43,6 +44,8 @@ public class PlayerMovementController : NetworkBehaviour
         _ctx.Input.OnMove += TryToRotate;
         _ctx.Input.OnJumpPressed += HandleJumpPressed;
         _ctx.Input.OnJumpReleased += HandleJumpReleased;
+
+        transform.position = new Vector3(0,2,0);
     }
 
     private void OnDestroy()
