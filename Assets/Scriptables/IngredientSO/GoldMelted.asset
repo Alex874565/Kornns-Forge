@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GoldMelted
   m_EditorClassIdentifier: 
   prefab: {fileID: 542483656882917983, guid: 73c900a277da64e45b7aff63b41af4a7, type: 3}
-  sprite: {fileID: 5676660126707665038, guid: 9f742a8ee87a91f4bbf1abad73e03edd, type: 3}
+  sprite: {fileID: 1194134363, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
   objectName: Gold Melted

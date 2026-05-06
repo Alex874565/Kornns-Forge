@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9784ec26adcd4df1a1f2bba15416efd1, type: 3}
-  m_Name: Crafting Recipes Database
+  m_Script: {fileID: 11500000, guid: 8043361abdf44450a250c5273daa27a8, type: 3}
+  m_Name: GoldSword
   m_EditorClassIdentifier: 
-  recipes:
-  - {fileID: 11400000, guid: aff438778824462409bb02802933ba14, type: 2}
-  - {fileID: 11400000, guid: f82a5a08595009840938f121d94cc0a3, type: 2}
+  recipeName: 
+  resultOrder: {fileID: 11400000, guid: b5cd7964cdd375549b87972a001c1fe4, type: 2}

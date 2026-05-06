@@ -77,6 +77,8 @@ public class Counter : BaseStation
 
         Debug.Log($"Completed {targetOrder.order.name} (+{targetOrder.points} pts)");
 
+        ScoreManager.Instance.AddScore(targetOrder.points);
+
         orderManager.CompleteOrder(targetOrder);
     }
 }

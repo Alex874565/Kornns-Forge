@@ -58,9 +58,8 @@ GameObject:
   - component: {fileID: 8029164412969300281}
   - component: {fileID: 6159186152463263796}
   - component: {fileID: 5537363319840508481}
-  - component: {fileID: -1635898131869042037}
   m_Layer: 3
-  m_Name: Station
+  m_Name: _BaseStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +74,7 @@ Transform:
   m_GameObject: {fileID: 608333111417010327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -142,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3065527806
+  GlobalObjectIdHash: 1419264302
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -155,22 +154,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &-1635898131869042037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608333111417010327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97d370890d1449dd9e80830891460c88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  stationTopPoint: {fileID: 0}
-  selectedVisual: {fileID: 2938071339951260982}
-  stats: {fileID: 11400000, guid: f5f262d33b692a04cadc2b039f6d361b, type: 2}
 --- !u!1 &617238550302010095
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,7 +196,7 @@ GameObject:
   - component: {fileID: 7017591520743141554}
   - component: {fileID: 6937340146597464851}
   m_Layer: 3
-  m_Name: StationCounter
+  m_Name: SelectedVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
