@@ -187,6 +187,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         if (player == null) return;
 
         Craft();
+        TakeCraftedResultServerRpc(playerId);
 
         RefreshUIClientRpc(player.OwnerClientId);
     }
