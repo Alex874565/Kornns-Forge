@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-[CreateAssetMenu(menuName = "Orders/Order Database")]
-public class OrderDatabase : ScriptableObject
+[CreateAssetMenu(menuName = "Orders/Orders Database")]
+public class OrdersDatabase : ScriptableObject
 {
     public OrderData[] orders;
 
@@ -16,5 +17,17 @@ public class OrderDatabase : ScriptableObject
             return null;
 
         return orders[index];
+    }
+
+    public OrderData GetCraftableOrder(List<Ingredient> ingredients)
+    {
+        foreach(OrderData order in orders)
+        {
+            if (order.CanCraft(ingredients))
+            {
+                return order;
+            }
+        }
+        return null;
     }
 }

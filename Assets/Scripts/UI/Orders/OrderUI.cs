@@ -29,8 +29,8 @@ public class OrderUI : MonoBehaviour
 
         if (resultIcon != null)
         {
-            resultIcon.sprite = order.resultIcon;
-            resultIcon.enabled = order.resultIcon != null;
+            resultIcon.sprite = order.sprite;
+            resultIcon.enabled = order.sprite != null;
             resultIcon.color = progress.crafted ? Color.green : Color.white;
         }
 

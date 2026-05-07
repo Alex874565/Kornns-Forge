@@ -156,13 +156,13 @@ public class CraftingStationUI : MonoBehaviour
 
         if (station.HasCrafted())
         {
-            image.sprite = station.CraftedOrder.resultIcon;
+            image.sprite = station.CraftedOrder.sprite;
             image.color = Color.white;
             resultButton.interactable = true;
         }
         else if (station.HasPreview())
         {
-            image.sprite = station.CurrentRecipePreview.resultOrder.resultIcon;
+            image.sprite = station.OrderPreview.sprite;
             image.color = Color.white;
             resultButton.interactable = false;
         }

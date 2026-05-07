@@ -7,14 +7,14 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 {
     [Header("Setup")]
     [SerializeField] private int maxIngredients = 3;
-    [SerializeField] private CraftingRecipeDatabaseSO recipeDatabase;
+    [SerializeField] private OrdersDatabase _ordersDatabase;
 
     [Header("UI")]
     [SerializeField] private CraftingStationUI craftingUI;
 
     public List<Ingredient> CurrentIngredients { get; private set; } = new();
 
-    public CraftingRecipeSO CurrentRecipePreview { get; private set; }
+    public OrderData OrderPreview { get; private set; }
     public OrderData CraftedOrder { get; private set; }
 
     public event Action OnCraftingChanged;
@@ -137,9 +137,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     private void UpdatePreview()
     {
-        CurrentRecipePreview = recipeDatabase != null
-            ? recipeDatabase.GetMatchingRecipe(CurrentIngredients)
-            : null;
+        OrderPreview = _ordersDatabase.GetCraftableOrder(CurrentIngredients);
     }
     
     [ClientRpc]
@@ -155,7 +153,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     public void Craft()
     {
-        if (CurrentRecipePreview == null) return;
+        if (OrderPreview == null) return;
         if (CraftedOrder != null) return;
 
         foreach (Ingredient ingredient in CurrentIngredients)
@@ -167,8 +165,8 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         for (int i = 0; i < CurrentIngredients.Count; i++)
             CurrentIngredients[i] = null;
 
-        CraftedOrder = CurrentRecipePreview.resultOrder;
-        CurrentRecipePreview = null;
+        CraftedOrder = OrderPreview;
+        OrderPreview = null;
 
         OnCraftingChanged?.Invoke();
     }
@@ -242,6 +240,6 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         return CurrentIngredients[index];
     }
 
-    public bool HasPreview() => CurrentRecipePreview != null;
+    public bool HasPreview() => OrderPreview != null;
     public bool HasCrafted() => CraftedOrder != null;
 }
