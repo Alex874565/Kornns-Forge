@@ -1,37 +1,57 @@
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
 {
+    [Header("Setup")]
     [SerializeField] private IngredientSO ingredientSO;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D coll;
 
-    private Transform followTarget;
-    
     private IIngredientParent ingredientParent;
+    private Transform followTarget;
+    private NetworkTransform networkTransform;
 
     private void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (coll == null) coll = GetComponent<Collider2D>();
+        if (networkTransform == null) networkTransform = GetComponent<NetworkTransform>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (networkTransform == null)
+            networkTransform = GetComponent<NetworkTransform>();
     }
 
     private void LateUpdate()
     {
-        if (followTarget == null) return;
+        if (followTarget == null)
+            return;
 
         transform.position = followTarget.position;
         transform.rotation = followTarget.rotation;
     }
-    
+
+    // ---------------- GETTERS ----------------
+
     public IngredientSO GetIngredientSO()
     {
         return ingredientSO;
     }
 
+    public IIngredientParent GetIngredientParent()
+    {
+        return ingredientParent;
+    }
+
+    // ---------------- PARENTING / HOLDING ----------------
+
     public void SetIngredientParent(IIngredientParent parent)
     {
+        if (!IsServer) return;
         if (parent == null) return;
 
         if (ingredientParent != null)
@@ -48,27 +68,39 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
 
         Transform followTransform = parent.GetIngredientFollowTransform();
 
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-        {
-            NetworkObject parentNetworkObject =
-                followTransform.GetComponentInParent<NetworkObject>();
+        NetworkObject parentNetworkObject =
+            followTransform.GetComponentInParent<NetworkObject>();
 
-            if (parentNetworkObject == null)
-            {
-                Debug.LogError("Parent has no NetworkObject in parents.");
-                return;
-            }
-
-            NetworkObject.TrySetParent(parentNetworkObject, true);
-        }
-        else
+        if (parentNetworkObject == null)
         {
-            transform.SetParent(followTransform);
+            Debug.LogError("Parent has no NetworkObject in parents.");
+            return;
         }
 
+        SetHeldState(parentNetworkObject.NetworkObjectId);
+        SetHeldStateClientRpc(parentNetworkObject.NetworkObjectId);
+
+        Debug.Log($"Parenting ingredient to: {followTransform.name}");
+    }
+
+    private void SetHeldState(ulong parentNetworkObjectId)
+    {
+        SetNetworkTransformEnabled(false);
+
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                parentNetworkObjectId,
+                out NetworkObject parentObj))
+            return;
+
+        IIngredientParent parent = parentObj.GetComponent<IIngredientParent>();
+        if (parent == null) return;
+
+        ingredientParent = parent;
         followTarget = parent.GetIngredientFollowTransform();
-        transform.position = followTransform.position;
-        transform.rotation = followTransform.rotation;
+
+        transform.SetParent(null);
+        transform.position = followTarget.position;
+        transform.rotation = followTarget.rotation;
 
         if (rb != null)
         {
@@ -77,15 +109,17 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
             rb.angularVelocity = 0f;
         }
 
-        Debug.Log($"Parenting ingredient to: {followTransform.name}");
+        if (coll != null)
+            coll.enabled = false;
     }
 
-    public IIngredientParent GetIngredientParent()
+    [ClientRpc]
+    private void SetHeldStateClientRpc(ulong parentNetworkObjectId)
     {
-        return ingredientParent;
+        SetHeldState(parentNetworkObjectId);
     }
 
-    public void DestroySelf()
+    private void ClearHeldState()
     {
         if (ingredientParent != null)
         {
@@ -93,15 +127,92 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
             ingredientParent = null;
         }
 
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-        {
-            NetworkObject.Despawn(true);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        followTarget = null;
+        transform.SetParent(null);
+
+        if (coll != null)
+            coll.enabled = true;
     }
+
+    [ClientRpc]
+    private void ClearHeldStateClientRpc()
+    {
+        ClearHeldState();
+    }
+
+    // ---------------- THROWING ----------------
+
+    public void ThrowSelf(Vector2 direction, float force, float angle)
+    {
+        if (!IsServer) return;
+        if (direction == Vector2.zero) return;
+
+        ClearHeldState();
+        ClearHeldStateClientRpc();
+
+        SetNetworkTransformEnabled(true);
+        SetNetworkTransformEnabledClientRpc(true);
+
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = true;
+        }
+
+        float xSign = direction.x >= 0 ? 1f : -1f;
+
+        Vector2 angledDirection = new Vector2(
+            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
+            Mathf.Sin(angle * Mathf.Deg2Rad)
+        ).normalized;
+
+        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
+    }
+
+    // ---------------- INTERACTION ----------------
+
+    public void Interact(PlayerStatusController playerStatusController)
+    {
+        Debug.Log($"Interacting {gameObject.name}");
+
+        if (!CanInteract(playerStatusController))
+            return;
+
+        if (!IsServer)
+        {
+            PickUpServerRpc(playerStatusController.NetworkObjectId);
+            return;
+        }
+
+        SetIngredientParent(playerStatusController);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PickUpServerRpc(ulong playerId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                playerId,
+                out NetworkObject playerObject))
+            return;
+
+        PlayerStatusController player =
+            playerObject.GetComponent<PlayerStatusController>();
+
+        if (player == null) return;
+
+        if (CanInteract(player))
+            SetIngredientParent(player);
+    }
+
+    public bool CanInteract(PlayerStatusController playerStatusController)
+    {
+        return playerStatusController != null &&
+               !playerStatusController.IsHoldingSomething();
+    }
+
+    // ---------------- SPAWNING / DESTROYING ----------------
 
     public static Ingredient SpawnIngredient(
         IngredientSO ingredientSO,
@@ -126,7 +237,6 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         }
 
         Transform ingredientTransform = Instantiate(ingredientSO.prefab);
-
         Ingredient ingredient = ingredientTransform.GetComponent<Ingredient>();
 
         if (ingredient == null)
@@ -156,80 +266,39 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         return ingredient;
     }
 
-    public void ThrowSelf(Vector2 direction, float force, float angle)
+    public void DestroySelf()
     {
-        if (direction == Vector2.zero) return;
-
-        if (ingredientParent != null)
+        if (IsServer)
         {
-            ingredientParent.ClearIngredient();
-            ingredientParent = null;
+            ClearHeldState();
+            ClearHeldStateClientRpc();
+
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+                NetworkObject.Despawn(true);
+            else
+                Destroy(gameObject);
         }
-
-        transform.SetParent(null);
-
-        if (rb != null)
-        {
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-        }
-
-        float xSign = Mathf.Sign(direction.x);
-
-        Vector2 angledDirection = new Vector2(
-            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        ).normalized;
-
-        followTarget = null;
-
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-            NetworkObject.TryRemoveParent();
-        else
-            transform.SetParent(null);
-        
-        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
     }
+
+    // ---------------- NETWORK TRANSFORM ----------------
+
+    private void SetNetworkTransformEnabled(bool enabled)
+    {
+        if (networkTransform == null)
+            networkTransform = GetComponent<NetworkTransform>();
+
+        if (networkTransform != null)
+            networkTransform.enabled = enabled;
+    }
+
+    [ClientRpc]
+    private void SetNetworkTransformEnabledClientRpc(bool enabled)
+    {
+        SetNetworkTransformEnabled(enabled);
+    }
+
+    // ---------------- VISUAL ----------------
 
     public void Highlight() { }
-
     public void UnHighlight() { }
-
-    public void Interact(PlayerStatusController playerStatusController)
-    {
-        Debug.Log($"Interacting {gameObject.name}");
-
-        if (!CanInteract(playerStatusController))
-            return;
-
-        if (!IsServer)
-        {
-            PickUpServerRpc(playerStatusController.NetworkObjectId);
-            return;
-        }
-
-        SetIngredientParent(playerStatusController);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void PickUpServerRpc(ulong playerId)
-    {
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
-                playerId,
-                out NetworkObject playerObject))
-            return;
-
-        PlayerStatusController player =
-            playerObject.GetComponent<PlayerStatusController>();
-
-        if (CanInteract(player))
-            SetIngredientParent(player);
-    }
-
-    public bool CanInteract(PlayerStatusController playerStatusController)
-    {
-        return playerStatusController != null &&
-            !playerStatusController.IsHoldingSomething();
-    }
 }

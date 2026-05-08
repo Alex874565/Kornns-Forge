@@ -107,6 +107,8 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
 
     public void ThrowSelf(Vector2 direction, float force, float angle)
     {
+        if (!IsServer) return;
+        
         if (direction == Vector2.zero) return;
 
         if (playerParent != null)

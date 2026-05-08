@@ -2,12 +2,13 @@
 using UnityEngine;
 using System;
 using Unity.VisualScripting;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(PlayerInputController), typeof(PlayerStatusController))]
 public class PlayerInteractionController : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactLayerMask;
-    [SerializeField] private new Collider2D collider;
+    [SerializeField] private new Collider2D interactionCollider;
     
     [Header("Throw")]
     [SerializeField] private float throwForce = 10f;
@@ -73,7 +74,7 @@ public class PlayerInteractionController : NetworkBehaviour
     private IPlayerInteractable DetectInteractables()
     {
         Collider2D[] results = new Collider2D[8];
-        int count = collider.Overlap(_contactFilter, results);
+        int count = interactionCollider.Overlap(_contactFilter, results);
 
         IPlayerInteractable stationFallback = null;
 
@@ -176,16 +177,39 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private void Throw()
     {
-        if(IsInteracting) return;
-        
-        if(_playerStatusController.HasIngredient())
+        if (IsInteracting) return;
+
+        ThrowServerRpc(transform.right);
+    }
+    
+    [ServerRpc]
+    private void ThrowServerRpc(Vector2 direction)
+    {
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+
+        if (playerObj == null) return;
+
+        PlayerStatusController player =
+            playerObj.GetComponent<PlayerStatusController>();
+
+        if (player == null) return;
+
+        if (player.HasIngredient())
         {
-            _playerStatusController.GetIngredient().ThrowSelf(transform.right, throwForce, throwAngle);
-            _playerStatusController.ClearIngredient();
-        }else if (_playerStatusController.HasOrder())
+            Ingredient ingredient = player.GetIngredient();
+            if (ingredient == null) return;
+
+            player.ClearIngredient();
+            ingredient.ThrowSelf(direction, throwForce, throwAngle);
+        }
+        else if (player.HasOrder())
         {
-            _playerStatusController.GetOrder().ThrowSelf(transform.right, throwForce, throwAngle);
-            _playerStatusController.ClearOrder();
+            Order order = player.GetOrder();
+            if (order == null) return;
+
+            player.ClearOrder();
+            order.ThrowSelf(direction, throwForce, throwAngle);
         }
     }
 
