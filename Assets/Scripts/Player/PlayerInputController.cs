@@ -12,6 +12,8 @@ public class PlayerInputController : NetworkBehaviour
     public event Action OnJumpReleased;
     public event Action OnInteract;
     public event Action OnEscape;
+    public event Action OnInteractAlternate;
+    public event Action OnThrow;
 
     public Vector2 Movement => controls.Player.Move.ReadValue<Vector2>();
 
@@ -30,6 +32,8 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Jump.canceled += HandleJumpReleased;
         controls.Player.Interact.performed += HandleInteract;
         controls.Player.Escape.performed += HandleEscape;
+        controls.Player.InteractAlternate.performed += HandleInteractAlternate;
+        controls.Player.Throw.performed += HandleThrow;
 
         controls.Player.Enable();
     }
@@ -44,6 +48,8 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Jump.canceled -= HandleJumpReleased;
         controls.Player.Interact.started -= HandleInteract;
         controls.Player.Escape.performed -= HandleEscape;
+        controls.Player.InteractAlternate.performed -= HandleInteractAlternate;
+        controls.Player.Throw.performed -= HandleThrow;
 
         controls.Player.Disable();
     }
@@ -72,5 +78,17 @@ public class PlayerInputController : NetworkBehaviour
     private void HandleEscape(InputAction.CallbackContext ctx)
     {
         OnEscape?.Invoke();
+    }
+
+    private void HandleInteractAlternate(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("HandleInteractAlternate fired"); 
+        OnInteractAlternate?.Invoke();
+    }
+
+    private void HandleThrow(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("Throw fired");
+        OnThrow?.Invoke();
     }
 }

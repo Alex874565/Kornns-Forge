@@ -1,39 +1,92 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
-using System;
 
-public class PlayerStatusController : NetworkBehaviour, IGiveElement, IReceiveElement
+public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 {
-    public event Action<ElementData> OnChangeHeldElement;
-    
-    private int Tiredness { get; set; }
-    
-    public NetworkVariable<ElementData> HeldElement { get; private set; } = new (writePerm: NetworkVariableWritePermission.Owner);
-    private NetworkVariable<ElementData>.OnValueChangedDelegate OnChangeHeldElementDelegate { get; set; }
+    private Ingredient ingredient;
+    private Order order;
 
-    public override void OnNetworkSpawn()
-    {        
-        if (!IsOwner) return;
-        OnChangeHeldElementDelegate= (oldElement, newElement) =>
-        {
-            Debug.Log("Held element changed to " + newElement);
-            OnChangeHeldElement?.Invoke(newElement);
-        };
-        HeldElement.OnValueChanged += OnChangeHeldElementDelegate;
-        HeldElement.Value = new ElementData();
-    }
-    
-    public void GiveElement(ElementData element, IReceiveElement player)
+    [SerializeField] private Transform holdPoint;
+
+    // ---------------- FOLLOW POINT ----------------
+
+    public Transform GetIngredientFollowTransform()
     {
-        if(!IsOwner) return;
-        Debug.Log("Giving " + element);
-        HeldElement.Value = new ElementData();
+        return holdPoint;
     }
 
-    public void ReceiveElement(ElementData element)
+    // ---------------- INGREDIENT ----------------
+
+    public void SetIngredient(Ingredient newIngredient)
     {
-        if (!IsOwner) return;
-        Debug.Log("Receiving " + element);
-        HeldElement.Value = new ElementData(element);
+        TrySetIngredient(newIngredient);
+    }
+
+    public bool TrySetIngredient(Ingredient newIngredient)
+    {
+        if (newIngredient == null) return false;
+        if (IsHoldingSomething()) return false;
+
+        ingredient = newIngredient;
+        return true;
+    }
+
+    public Ingredient GetIngredient()
+    {
+        return ingredient;
+    }
+
+    public void ClearIngredient()
+    {
+        ingredient = null;
+    }
+
+    public bool HasIngredient()
+    {
+        return ingredient != null;
+    }
+
+    // ---------------- ORDER ----------------
+
+    public void SetOrder(Order newOrder)
+    {
+        TrySetOrder(newOrder);
+    }
+
+    public bool TrySetOrder(Order newOrder)
+    {
+        if (newOrder == null) return false;
+        if (IsHoldingSomething()) return false;
+
+        order = newOrder;
+        return true;
+    }
+
+    public Order GetOrder()
+    {
+        return order;
+    }
+
+    public void ClearOrder()
+    {
+        order = null;
+    }
+
+    public bool HasOrder()
+    {
+        return order != null;
+    }
+
+    // ---------------- SHARED ----------------
+
+    public bool IsHoldingSomething()
+    {
+        return ingredient != null || order != null;
+    }
+
+    public void ClearHeldItem()
+    {
+        ingredient = null;
+        order = null;
     }
 }
