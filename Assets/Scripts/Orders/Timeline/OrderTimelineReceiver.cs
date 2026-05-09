@@ -17,7 +17,7 @@ public class OrderTimelineReceiver : NetworkBehaviour
             return;
         }
 
-        int index = orderDatabase.GetIndex(order);
+        int index = orderDatabase.GetOrderIndex(order);
 
         if (index == -1)
         {
@@ -31,7 +31,7 @@ public class OrderTimelineReceiver : NetworkBehaviour
     [ClientRpc]
     private void SpawnOrderClientRpc(int orderIndex, float timer, int points)
     {
-        OrderData order = orderDatabase.GetOrder(orderIndex);
+        OrderData order = orderDatabase.GetOrderByIndex(orderIndex);
 
         if (order == null)
         {

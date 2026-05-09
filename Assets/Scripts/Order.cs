@@ -3,19 +3,20 @@ using UnityEngine;
 
 public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
 {
+    [Header("Setup")]
     [SerializeField] private OrderData orderData;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D coll;
-    private Transform followTarget;
 
+    private Transform followTarget;
     private PlayerStatusController playerParent;
 
     private void Awake()
     {
-        if(rb == null) rb = GetComponent<Rigidbody2D>();
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (coll == null) coll = GetComponent<Collider2D>();
     }
-    
+
     private void LateUpdate()
     {
         if (followTarget == null) return;
@@ -23,7 +24,9 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         transform.position = followTarget.position;
         transform.rotation = followTarget.rotation;
     }
-    
+
+    // ---------------- DATA ----------------
+
     public OrderData GetOrderData()
     {
         return orderData;
@@ -34,8 +37,11 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         orderData = data;
     }
 
+    // ---------------- HOLDING ----------------
+
     public void SetOrderParent(PlayerStatusController parent)
     {
+        if (!IsServer) return;
         if (parent == null) return;
 
         if (playerParent != null)
@@ -48,17 +54,35 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         }
 
         playerParent = parent;
-        followTarget = parent.GetIngredientFollowTransform();
 
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
+        NetworkObject parentNetworkObject = parent.GetComponent<NetworkObject>();
+
+        if (parentNetworkObject == null)
         {
-            NetworkObject parentNetworkObject =
-                followTarget.GetComponentInParent<NetworkObject>();
-
-            if (parentNetworkObject != null)
-                NetworkObject.TrySetParent(parentNetworkObject, true);
+            Debug.LogError("Parent has no NetworkObject.");
+            return;
         }
 
+        SetHeldState(parentNetworkObject.NetworkObjectId);
+        SetHeldStateClientRpc(parentNetworkObject.NetworkObjectId);
+    }
+
+    private void SetHeldState(ulong parentId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                parentId,
+                out NetworkObject parentObj))
+            return;
+
+        PlayerStatusController parent =
+            parentObj.GetComponent<PlayerStatusController>();
+
+        if (parent == null) return;
+
+        playerParent = parent;
+        followTarget = parent.GetIngredientFollowTransform();
+
+        transform.SetParent(null);
         transform.position = followTarget.position;
         transform.rotation = followTarget.rotation;
 
@@ -68,9 +92,18 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
+
+        if (coll != null)
+            coll.enabled = false;
     }
 
-    public void DestroySelf()
+    [ClientRpc]
+    private void SetHeldStateClientRpc(ulong parentId)
+    {
+        SetHeldState(parentId);
+    }
+
+    private void ClearHeldState()
     {
         if (playerParent != null)
         {
@@ -79,23 +112,122 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         }
 
         followTarget = null;
+        transform.SetParent(null);
 
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-            NetworkObject.Despawn(true);
-        else
-            Destroy(gameObject);
+        if (coll != null)
+            coll.enabled = true;
     }
-    
-    public static Order SpawnOrder(OrderData orderData, PlayerStatusController parent, Transform orderPrefab)
+
+    [ClientRpc]
+    private void ClearHeldStateClientRpc()
     {
+        ClearHeldState();
+    }
+
+    // ---------------- THROWING ----------------
+
+    public void ThrowSelf(Vector2 direction, float force, float angle)
+    {
+        if (!IsServer) return;
+        if (direction == Vector2.zero) return;
+
+        ClearHeldState();
+        ClearHeldStateClientRpc();
+
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = true;
+        }
+
+        if (coll != null)
+            coll.enabled = true;
+
+        float xSign = direction.x >= 0 ? 1f : -1f;
+
+        Vector2 angledDirection = new Vector2(
+            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
+            Mathf.Sin(angle * Mathf.Deg2Rad)
+        ).normalized;
+
+        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
+    }
+
+    // ---------------- INTERACTION ----------------
+
+    public void Interact(PlayerStatusController playerStatusController)
+    {
+        Debug.Log($"Interacting {gameObject.name}");
+
+        if (!CanInteract(playerStatusController))
+            return;
+
+        if (!IsServer)
+        {
+            PickUpServerRpc(playerStatusController.NetworkObjectId);
+            return;
+        }
+
+        SetOrderParent(playerStatusController);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PickUpServerRpc(ulong playerId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                playerId,
+                out NetworkObject playerObject))
+            return;
+
+        PlayerStatusController player =
+            playerObject.GetComponent<PlayerStatusController>();
+
+        if (player == null) return;
+
+        if (CanInteract(player))
+            SetOrderParent(player);
+    }
+
+    public bool CanInteract(PlayerStatusController playerStatusController)
+    {
+        return playerStatusController != null &&
+               !playerStatusController.IsHoldingSomething() &&
+               playerParent == null;
+    }
+
+    // ---------------- SPAWNING / DESTROYING ----------------
+
+    public static Order SpawnOrder(
+        OrderData orderData,
+        PlayerStatusController parent,
+        Transform orderPrefab)
+    {
+        if (orderData == null || parent == null || orderPrefab == null)
+            return null;
+
         Transform orderTransform = Instantiate(orderPrefab);
 
         Order order = orderTransform.GetComponent<Order>();
+        if (order == null)
+        {
+            Destroy(orderTransform.gameObject);
+            return null;
+        }
+
         order.SetOrderData(orderData);
 
         NetworkObject netObj = order.GetComponent<NetworkObject>();
 
-        if (parent.IsServer)
+        if (netObj == null)
+        {
+            Destroy(orderTransform.gameObject);
+            return null;
+        }
+
+        if (NetworkManager.Singleton != null &&
+            NetworkManager.Singleton.IsServer)
         {
             netObj.Spawn(true);
         }
@@ -105,69 +237,22 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         return order;
     }
 
-    public void ThrowSelf(Vector2 direction, float force, float angle)
+    public void DestroySelf()
     {
         if (!IsServer) return;
-        
-        if (direction == Vector2.zero) return;
 
-        if (playerParent != null)
-        {
-            playerParent.ClearOrder();
-            playerParent = null;
-        }
+        ClearHeldState();
+        ClearHeldStateClientRpc();
 
-        followTarget = null;
-
-        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-            NetworkObject.TryRemoveParent();
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+            NetworkObject.Despawn(true);
         else
-            transform.SetParent(null);
-
-        if (rb != null)
-        {
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-        }
-
-        float xSign = Mathf.Sign(direction.x);
-
-        Vector2 angledDirection = new Vector2(
-            xSign * Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        ).normalized;
-
-        rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
-    }
-    
-    #region Interaction
-    
-    public void Highlight()
-    {
-        return;
+            Destroy(gameObject);
     }
 
-    public void UnHighlight()
-    {
-        return;
-    }
+    // ---------------- VISUAL ----------------
 
-    public void Interact(PlayerStatusController playerStatusController)
-    {
-        Debug.Log($"Interacting {gameObject.name}");
-        if (CanInteract(playerStatusController))
-        {
-            SetOrderParent(playerStatusController);
-        }
-    }
+    public void Highlight() { }
 
-    public bool CanInteract(PlayerStatusController playerStatusController)
-    {
-        return playerStatusController != null &&
-               !playerStatusController.IsHoldingSomething() &&
-               playerParent == null;
-    }
-    
-    #endregion
+    public void UnHighlight() { }
 }

@@ -5094,9 +5094,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 16007360}
     - target: {fileID: 3057539853121227335, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
+      propertyPath: ordersDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: 693f4b989a8919d4488e0afb001a29c8, type: 2}
+    - target: {fileID: 3057539853121227335, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
       propertyPath: _ordersDatabase
       value: 
       objectReference: {fileID: 11400000, guid: 693f4b989a8919d4488e0afb001a29c8, type: 2}
+    - target: {fileID: 3057539853121227335, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
+      propertyPath: ingredientsDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: 77c3a400dac317a499465f24498f0712, type: 2}
     - target: {fileID: 4516869690726873748, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 4270191953

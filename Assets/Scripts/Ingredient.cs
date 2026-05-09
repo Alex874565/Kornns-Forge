@@ -187,6 +187,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         }
 
         SetIngredientParent(playerStatusController);
+        playerStatusController.SetIngredient(this);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -203,7 +204,10 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         if (player == null) return;
 
         if (CanInteract(player))
+        {
             SetIngredientParent(player);
+            player.SetIngredient(this);
+        }
     }
 
     public bool CanInteract(PlayerStatusController playerStatusController)

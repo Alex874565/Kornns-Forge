@@ -19,7 +19,7 @@ public class OrderData : ScriptableObject
     [Header("Requirements")]
     public List<OrderRequirement> requirements;
 
-    public bool CanCraft(List<Ingredient> ingredients)
+    public bool CanCraft(List<IngredientSO> ingredients)
     {
         if (requirements == null || ingredients == null)
             return false;
@@ -29,12 +29,10 @@ public class OrderData : ScriptableObject
 
         int providedTotal = 0;
 
-        foreach (Ingredient ingredient in ingredients)
+        foreach (IngredientSO so in ingredients)
         {
-            if (ingredient == null)
+            if (so == null)
                 continue;
-
-            IngredientSO so = ingredient.GetIngredientSO();
 
             if (!providedCounts.ContainsKey(so))
                 providedCounts[so] = 0;
