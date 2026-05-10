@@ -44,9 +44,6 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
         if (!IsServer) return;
         if (parent == null) return;
 
-        if (playerParent != null)
-            playerParent.ClearOrder();
-
         if (!parent.TrySetOrder(this))
         {
             Debug.LogError("Player already holding something");
@@ -105,12 +102,10 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
 
     private void ClearHeldState()
     {
-        if (playerParent != null)
-        {
+        if (IsServer && playerParent != null)
             playerParent.ClearOrder();
-            playerParent = null;
-        }
 
+        playerParent = null;
         followTarget = null;
         transform.SetParent(null);
 
@@ -193,8 +188,7 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
     public bool CanInteract(PlayerStatusController playerStatusController)
     {
         return playerStatusController != null &&
-               !playerStatusController.IsHoldingSomething() &&
-               playerParent == null;
+               !playerStatusController.IsHoldingSomethingNetworked();
     }
 
     // ---------------- SPAWNING / DESTROYING ----------------

@@ -155,9 +155,9 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
     private void PlaceIngredient(int index, PlayerStatusController player)
     {
         if (player == null) return;
-        if (!player.HasIngredient()) return;
+        if (!player.HasIngredientNetworked()) return;
 
-        Ingredient ingredient = player.GetIngredient();
+        Ingredient ingredient = player.GetIngredientNetworked();
         if (ingredient == null) return;
 
         IngredientSO ingredientSO = ingredient.GetIngredientSO();
