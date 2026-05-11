@@ -15,12 +15,9 @@ MonoBehaviour:
   prefab: {fileID: 2557834597547689182, guid: f686eb1959dbf5b4bb8a70aa04f92a78, type: 3}
   resultIcon: {fileID: 6150881297002022117, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
   orderName: Copper Sword Order
-  description: I need a copper sword
+  timeToComplete: 60
   reward: 150
   requirements:
-  - ingredient: {fileID: 0}
+  - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
     quantity: 1
-  - ingredient: {fileID: 0}
-    quantity: 1
-  - ingredient: {fileID: 0}
-    quantity: 1
+    processIcon: {fileID: 0}

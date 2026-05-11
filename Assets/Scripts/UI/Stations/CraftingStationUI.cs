@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ public class CraftingStationUI : MonoBehaviour
 {
     private CraftingStationController station;
     private PlayerStatusController player;
+    private PlayerInputController input;
 
     [SerializeField] private List<Button> materialButtons;
     [SerializeField] private Button resultButton;
@@ -20,6 +22,7 @@ public class CraftingStationUI : MonoBehaviour
 
         station = s;
         player = p;
+        input = p.gameObject.GetComponent<PlayerInputController>();
 
         station.OnCraftingChanged += Refresh;
 
@@ -27,11 +30,16 @@ public class CraftingStationUI : MonoBehaviour
         Refresh();
 
         gameObject.SetActive(true);
+
+        if (input != null)
+            input.OnInteract += Hide;
     }
     
     public void Hide()
     {
         gameObject.SetActive(false);
+        if(input != null)
+            input.OnInteract -= Hide;
     }
     
     private void SetupButtons()
@@ -47,7 +55,7 @@ public class CraftingStationUI : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                station.ToggleIngredientSlot(index, player);
+                station.RequestToggleIngredientSlot(index, player);
             });
 
             AddHover(
@@ -60,13 +68,12 @@ public class CraftingStationUI : MonoBehaviour
         craftButton.onClick.RemoveAllListeners();
         craftButton.onClick.AddListener(() =>
         {
-            station.Craft();
+            station.RequestCraft(player);
         });
-
         resultButton.onClick.RemoveAllListeners();
         resultButton.onClick.AddListener(() =>
         {
-            station.TakeCraftedResult(player);
+            station.RequestTakeCraftedResult(player);
         });
 
         AddHover(
@@ -96,7 +103,7 @@ public class CraftingStationUI : MonoBehaviour
         TextMeshProUGUI text = resultButton.GetComponentInChildren<TextMeshProUGUI>();
         if (text == null) return;
 
-        if (station.HasCrafted() && !player.HasIngredient())
+        if (station.HasCrafted() && !player.IsHoldingSomething())
             text.text = "Take";
         else
             text.text = "";
@@ -157,13 +164,12 @@ public class CraftingStationUI : MonoBehaviour
 
         if (station.HasCrafted())
         {
-            image.sprite = station.CraftedOrder.resultIcon;
-            image.color = Color.white;
+            image.sprite = station.CraftedOrder.sprite;
             resultButton.interactable = true;
         }
         else if (station.HasPreview())
         {
-            image.sprite = station.CurrentRecipePreview.resultOrder.resultIcon;
+            image.sprite = station.OrderPreview.sprite;
             image.color = Color.white;
             resultButton.interactable = false;
         }
@@ -193,5 +199,8 @@ public class CraftingStationUI : MonoBehaviour
     {
         if (station != null)
             station.OnCraftingChanged -= Refresh;
+        
+        if(input != null)
+            input.OnInteract -= Hide;
     }
 }

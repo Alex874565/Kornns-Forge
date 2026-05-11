@@ -15,6 +15,6 @@ MonoBehaviour:
   <GroundLayer>k__BackingField:
     serializedVersion: 2
     m_Bits: 64
-  <GroundCheckDistance>k__BackingField: 0.4
+  <GroundCheckDistance>k__BackingField: 1.12
   <HeadCheckDistance>k__BackingField: 0.2
   <HeadSize>k__BackingField: 0.75

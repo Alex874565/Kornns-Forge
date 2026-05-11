@@ -7,14 +7,14 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 {
     [Header("Setup")]
     [SerializeField] private int maxIngredients = 3;
-    [SerializeField] private CraftingRecipeDatabaseSO recipeDatabase;
+    [SerializeField] private OrdersDatabase _ordersDatabase;
 
     [Header("UI")]
     [SerializeField] private CraftingStationUI craftingUI;
 
     public List<Ingredient> CurrentIngredients { get; private set; } = new();
 
-    public CraftingRecipeSO CurrentRecipePreview { get; private set; }
+    public OrderData OrderPreview { get; private set; }
     public OrderData CraftedOrder { get; private set; }
 
     public event Action OnCraftingChanged;
@@ -31,7 +31,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     public void Interact(PlayerStatusController player)
     {
-        if (!IsOwner) return;
+        Debug.Log("CRAFTING INTERACT CALLED");
 
         if (craftingUI == null)
         {
@@ -56,6 +56,17 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
     {
         return;
         
+    }
+    
+    public void OpenUIClientOnly(PlayerStatusController player)
+    {
+        if (craftingUI == null)
+        {
+            Debug.LogWarning("Crafting UI not assigned!");
+            return;
+        }
+
+        craftingUI.Show(this, player);
     }
 
     // ---------------- SLOT LOGIC ----------------
@@ -101,21 +112,48 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         ingredient.gameObject.SetActive(true);
         player.SetIngredient(ingredient);
     }
+    
+    public void RequestToggleIngredientSlot(int index, PlayerStatusController player)
+    {
+        ToggleIngredientSlotServerRpc(index, player.NetworkObjectId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ToggleIngredientSlotServerRpc(int index, ulong playerId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                .TryGetValue(playerId, out NetworkObject playerObj))
+            return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        ToggleIngredientSlot(index, player);
+
+        RefreshUIClientRpc(player.OwnerClientId);
+    }
 
     // ---------------- MATCHING ----------------
 
     private void UpdatePreview()
     {
-        CurrentRecipePreview = recipeDatabase != null
-            ? recipeDatabase.GetMatchingRecipe(CurrentIngredients)
-            : null;
+        OrderPreview = _ordersDatabase.GetCraftableOrder(CurrentIngredients);
+    }
+    
+    [ClientRpc]
+    private void RefreshUIClientRpc(ulong targetClientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != targetClientId)
+            return;
+
+        OnCraftingChanged?.Invoke();
     }
 
     // ---------------- CRAFT ----------------
 
     public void Craft()
     {
-        if (CurrentRecipePreview == null) return;
+        if (OrderPreview == null) return;
         if (CraftedOrder != null) return;
 
         foreach (Ingredient ingredient in CurrentIngredients)
@@ -127,12 +165,53 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         for (int i = 0; i < CurrentIngredients.Count; i++)
             CurrentIngredients[i] = null;
 
-        CraftedOrder = CurrentRecipePreview.resultOrder;
-        CurrentRecipePreview = null;
+        CraftedOrder = OrderPreview;
+        OrderPreview = null;
 
         OnCraftingChanged?.Invoke();
     }
+    
+    public void RequestCraft(PlayerStatusController player)
+    {
+        CraftServerRpc(player.NetworkObjectId);
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void CraftServerRpc(ulong playerId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                .TryGetValue(playerId, out NetworkObject playerObj))
+            return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        Craft();
+        TakeCraftedResultServerRpc(playerId);
+
+        RefreshUIClientRpc(player.OwnerClientId);
+    }
+
+    public void RequestTakeCraftedResult(PlayerStatusController player)
+    {
+        TakeCraftedResultServerRpc(player.NetworkObjectId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TakeCraftedResultServerRpc(ulong playerId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                .TryGetValue(playerId, out NetworkObject playerObj))
+            return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        TakeCraftedResult(player);
+
+        RefreshUIClientRpc(player.OwnerClientId);
+    }
+    
     public void TakeCraftedResult(PlayerStatusController player)
     {
         if (player == null) return;
@@ -162,6 +241,6 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         return CurrentIngredients[index];
     }
 
-    public bool HasPreview() => CurrentRecipePreview != null;
+    public bool HasPreview() => OrderPreview != null;
     public bool HasCrafted() => CraftedOrder != null;
 }

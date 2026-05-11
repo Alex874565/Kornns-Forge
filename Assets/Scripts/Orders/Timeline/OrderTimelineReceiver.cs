@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class OrderTimelineReceiver : NetworkBehaviour
 {
-    [SerializeField] private OrderDatabase orderDatabase;
+    [SerializeField] private OrdersDatabase orderDatabase;
     [SerializeField] private OrderManager orderManager;
 
     public void SpawnOrder(OrderData order, float timer, int points)

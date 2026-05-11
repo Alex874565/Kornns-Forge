@@ -41,6 +41,7 @@ public class Anvil : BaseStation, IIngredientParent
 
     public override void InteractAlternate(PlayerStatusController playerStatusController)
     {
+         Debug.Log("ANVIL ALT INTERACT CALLED");
         if (!HasIngredient()) return;
 
         IngredientSO outputIngredientSO = GetOutputForInput(GetIngredient().GetIngredientSO());

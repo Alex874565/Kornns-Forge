@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: processingStation
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3720561241371100718, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: m_Name
+      value: SelectedVisual
+      objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 619689085
@@ -69,6 +73,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8689429401128634831}
   m_SourcePrefab: {fileID: 100100000, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+--- !u!114 &6535197797842613731 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2938071339951260982, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+  m_PrefabInstance: {fileID: 8248219110582776021}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c27b6a04212d4e4cbc6fa9be3063e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8792913412297427010 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 608333111417010327, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
@@ -86,3 +101,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c7474356b6394e45ae3670740a450fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  stationTopPoint: {fileID: 9144390710817269946}
+  selectedVisual: {fileID: 6535197797842613731}
+  ingredientSO: {fileID: 0}
+--- !u!4 &9144390710817269946 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 905480207488178287, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+  m_PrefabInstance: {fileID: 8248219110582776021}
+  m_PrefabAsset: {fileID: 0}

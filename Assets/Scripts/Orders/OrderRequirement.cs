@@ -1,8 +1,11 @@
-﻿[System.Serializable]
+﻿using UnityEngine;
+
+[System.Serializable]
 public class OrderRequirement
 {
     public IngredientSO ingredient;
     public int quantity = 1;
+    public Sprite processIcon;
 }
 
 [System.Serializable]

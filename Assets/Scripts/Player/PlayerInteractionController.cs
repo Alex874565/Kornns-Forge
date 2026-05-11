@@ -48,7 +48,6 @@ public class PlayerInteractionController : NetworkBehaviour
         _interactableLayer = LayerMask.NameToLayer("Interactable");
         _itemLayer = LayerMask.NameToLayer("Item");
         
-        OnInteract += Interact;
     }
 
     public override void OnNetworkDespawn()
@@ -58,7 +57,6 @@ public class PlayerInteractionController : NetworkBehaviour
         _playerInputController.OnInteractAlternate -= InteractAlternateClick;
         _playerInputController.OnThrow -= Throw;
         
-        OnInteract -= Interact;
     }
 
     private void FixedUpdate()
@@ -77,34 +75,45 @@ public class PlayerInteractionController : NetworkBehaviour
         Collider2D[] results = new Collider2D[8];
         int count = collider.Overlap(_contactFilter, results);
 
-        IPlayerInteractable fallback = null;
+        IPlayerInteractable stationFallback = null;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D col = results[i];
             if (col == null) continue;
 
-            IPlayerInteractable interactable = col.GetComponentInParent<IPlayerInteractable>();
+            IPlayerInteractable interactable =
+                col.GetComponentInParent<IPlayerInteractable>();
+
             if (interactable == null) continue;
 
-            // ✅ Priority layer
-            if (col.gameObject.layer == _itemLayer)
+            // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
+            if (interactable is Ingredient ingredient)
             {
-                return interactable;
+                IIngredientParent parent = ingredient.GetIngredientParent();
+
+                if (parent is Component parentComponent &&
+                    parentComponent.gameObject.layer == _interactableLayer)
+                {
+                    continue;
+                }
+
+                return ingredient;
             }
 
-            // 🟡 Save fallback (e.g. Item)
-            if (fallback == null)
+            // PRIORITY 2: anything on Interactable layer
+            if (col.gameObject.layer == _interactableLayer && stationFallback == null)
             {
-                fallback = interactable;
+                stationFallback = interactable;
             }
         }
 
-        return fallback;
+        return stationFallback;
     }
     
     private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
     {
+        Debug.Log("Hovered: " + playerInteractable);
         _hoveredInteractable?.UnHighlight();
 
         _hoveredInteractable = playerInteractable;
@@ -120,49 +129,49 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private void InteractClick()
     {
-        Debug.Log("Interact");
-        if(IsInteracting)
+        if (IsInteracting)
         {
             IsInteracting = false;
-            //InteractOnlyOnce = false;
+            return;
+        }
+
+        if (_hoveredInteractable == null ||
+            !_hoveredInteractable.CanInteract(_playerStatusController))
+        {
+            OnInteractFailed?.Invoke();
+            return;
+        }
+
+        IsInteracting = true;
+
+        // Client-only interaction, no RPC
+        if (_hoveredInteractable is CraftingStationController craftingStation)
+        {
+            craftingStation.OpenUIClientOnly(_playerStatusController);
+        }
+        else if (_hoveredInteractable is Component component &&
+                 component.gameObject.layer == _interactableLayer &&
+                 component.TryGetComponent(out NetworkObject networkObject))
+        {
+            InteractServerRpc(networkObject.NetworkObjectId);
         }
         else
         {
-            if (_hoveredInteractable != null && _hoveredInteractable.CanInteract(_playerStatusController))
-            {
-                IsInteracting = true;
-                //InteractOnlyOnce = _hoveredInteractable.InteractOnlyOnce;
-                _hoveredInteractable.Interact(_playerStatusController);
-                IsInteracting = false;
-            }
-            else
-            {
-                OnInteractFailed?.Invoke();
-            }
+            _hoveredInteractable.Interact(_playerStatusController);
         }
+
+        IsInteracting = false;
     }
 
-    private void InteractAlternateClick()
+    public void InteractAlternateClick()
     {
-        Debug.Log("InteractAlternateClicked");
-        if (_selectedStation != null )
+        Debug.Log("ALT CLICK");
+
+        if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
         {
-            _selectedStation.InteractAlternate(_playerStatusController);
+            Debug.Log("Sending ALT RPC to: " + station.name);
+            InteractAlternateServerRpc(station.NetworkObjectId);
         }
-    }
-    
-    private void Interact()
-    {
-        Debug.Log(IsOwner);
-        if(!IsOwner) return;
-        
-        _hoveredInteractable.Interact(_playerStatusController);
-
-        //if (InteractOnlyOnce)
-        //{
-        //    IsInteracting = false;
-        //    InteractOnlyOnce = true;
-        //}
     }
 
     private void Throw()
@@ -178,5 +187,46 @@ public class PlayerInteractionController : NetworkBehaviour
             _playerStatusController.GetOrder().ThrowSelf(transform.right, throwForce, throwAngle);
             _playerStatusController.ClearOrder();
         }
+    }
+
+    [ServerRpc]
+    private void InteractServerRpc(ulong stationId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+            .TryGetValue(stationId, out NetworkObject netObj))
+            return;
+
+        BaseStation station = netObj.GetComponent<BaseStation>();
+        if (station == null) return;
+
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+
+        if (playerObj == null) return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        station.Interact(player);
+    }
+
+    [ServerRpc]
+    private void InteractAlternateServerRpc(ulong stationId)
+    {
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+            .TryGetValue(stationId, out NetworkObject netObj))
+            return;
+
+        BaseStation station = netObj.GetComponent<BaseStation>();
+        if (station == null) return;
+
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+        if (playerObj == null) return;
+
+        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        station.InteractAlternate(player);
     }
 }
