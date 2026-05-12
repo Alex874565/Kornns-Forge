@@ -8,6 +8,10 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
 
     protected Ingredient ingredient;
 
+    public Action OnStartProcessing;
+    public Action OnStopProcessing;
+    public Action OnInteract;
+
     public event Action OnHighlight, OnUnHighlight;
     [SerializeField] private SelectedCounterVisual selectedVisual;
 

@@ -91,8 +91,7 @@ public class Furnace : BaseStation
 
                     furnaceRecipeSO = GetFurnaceRecipeSOWithInput(GetIngredient().GetIngredientSO());
 
-                    state = State.Heating;
-                    heatingTimer = 0f;
+                    StartHeating();
                 }
                 
             } else
@@ -110,7 +109,7 @@ public class Furnace : BaseStation
                 //player isn t carrying anything
                 GetIngredient().SetIngredientParent(playerStatusController);
 
-                state = State.Idle;
+                StopHeating();
             }
         }
     }
@@ -155,5 +154,20 @@ public class Furnace : BaseStation
             }
         }
         return null;
+    }
+
+    private void StartHeating()
+    {
+        state = State.Heating;
+        heatingTimer = 0f;
+        
+        OnStartProcessing?.Invoke();
+    }
+
+    private void StopHeating()
+    {
+        state = State.Idle;
+        
+        OnStopProcessing?.Invoke();
     }
 }
