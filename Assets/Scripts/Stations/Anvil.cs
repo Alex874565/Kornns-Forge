@@ -3,6 +3,8 @@ using UnityEngine;
 public class Anvil : BaseStation
 {
     [SerializeField] private AnvilRecipeSO[] anvilRecipeSOArray;
+    [Header("Tiredness")]
+    [SerializeField] private float energy = 5f;
 
     public override bool CanInteract(PlayerStatusController player)
     {
@@ -33,6 +35,9 @@ public class Anvil : BaseStation
             Ingredient ingredient = player.GetIngredient();
             if (ingredient == null) return;
 
+            // consume player energy for placing ingredient on anvil
+            player.GetTired(this.energy);
+
             ingredient.SetIngredientParent(this);
         }
         else
@@ -41,6 +46,9 @@ public class Anvil : BaseStation
 
             Ingredient ingredient = GetIngredient();
             if (ingredient == null) return;
+
+            // taking ingredient from anvil also costs small effort
+            player.GetTired(this.energy * 0.5f);
 
             ingredient.SetIngredientParent(player);
         }
@@ -62,6 +70,9 @@ public class Anvil : BaseStation
             Debug.LogError("No matching anvil recipe found!");
             return;
         }
+
+        // crafting on the anvil consumes more energy
+        player.GetTired(this.energy * 1.5f);
 
         ingredient.DestroySelf();
         Ingredient.SpawnIngredient(output, this);

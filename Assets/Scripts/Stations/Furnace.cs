@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Furnace : BaseStation
+public class Furnace : BaseStation, ITiredness
 {
     private enum State
     {
@@ -21,6 +21,9 @@ public class Furnace : BaseStation
 
     private float burningTimer;
     private BurningRecipeSO burningRecipeSO;
+
+    //TIREDNESS
+    [SerializeField] private float energy;
 
     private void Start()
     {
@@ -96,6 +99,12 @@ public class Furnace : BaseStation
 
         if (recipe == null)
             return;
+
+        // For testing: consuming player's energy when they start using the furnace
+        if (player != null)
+        {
+            player.GetTired(this.energy);
+        }
 
         playerIngredient.SetIngredientParent(this);
 
@@ -207,5 +216,15 @@ public class Furnace : BaseStation
         }
 
         return null;
+    }
+
+    public float GetTired(float energy_points)
+    {
+        return energy;
+    }
+
+    public float GetEnegy(float energy_points)
+    {
+        return 0;
     }
 }

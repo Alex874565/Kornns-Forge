@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2638971
+      value: 2076626599
       objectReference: {fileID: 0}
     - target: {fileID: 6159186152463263796, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_Size.x
@@ -172,6 +172,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db8469749ccfd784eaf0d81003c3d846, type: 2}
   burningRecipeSOArray:
   - {fileID: 11400000, guid: 86f5cd9e680e5b849af36927d039dd2c, type: 2}
+  energy: 10
 --- !u!4 &9144390710817269946 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 905480207488178287, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}

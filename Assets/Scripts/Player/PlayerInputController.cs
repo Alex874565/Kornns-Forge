@@ -54,6 +54,17 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Disable();
     }
 
+    // Enable or disable the input action map at runtime.
+    public void SetActive(bool active)
+    {
+        if (!IsOwner) return;
+
+        if (active)
+            controls.Player.Enable();
+        else
+            controls.Player.Disable();
+    }
+
     private void HandleMove(InputAction.CallbackContext ctx)
     {
         OnMove?.Invoke(ctx.ReadValue<Vector2>());
@@ -82,7 +93,7 @@ public class PlayerInputController : NetworkBehaviour
 
     private void HandleInteractAlternate(InputAction.CallbackContext ctx)
     {
-        Debug.Log("HandleInteractAlternate fired"); 
+        Debug.Log("HandleInteractAlternate fired");
         OnInteractAlternate?.Invoke();
     }
 
