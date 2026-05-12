@@ -8,6 +8,7 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
     [SerializeField] private Transform stationTopPoint;
 
     [Header("Visual")]
+
     [SerializeField] private SelectedCounterVisual selectedVisual;
 
     protected Ingredient ingredient;
@@ -20,6 +21,10 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
 
     public event Action OnHighlight;
     public event Action OnUnHighlight;
+    
+    public Action OnStartProcessing;
+    public Action OnStopProcessing;
+    public Action OnInteract;
 
     // ---------------- INTERACTION ----------------
 

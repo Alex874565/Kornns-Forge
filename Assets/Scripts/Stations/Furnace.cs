@@ -1,4 +1,6 @@
 using UnityEngine;
+using Unity.Netcode;
+using System;
 
 public class Furnace : BaseStation, ITiredness
 {
@@ -24,6 +26,8 @@ public class Furnace : BaseStation, ITiredness
 
     //TIREDNESS
     [SerializeField] private float energy;
+
+    private bool isProcessing;
 
     private void Start()
     {
@@ -51,6 +55,24 @@ public class Furnace : BaseStation, ITiredness
             case State.Burnt:
                 break;
         }
+    }
+
+    // ---------------- PROCESS EVENTS ----------------
+
+    private void StartProcessing()
+    {
+        if (isProcessing) return;
+
+        isProcessing = true;
+        OnStartProcessing?.Invoke();
+    }
+
+    private void StopProcessing()
+    {
+        if (!isProcessing) return;
+
+        isProcessing = false;
+        OnStopProcessing?.Invoke();
     }
 
     // ---------------- INTERACTION ----------------
@@ -111,6 +133,8 @@ public class Furnace : BaseStation, ITiredness
         furnaceRecipeSO = recipe;
         heatingTimer = 0f;
         state = State.Heating;
+
+        StartProcessing();
     }
 
     private void TryTakeIngredient(PlayerStatusController player)
@@ -122,11 +146,20 @@ public class Furnace : BaseStation, ITiredness
 
         stationIngredient.SetIngredientParent(player);
 
+        ResetProcessing();
+    }
+
+    private void ResetProcessing()
+    {
         state = State.Idle;
+
         heatingTimer = 0f;
         burningTimer = 0f;
+
         furnaceRecipeSO = null;
         burningRecipeSO = null;
+
+        StopProcessing();
     }
 
     // ---------------- PROCESSING ----------------
@@ -135,7 +168,7 @@ public class Furnace : BaseStation, ITiredness
     {
         if (furnaceRecipeSO == null)
         {
-            state = State.Idle;
+            ResetProcessing();
             return;
         }
 
@@ -147,7 +180,7 @@ public class Furnace : BaseStation, ITiredness
         Ingredient currentIngredient = GetIngredient();
         if (currentIngredient == null)
         {
-            state = State.Idle;
+            ResetProcessing();
             return;
         }
 
@@ -161,6 +194,12 @@ public class Furnace : BaseStation, ITiredness
         burningRecipeSO = GetBurningRecipeSOWithInput(heatedOutput);
 
         Debug.Log("Object heated");
+
+        // No burning recipe = finished processing
+        if (burningRecipeSO == null)
+        {
+            StopProcessing();
+        }
     }
 
     private void TickBurning()
@@ -176,7 +215,7 @@ public class Furnace : BaseStation, ITiredness
         Ingredient currentIngredient = GetIngredient();
         if (currentIngredient == null)
         {
-            state = State.Idle;
+            ResetProcessing();
             return;
         }
 
@@ -186,6 +225,8 @@ public class Furnace : BaseStation, ITiredness
         Ingredient.SpawnIngredient(burntOutput, this);
 
         state = State.Burnt;
+
+        StopProcessing();
 
         Debug.Log("Object burnt");
     }
