@@ -9,44 +9,16 @@ public class Counter : BaseStation
     public override bool CanInteract(PlayerStatusController player)
     {
         if (player == null) return false;
-        if (!player.HasOrder()) return false;
-        if (orderManager == null) return false;
 
-        Order heldOrder = player.GetOrder();
-        if (heldOrder == null) return false;
+        // Client + server safe if HasOrder() uses heldOrderId
+        if (!player.HasOrderNetworked()) return false;
 
-        OrderData heldOrderData = heldOrder.GetOrderData();
-
-        return orderManager.GetActiveOrders().Any(activeOrder =>
-            !activeOrder.crafted &&
-            !activeOrder.IsExpired() &&
-            activeOrder.order == heldOrderData
-        );
+        return true;
     }
 
     public override void Interact(PlayerStatusController player)
     {
-        Debug.Log("Counter.Interact()");
-
-        if (!IsServer)
-        {
-            SubmitOrderServerRpc(player.NetworkObjectId);
-            return;
-        }
-
-        SubmitOrder(player);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SubmitOrderServerRpc(ulong playerNetworkObjectId)
-    {
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
-                playerNetworkObjectId,
-                out NetworkObject playerNetworkObject))
-            return;
-
-        PlayerStatusController player =
-            playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (!IsServer) return;
 
         SubmitOrder(player);
     }
@@ -54,15 +26,18 @@ public class Counter : BaseStation
     private void SubmitOrder(PlayerStatusController player)
     {
         if (player == null) return;
+        if (orderManager == null) return;
         if (!player.HasOrder()) return;
 
         Order heldOrder = player.GetOrder();
         if (heldOrder == null) return;
 
         OrderData heldOrderData = heldOrder.GetOrderData();
+        if (heldOrderData == null) return;
 
         OrderProgress targetOrder = orderManager.GetActiveOrders()
             .Where(activeOrder =>
+                activeOrder != null &&
                 !activeOrder.crafted &&
                 !activeOrder.IsExpired() &&
                 activeOrder.order == heldOrderData
@@ -71,14 +46,19 @@ public class Counter : BaseStation
             .FirstOrDefault();
 
         if (targetOrder == null)
+        {
+            Debug.Log("No matching active order found.");
             return;
+        }
 
         heldOrder.DestroySelf();
+        player.ClearOrder();
 
         Debug.Log($"Completed {targetOrder.order.name} (+{targetOrder.points} pts)");
 
-        ScoreManager.Instance.AddScore(targetOrder.points);
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.AddScore(targetOrder.points);
 
         orderManager.CompleteOrder(targetOrder);
     }
-}
+}   

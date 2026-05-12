@@ -1,23 +1,30 @@
 using UnityEngine;
-using UnityEngine.AI;
+using Unity.Netcode;
+using System;
 
 public class Furnace : BaseStation
 {
     private enum State
     {
-        Idle, 
-        Heating, 
-        Heated, 
+        Idle,
+        Heating,
+        Heated,
         Burnt,
     }
+
+    [Header("Recipes")]
     [SerializeField] private FurnaceRecipeSO[] furnaceRecipeSOArray;
     [SerializeField] private BurningRecipeSO[] burningRecipeSOArray;
 
     private State state;
+
     private float heatingTimer;
     private FurnaceRecipeSO furnaceRecipeSO;
+
     private float burningTimer;
     private BurningRecipeSO burningRecipeSO;
+
+    private bool isProcessing;
 
     private void Start()
     {
@@ -26,148 +33,220 @@ public class Furnace : BaseStation
 
     private void Update()
     {
-        if (HasIngredient())
+        if (!IsServer) return;
+        if (!HasIngredient()) return;
+
+        switch (state)
         {
-            switch (state)
-            {
-                case State.Idle:
-                    break;
-                case State.Heating:
-                    heatingTimer += Time.deltaTime;
-                    if (heatingTimer > furnaceRecipeSO.heatingTimerMax)
-                    {
-                        // heated
-                        GetIngredient().DestroySelf();
+            case State.Idle:
+                break;
 
-                        Ingredient.SpawnIngredient(furnaceRecipeSO.output, this);
+            case State.Heating:
+                TickHeating();
+                break;
 
-                        Debug.Log("object heated");
+            case State.Heated:
+                TickBurning();
+                break;
 
-                        state = State.Heated;
-                        burningTimer = 0f;
-                        burningRecipeSO = GetBurningRecipeSOWithInput(GetIngredient().GetIngredientSO());
-                    }
-                    break;
-                case State.Heated:
-                    burningTimer += Time.deltaTime;
-                    if (burningTimer > burningRecipeSO.burningTimerMax)
-                    {
-                        // heated
-                        GetIngredient().DestroySelf();
-
-                        Ingredient.SpawnIngredient(burningRecipeSO.output, this);
-
-                        Debug.Log("object burnt");
-                        state = State.Burnt;
-                    }
-                    break;
-                case State.Burnt:
-                    break;
-            }
-            Debug.Log(state);
+            case State.Burnt:
+                break;
         }
     }
 
-    public override bool CanInteract(PlayerStatusController player)
+    // ---------------- PROCESS EVENTS ----------------
+
+    private void StartProcessing()
     {
-        bool playerHasIngredient = player.HasIngredient();
-        bool furnaceHasIngredient = HasIngredient();
+        if (isProcessing) return;
 
-        return playerHasIngredient != furnaceHasIngredient;
-    }
-
-    public override void Interact(PlayerStatusController playerStatusController)
-    {
-        if (!HasIngredient())
-        {
-            //there s no ingredient here 
-            if (playerStatusController.HasIngredient())
-            {
-                //player is carrying something
-                if (HasRecipeWithInput(playerStatusController.GetIngredient().GetIngredientSO()))
-                {
-                    //player is carrying something that can be heated
-                    playerStatusController.GetIngredient().SetIngredientParent(this);
-
-                    furnaceRecipeSO = GetFurnaceRecipeSOWithInput(GetIngredient().GetIngredientSO());
-
-                    StartHeating();
-                }
-                
-            } else
-            {
-                //player isn t carrying anything
-            }
-        } else
-        {
-            //there is an ingredient here
-            if (playerStatusController.HasIngredient())
-            {
-                //player is carrying something
-            } else
-            {
-                //player isn t carrying anything
-                GetIngredient().SetIngredientParent(playerStatusController);
-
-                StopHeating();
-            }
-        }
-    }
-
-    private bool HasRecipeWithInput(IngredientSO inputIngredientSO)
-    {
-        FurnaceRecipeSO furnaceRecipeSO = GetFurnaceRecipeSOWithInput(inputIngredientSO);
-        return furnaceRecipeSO != null;
-    }
-
-    private IngredientSO GetOutputForInput(IngredientSO inputIngredientSO)
-    {
-        FurnaceRecipeSO furnaceRecipeSO = GetFurnaceRecipeSOWithInput(inputIngredientSO);
-        if (furnaceRecipeSO != null)    
-        {
-            return furnaceRecipeSO.output;
-        } else
-        {
-            return null;
-        }
-    }
-
-    private FurnaceRecipeSO GetFurnaceRecipeSOWithInput(IngredientSO inputIngredientSO)
-    {
-        foreach (FurnaceRecipeSO furnaceRecipeSO in furnaceRecipeSOArray)
-        {
-            if (furnaceRecipeSO.input == inputIngredientSO)
-            {
-                return furnaceRecipeSO;
-            }
-        }
-        return null;
-    }
-
-    private BurningRecipeSO GetBurningRecipeSOWithInput(IngredientSO inputIngredientSO)
-    {
-        foreach (BurningRecipeSO burningRecipeSO in burningRecipeSOArray)
-        {
-            if (burningRecipeSO.input == inputIngredientSO)
-            {
-                return burningRecipeSO;
-            }
-        }
-        return null;
-    }
-
-    private void StartHeating()
-    {
-        state = State.Heating;
-        heatingTimer = 0f;
-        
+        isProcessing = true;
         OnStartProcessing?.Invoke();
     }
 
-    private void StopHeating()
+    private void StopProcessing()
+    {
+        if (!isProcessing) return;
+
+        isProcessing = false;
+        OnStopProcessing?.Invoke();
+    }
+
+    // ---------------- INTERACTION ----------------
+
+    public override bool CanInteract(PlayerStatusController player)
+    {
+        if (player == null) return false;
+
+        bool furnaceHasIngredient = HasIngredient();
+        bool playerHasIngredient = player.HasIngredientNetworked();
+        bool playerHoldingSomething = player.IsHoldingSomethingNetworked();
+
+        if (!furnaceHasIngredient && playerHasIngredient)
+            return true;
+
+        if (furnaceHasIngredient && !playerHoldingSomething)
+            return true;
+
+        return GetFurnaceRecipeSOWithInput(player.GetIngredientNetworked()?.GetIngredientSO()) != null;
+    }
+
+    public override void Interact(PlayerStatusController player)
+    {
+        if (!IsServer) return;
+        if (player == null) return;
+
+        if (!HasIngredient())
+        {
+            TryPlaceIngredient(player);
+        }
+        else
+        {
+            TryTakeIngredient(player);
+        }
+    }
+
+    private void TryPlaceIngredient(PlayerStatusController player)
+    {
+        if (!player.HasIngredient()) return;
+
+        Ingredient playerIngredient = player.GetIngredient();
+        if (playerIngredient == null) return;
+
+        IngredientSO input = playerIngredient.GetIngredientSO();
+        FurnaceRecipeSO recipe = GetFurnaceRecipeSOWithInput(input);
+
+        if (recipe == null)
+            return;
+
+        playerIngredient.SetIngredientParent(this);
+
+        furnaceRecipeSO = recipe;
+        heatingTimer = 0f;
+        state = State.Heating;
+
+        StartProcessing();
+    }
+
+    private void TryTakeIngredient(PlayerStatusController player)
+    {
+        if (player.IsHoldingSomething()) return;
+
+        Ingredient stationIngredient = GetIngredient();
+        if (stationIngredient == null) return;
+
+        stationIngredient.SetIngredientParent(player);
+
+        ResetProcessing();
+    }
+
+    private void ResetProcessing()
     {
         state = State.Idle;
-        
-        OnStopProcessing?.Invoke();
+
+        heatingTimer = 0f;
+        burningTimer = 0f;
+
+        furnaceRecipeSO = null;
+        burningRecipeSO = null;
+
+        StopProcessing();
+    }
+
+    // ---------------- PROCESSING ----------------
+
+    private void TickHeating()
+    {
+        if (furnaceRecipeSO == null)
+        {
+            ResetProcessing();
+            return;
+        }
+
+        heatingTimer += Time.deltaTime;
+
+        if (heatingTimer < furnaceRecipeSO.heatingTimerMax)
+            return;
+
+        Ingredient currentIngredient = GetIngredient();
+        if (currentIngredient == null)
+        {
+            ResetProcessing();
+            return;
+        }
+
+        IngredientSO heatedOutput = furnaceRecipeSO.output;
+
+        currentIngredient.DestroySelf();
+        Ingredient.SpawnIngredient(heatedOutput, this);
+
+        state = State.Heated;
+        burningTimer = 0f;
+        burningRecipeSO = GetBurningRecipeSOWithInput(heatedOutput);
+
+        Debug.Log("Object heated");
+
+        // No burning recipe = finished processing
+        if (burningRecipeSO == null)
+        {
+            StopProcessing();
+        }
+    }
+
+    private void TickBurning()
+    {
+        if (burningRecipeSO == null)
+            return;
+
+        burningTimer += Time.deltaTime;
+
+        if (burningTimer < burningRecipeSO.burningTimerMax)
+            return;
+
+        Ingredient currentIngredient = GetIngredient();
+        if (currentIngredient == null)
+        {
+            ResetProcessing();
+            return;
+        }
+
+        IngredientSO burntOutput = burningRecipeSO.output;
+
+        currentIngredient.DestroySelf();
+        Ingredient.SpawnIngredient(burntOutput, this);
+
+        state = State.Burnt;
+
+        StopProcessing();
+
+        Debug.Log("Object burnt");
+    }
+
+    // ---------------- RECIPES ----------------
+
+    private FurnaceRecipeSO GetFurnaceRecipeSOWithInput(IngredientSO input)
+    {
+        if (input == null) return null;
+
+        foreach (FurnaceRecipeSO recipe in furnaceRecipeSOArray)
+        {
+            if (recipe != null && recipe.input == input)
+                return recipe;
+        }
+
+        return null;
+    }
+
+    private BurningRecipeSO GetBurningRecipeSOWithInput(IngredientSO input)
+    {
+        if (input == null) return null;
+
+        foreach (BurningRecipeSO recipe in burningRecipeSOArray)
+        {
+            if (recipe != null && recipe.input == input)
+                return recipe;
+        }
+
+        return null;
     }
 }

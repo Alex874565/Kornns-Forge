@@ -88,18 +88,27 @@ public class PlayerInteractionController : NetworkBehaviour
 
             if (interactable == null) continue;
 
-            // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
-            if (interactable is Ingredient ingredient)
+            if (col.gameObject.layer == _itemLayer)
             {
-                IIngredientParent parent = ingredient.GetIngredientParent();
 
-                if (parent is Component parentComponent &&
-                    parentComponent.gameObject.layer == _interactableLayer)
+                // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
+                if (interactable is Ingredient ingredient)
                 {
-                    continue;
-                }
+                    IIngredientParent parent = ingredient.GetIngredientParent();
 
-                return ingredient;
+                    if (parent is Component parentComponent &&
+                        parentComponent.gameObject.layer == _interactableLayer)
+                    {
+                        continue;
+                    }
+
+                    return ingredient;
+                }
+                
+                if(interactable is Order order)
+                {
+                    return order;
+                }
             }
 
             // PRIORITY 2: anything on Interactable layer
@@ -122,7 +131,8 @@ public class PlayerInteractionController : NetworkBehaviour
         // 🔥 THIS WAS MISSING
         _selectedStation = playerInteractable as BaseStation;
 
-        if (_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
+        if (_hoveredInteractable == null ||
+            !_hoveredInteractable.CanInteract(_playerStatusController))
             return;
 
         _hoveredInteractable.Highlight();
@@ -151,10 +161,13 @@ public class PlayerInteractionController : NetworkBehaviour
             craftingStation.OpenUIClientOnly(_playerStatusController);
         }
         else if (_hoveredInteractable is Component component &&
-                 component.gameObject.layer == _interactableLayer &&
-                 component.TryGetComponent(out NetworkObject networkObject))
+                 component.gameObject.layer == _interactableLayer)
         {
-            InteractServerRpc(networkObject.NetworkObjectId);
+            NetworkObject networkObject =
+                component.GetComponentInParent<NetworkObject>();
+
+            if (networkObject != null)
+                InteractServerRpc(networkObject.NetworkObjectId);
         }
         else
         {
@@ -168,10 +181,13 @@ public class PlayerInteractionController : NetworkBehaviour
     {
         Debug.Log("ALT CLICK");
 
-        if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
+        if (_hoveredInteractable is Component component)
         {
-            Debug.Log("Sending ALT RPC to: " + station.name);
-            InteractAlternateServerRpc(station.NetworkObjectId);
+            NetworkObject networkObject =
+                component.GetComponentInParent<NetworkObject>();
+
+            if (networkObject != null)
+                InteractAlternateServerRpc(networkObject.NetworkObjectId);
         }
     }
 

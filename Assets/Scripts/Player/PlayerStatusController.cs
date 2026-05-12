@@ -135,10 +135,4 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     {
         return HasIngredientNetworked() || HasOrderNetworked();
     }
-
-    public void ClearHeldItem()
-    {
-        ClearIngredient();
-        ClearOrder();
-    }
 }

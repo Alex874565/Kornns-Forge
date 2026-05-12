@@ -28,7 +28,7 @@ public class PlayerCollisionController : NetworkBehaviour
     
     private void CheckGroundCollision()
     {
-        Vector2 boxCastOrigin = new Vector2(feetColl.bounds.center.x, bodyColl.bounds.min.y + .2f);
+        Vector2 boxCastOrigin = new Vector2(feetColl.bounds.center.x, feetColl.bounds.min.y + .2f);
         Vector2 boxCastSize = new Vector2(feetColl.bounds.size.x, .02f);
         
         RaycastHit2D groundHit = Physics2D.BoxCast(boxCastOrigin, boxCastSize, 0f, Vector2.down, collisionStats.GroundCheckDistance, collisionStats.GroundLayer);

@@ -1,78 +1,85 @@
 using UnityEngine;
 
-public class Anvil : BaseStation, IIngredientParent
+public class Anvil : BaseStation
 {
     [SerializeField] private AnvilRecipeSO[] anvilRecipeSOArray;
 
     public override bool CanInteract(PlayerStatusController player)
     {
-        bool playerHasIngredient = player.HasIngredient();
+        if (player == null) return false;
+
+        bool playerHasIngredient = player.HasIngredientNetworked();
+        bool playerHoldingSomething = player.IsHoldingSomethingNetworked();
         bool anvilHasIngredient = HasIngredient();
 
-        return playerHasIngredient != anvilHasIngredient;
+        if (!anvilHasIngredient && playerHasIngredient)
+            return true;
+
+        if (anvilHasIngredient && !playerHoldingSomething)
+            return true;
+
+        return false;
     }
 
-    public override void Interact(PlayerStatusController playerStatusController)
+    public override void Interact(PlayerStatusController player)
     {
+        if (!IsServer) return;
+        if (player == null) return;
+
         if (!HasIngredient())
         {
-            //there s no ingredient here 
-            if (playerStatusController.HasIngredient())
-            {
-                //player is carrying something
-                playerStatusController.GetIngredient().SetIngredientParent(this);
-            } else
-            {
-                //player isn t carrying anything
-            }
-        } else
+            if (!player.HasIngredient()) return;
+
+            Ingredient ingredient = player.GetIngredient();
+            if (ingredient == null) return;
+
+            ingredient.SetIngredientParent(this);
+        }
+        else
         {
-            //there is an ingredient here
-            if (playerStatusController.HasIngredient())
-            {
-                //player is carrying something
-            } else
-            {
-                //player isn t carrying anything
-                GetIngredient().SetIngredientParent(playerStatusController);
-            }
+            if (player.IsHoldingSomething()) return;
+
+            Ingredient ingredient = GetIngredient();
+            if (ingredient == null) return;
+
+            ingredient.SetIngredientParent(player);
         }
     }
 
-    public override void InteractAlternate(PlayerStatusController playerStatusController)
+    public override void InteractAlternate(PlayerStatusController player)
     {
-         Debug.Log("ANVIL ALT INTERACT CALLED");
+        if (!IsServer) return;
         if (!HasIngredient()) return;
 
-        IngredientSO outputIngredientSO = GetOutputForInput(GetIngredient().GetIngredientSO());
+        Ingredient ingredient = GetIngredient();
+        if (ingredient == null) return;
 
-        if (outputIngredientSO == null)
+        IngredientSO input = ingredient.GetIngredientSO();
+        IngredientSO output = GetOutputForInput(input);
+
+        if (output == null)
         {
             Debug.LogError("No matching anvil recipe found!");
             return;
         }
 
-        GetIngredient().DestroySelf();
-
-        Ingredient.SpawnIngredient(outputIngredientSO, this);
+        ingredient.DestroySelf();
+        Ingredient.SpawnIngredient(output, this);
     }
 
-    private IngredientSO GetOutputForInput(IngredientSO inputIngredientSO)
+    private IngredientSO GetOutputForInput(IngredientSO input)
     {
-        Debug.Log("Input ingredient: " + inputIngredientSO.name);
+        if (input == null) return null;
 
-        foreach (AnvilRecipeSO anvilRecipeSO in anvilRecipeSOArray)
+        foreach (AnvilRecipeSO recipe in anvilRecipeSOArray)
         {
-            Debug.Log("Checking recipe: " + anvilRecipeSO.input.name);
+            if (recipe == null || recipe.input == null)
+                continue;
 
-            if (anvilRecipeSO.input == inputIngredientSO)
-            {
-                Debug.Log("MATCH FOUND");
-                return anvilRecipeSO.output;
-            }
+            if (recipe.input == input)
+                return recipe.output;
         }
 
-        Debug.LogError("NO MATCH FOUND");
         return null;
     }
 }

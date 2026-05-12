@@ -6,6 +6,12 @@ public class OrderManager : MonoBehaviour
     public List<OrderProgress> activeOrders = new();
 
     public System.Action OnOrdersUpdated;
+    private IOrderFactory orderFactory;
+
+    private void Awake()
+    {
+        orderFactory = new OrderFactory();
+    }
 
     public void AddItem(IngredientSO ingredient)
     {
@@ -90,9 +96,11 @@ public class OrderManager : MonoBehaviour
 
     public void AddOrder(OrderData order, float timer, int points)
     {
-        if (order == null) return;
+        OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points);
 
-        activeOrders.Add(new OrderProgress(order, timer, points));
+        if (newOrder == null) return;
+
+        activeOrders.Add(newOrder);
         OnOrdersUpdated?.Invoke();
     }
     
