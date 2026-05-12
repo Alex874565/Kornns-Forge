@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,32 +8,68 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 {
     [Header("Setup")]
     [SerializeField] private int maxIngredients = 3;
-    [SerializeField] private OrdersDatabase _ordersDatabase;
+    [SerializeField] private OrdersDatabase ordersDatabase;
+    [SerializeField] private IngredientsDatabase ingredientsDatabase;
 
     [Header("UI")]
     [SerializeField] private CraftingStationUI craftingUI;
 
-    public List<Ingredient> CurrentIngredients { get; private set; } = new();
-
-    public OrderData OrderPreview { get; private set; }
-    public OrderData CraftedOrder { get; private set; }
+    private NetworkList<int> ingredientIndexes = new NetworkList<int>();
+    private NetworkVariable<int> previewOrderIndex = new(-1);
+    private NetworkVariable<int> craftedOrderIndex = new(-1);
 
     public event Action OnCraftingChanged;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        CurrentIngredients.Clear();
+        ingredientIndexes.OnListChanged += OnIngredientListChanged;
+        previewOrderIndex.OnValueChanged += OnOrderStateChanged;
+        craftedOrderIndex.OnValueChanged += OnOrderStateChanged;
 
-        for (int i = 0; i < maxIngredients; i++)
-            CurrentIngredients.Add(null);
+        if (IsServer)
+        {
+            if (ingredientIndexes.Count == 0)
+            {
+                for (int i = 0; i < maxIngredients; i++)
+                    ingredientIndexes.Add(-1);
+            }
+        }
+
+        OnCraftingChanged?.Invoke();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        ingredientIndexes.OnListChanged -= OnIngredientListChanged;
+        previewOrderIndex.OnValueChanged -= OnOrderStateChanged;
+        craftedOrderIndex.OnValueChanged -= OnOrderStateChanged;
+    }
+
+    private void OnIngredientListChanged(NetworkListEvent<int> changeEvent)
+    {
+        StartCoroutine(RefreshNextFrame());
+    }
+
+    private IEnumerator RefreshNextFrame()
+    {
+        yield return null;
+        OnCraftingChanged?.Invoke();
+    }
+
+    private void OnOrderStateChanged(int previousValue, int newValue)
+    {
+        OnCraftingChanged?.Invoke();
     }
 
     // ---------------- INTERACTION ----------------
 
     public void Interact(PlayerStatusController player)
     {
-        Debug.Log("CRAFTING INTERACT CALLED");
+        OpenUIClientOnly(player);
+    }
 
+    public void OpenUIClientOnly(PlayerStatusController player)
+    {
         if (craftingUI == null)
         {
             Debug.LogWarning("Crafting UI not assigned!");
@@ -47,200 +84,234 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         return true;
     }
 
-    public void Highlight()
-    {
-        return;
-    }
+    public void Highlight() { }
+    public void UnHighlight() { }
 
-    public void UnHighlight()
-    {
-        return;
-        
-    }
-    
-    public void OpenUIClientOnly(PlayerStatusController player)
-    {
-        if (craftingUI == null)
-        {
-            Debug.LogWarning("Crafting UI not assigned!");
-            return;
-        }
+    // ---------------- REQUESTS ----------------
 
-        craftingUI.Show(this, player);
-    }
-
-    // ---------------- SLOT LOGIC ----------------
-
-    public void ToggleIngredientSlot(int index, PlayerStatusController player)
-    {
-        if (index < 0 || index >= CurrentIngredients.Count) return;
-        if (CraftedOrder != null) return;
-
-        if (CurrentIngredients[index] == null)
-            PlaceIngredient(index, player);
-        else
-            RemoveIngredient(index, player);
-
-        UpdatePreview();
-        OnCraftingChanged?.Invoke();
-    }
-
-    private void PlaceIngredient(int index, PlayerStatusController player)
-    {
-        if (player == null) return;
-        if (!player.HasIngredient()) return;
-
-        Ingredient ingredient = player.GetIngredient();
-        if (ingredient == null) return;
-
-        CurrentIngredients[index] = ingredient;
-
-        player.ClearIngredient();
-        ingredient.gameObject.SetActive(false);
-    }
-
-    private void RemoveIngredient(int index, PlayerStatusController player)
-    {
-        if (player == null) return;
-        if (player.HasIngredient()) return;
-
-        Ingredient ingredient = CurrentIngredients[index];
-        if (ingredient == null) return;
-
-        CurrentIngredients[index] = null;
-
-        ingredient.gameObject.SetActive(true);
-        player.SetIngredient(ingredient);
-    }
-    
     public void RequestToggleIngredientSlot(int index, PlayerStatusController player)
     {
+        if (player == null) return;
         ToggleIngredientSlotServerRpc(index, player.NetworkObjectId);
     }
+
+    public void RequestCraft(PlayerStatusController player)
+    {
+        if (player == null) return;
+        CraftServerRpc(player.NetworkObjectId);
+    }
+
+    public void RequestTakeCraftedResult(PlayerStatusController player)
+    {
+        if (player == null) return;
+        TakeCraftedResultServerRpc(player.NetworkObjectId);
+    }
+
+    // ---------------- SERVER RPCS ----------------
 
     [ServerRpc(RequireOwnership = false)]
     private void ToggleIngredientSlotServerRpc(int index, ulong playerId)
     {
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
-                .TryGetValue(playerId, out NetworkObject playerObj))
+        if (!TryGetPlayer(playerId, out PlayerStatusController player))
             return;
-
-        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
-        if (player == null) return;
 
         ToggleIngredientSlot(index, player);
-
-        RefreshUIClientRpc(player.OwnerClientId);
-    }
-
-    // ---------------- MATCHING ----------------
-
-    private void UpdatePreview()
-    {
-        OrderPreview = _ordersDatabase.GetCraftableOrder(CurrentIngredients);
-    }
-    
-    [ClientRpc]
-    private void RefreshUIClientRpc(ulong targetClientId)
-    {
-        if (NetworkManager.Singleton.LocalClientId != targetClientId)
-            return;
-
-        OnCraftingChanged?.Invoke();
-    }
-
-    // ---------------- CRAFT ----------------
-
-    public void Craft()
-    {
-        if (OrderPreview == null) return;
-        if (CraftedOrder != null) return;
-
-        foreach (Ingredient ingredient in CurrentIngredients)
-        {
-            if (ingredient != null)
-                Destroy(ingredient.gameObject);
-        }
-
-        for (int i = 0; i < CurrentIngredients.Count; i++)
-            CurrentIngredients[i] = null;
-
-        CraftedOrder = OrderPreview;
-        OrderPreview = null;
-
-        OnCraftingChanged?.Invoke();
-    }
-    
-    public void RequestCraft(PlayerStatusController player)
-    {
-        CraftServerRpc(player.NetworkObjectId);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void CraftServerRpc(ulong playerId)
     {
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
-                .TryGetValue(playerId, out NetworkObject playerObj))
+        if (!TryGetPlayer(playerId, out PlayerStatusController player))
             return;
 
-        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
-        if (player == null) return;
-
         Craft();
-        TakeCraftedResultServerRpc(playerId);
-
-        RefreshUIClientRpc(player.OwnerClientId);
-    }
-
-    public void RequestTakeCraftedResult(PlayerStatusController player)
-    {
-        TakeCraftedResultServerRpc(player.NetworkObjectId);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void TakeCraftedResultServerRpc(ulong playerId)
     {
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
-                .TryGetValue(playerId, out NetworkObject playerObj))
+        if (!TryGetPlayer(playerId, out PlayerStatusController player))
             return;
 
-        PlayerStatusController player = playerObj.GetComponent<PlayerStatusController>();
-        if (player == null) return;
-
         TakeCraftedResult(player);
-
-        RefreshUIClientRpc(player.OwnerClientId);
     }
-    
-    public void TakeCraftedResult(PlayerStatusController player)
+
+    // ---------------- SLOT LOGIC ----------------
+
+    private void ToggleIngredientSlot(int index, PlayerStatusController player)
+    {
+        if (!IsServer) return;
+        if (index < 0 || index >= ingredientIndexes.Count) return;
+        if (HasCrafted()) return;
+
+        if (ingredientIndexes[index] == -1)
+            PlaceIngredient(index, player);
+        else
+            RemoveIngredient(index, player);
+
+        UpdatePreview();
+    }
+
+    private void PlaceIngredient(int index, PlayerStatusController player)
     {
         if (player == null) return;
-        if (CraftedOrder == null) return;
-        if (player.IsHoldingSomething()) return;
-        if (CraftedOrder.prefab == null)
+        if (!player.HasIngredientNetworked()) return;
+
+        Ingredient ingredient = player.GetIngredientNetworked();
+        if (ingredient == null) return;
+
+        IngredientSO ingredientSO = ingredient.GetIngredientSO();
+        int ingredientIndex = ingredientsDatabase.GetIndex(ingredientSO);
+
+        Debug.Log(
+            $"SERVER station={name}, netId={NetworkObjectId}, " +
+            $"set slot {index} to {ingredientIndex}"
+        );
+        
+        if (ingredientIndex < 0)
         {
-            Debug.LogError($"Order prefab missing on {CraftedOrder.orderName}");
+            Debug.LogError($"Ingredient {ingredientSO.name} is missing from OrdersDatabase.");
             return;
         }
 
-        Order.SpawnOrder(CraftedOrder, player, CraftedOrder.prefab);
+        ingredientIndexes[index] = ingredientIndex;
 
-        CraftedOrder = null;
-
-        UpdatePreview();
-        OnCraftingChanged?.Invoke();
+        player.ClearIngredient();
+        ingredient.DestroySelf();
     }
 
+    private void RemoveIngredient(int index, PlayerStatusController player)
+    {
+        if (player == null) return;
+        if (player.IsHoldingSomething()) return;
+
+        int ingredientIndex = ingredientIndexes[index];
+        if (ingredientIndex < 0) return;
+
+        IngredientSO ingredientSO = ingredientsDatabase.GetIngredient(ingredientIndex);
+        if (ingredientSO == null) return;
+
+        ingredientIndexes[index] = -1;
+
+        Ingredient.SpawnIngredient(ingredientSO, player);
+    }
+
+    // ---------------- CRAFTING ----------------
+
+    private void UpdatePreview()
+    {
+        List<IngredientSO> ingredients = new();
+
+        foreach (int index in ingredientIndexes)
+        {
+            IngredientSO ingredient =
+                ingredientsDatabase.GetIngredient(index);
+
+            if (ingredient != null)
+                ingredients.Add(ingredient);
+        }
+
+        previewOrderIndex.Value =
+            ordersDatabase.GetOrderIndex(
+                ordersDatabase.GetCraftableOrder(ingredients)
+            );
+    }
+
+    private void Craft()
+    {
+        if (!IsServer) return;
+        if (!HasPreview()) return;
+        if (HasCrafted()) return;
+
+        craftedOrderIndex.Value = previewOrderIndex.Value;
+        previewOrderIndex.Value = -1;
+
+        for (int i = 0; i < ingredientIndexes.Count; i++)
+            ingredientIndexes[i] = -1;
+    }
+
+    private void TakeCraftedResult(PlayerStatusController player)
+    {
+        if (!IsServer) return;
+        if (player == null) return;
+        if (!HasCrafted()) return;
+        if (player.IsHoldingSomething()) return;
+
+        OrderData craftedOrder = GetCraftedOrder();
+
+        if (craftedOrder == null || craftedOrder.prefab == null)
+        {
+            Debug.LogError("Crafted order prefab missing.");
+            return;
+        }
+
+        Order.SpawnOrder(craftedOrder, player, craftedOrder.prefab);
+
+        craftedOrderIndex.Value = -1;
+        UpdatePreview();
+    }
+
+    // ---------------- GETTERS FOR UI ----------------
+
+    public IngredientSO GetIngredient(int index)
+    {
+        if (ingredientsDatabase == null) return null;
+        if (index < 0 || index >= ingredientIndexes.Count) return null;
+
+        return ingredientsDatabase.GetIngredient(ingredientIndexes[index]);
+    }
+    
+    public OrderData GetOrderPreview()
+    {
+        if (ordersDatabase == null) return null;
+        return ordersDatabase.GetOrderByIndex(previewOrderIndex.Value);
+    }
+
+    public OrderData GetCraftedOrder()
+    {
+        if (ordersDatabase == null) return null;
+        return ordersDatabase.GetOrderByIndex(craftedOrderIndex.Value);
+    }
+
+    public bool HasPreview()
+    {
+        return previewOrderIndex.Value >= 0;
+    }
+
+    public bool HasCrafted()
+    {
+        return craftedOrderIndex.Value >= 0;
+    }
+
+    public int GetIngredientIndexRaw(int index)
+    {
+        if (ingredientIndexes == null)
+        {
+            Debug.LogError($"{name}: ingredientIndexes is null");
+            return -999;
+        }
+
+        if (index < 0 || index >= ingredientIndexes.Count)
+        {
+            Debug.LogError($"{name}: index {index} invalid, count={ingredientIndexes.Count}");
+            return -999;
+        }
+
+        return ingredientIndexes[index];
+    }
+    
     // ---------------- HELPERS ----------------
 
-    public Ingredient GetIngredient(int index)
+    private bool TryGetPlayer(ulong playerId, out PlayerStatusController player)
     {
-        if (index < 0 || index >= CurrentIngredients.Count)
-            return null;
+        player = null;
 
-        return CurrentIngredients[index];
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                .TryGetValue(playerId, out NetworkObject playerObj))
+            return false;
+
+        player = playerObj.GetComponent<PlayerStatusController>();
+
+        return player != null;
     }
-
-    public bool HasPreview() => OrderPreview != null;
-    public bool HasCrafted() => CraftedOrder != null;
 }

@@ -2,12 +2,13 @@
 using UnityEngine;
 using System;
 using Unity.VisualScripting;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(PlayerInputController), typeof(PlayerStatusController))]
 public class PlayerInteractionController : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactLayerMask;
-    [SerializeField] private new Collider2D collider;
+    [SerializeField] private new Collider2D interactionCollider;
     
     [Header("Throw")]
     [SerializeField] private float throwForce = 10f;
@@ -73,7 +74,7 @@ public class PlayerInteractionController : NetworkBehaviour
     private IPlayerInteractable DetectInteractables()
     {
         Collider2D[] results = new Collider2D[8];
-        int count = collider.Overlap(_contactFilter, results);
+        int count = interactionCollider.Overlap(_contactFilter, results);
 
         IPlayerInteractable stationFallback = null;
 
@@ -87,18 +88,27 @@ public class PlayerInteractionController : NetworkBehaviour
 
             if (interactable == null) continue;
 
-            // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
-            if (interactable is Ingredient ingredient)
+            if (col.gameObject.layer == _itemLayer)
             {
-                IIngredientParent parent = ingredient.GetIngredientParent();
 
-                if (parent is Component parentComponent &&
-                    parentComponent.gameObject.layer == _interactableLayer)
+                // PRIORITY 1: item, but only if it is NOT on an Interactable layer parent
+                if (interactable is Ingredient ingredient)
                 {
-                    continue;
-                }
+                    IIngredientParent parent = ingredient.GetIngredientParent();
 
-                return ingredient;
+                    if (parent is Component parentComponent &&
+                        parentComponent.gameObject.layer == _interactableLayer)
+                    {
+                        continue;
+                    }
+
+                    return ingredient;
+                }
+                
+                if(interactable is Order order)
+                {
+                    return order;
+                }
             }
 
             // PRIORITY 2: anything on Interactable layer
@@ -121,7 +131,8 @@ public class PlayerInteractionController : NetworkBehaviour
         // 🔥 THIS WAS MISSING
         _selectedStation = playerInteractable as BaseStation;
 
-        if (_hoveredInteractable == null || !_hoveredInteractable.CanInteract(_playerStatusController))
+        if (_hoveredInteractable == null ||
+            !_hoveredInteractable.CanInteract(_playerStatusController))
             return;
 
         _hoveredInteractable.Highlight();
@@ -150,10 +161,13 @@ public class PlayerInteractionController : NetworkBehaviour
             craftingStation.OpenUIClientOnly(_playerStatusController);
         }
         else if (_hoveredInteractable is Component component &&
-                 component.gameObject.layer == _interactableLayer &&
-                 component.TryGetComponent(out NetworkObject networkObject))
+                 component.gameObject.layer == _interactableLayer)
         {
-            InteractServerRpc(networkObject.NetworkObjectId);
+            NetworkObject networkObject =
+                component.GetComponentInParent<NetworkObject>();
+
+            if (networkObject != null)
+                InteractServerRpc(networkObject.NetworkObjectId);
         }
         else
         {
@@ -167,25 +181,51 @@ public class PlayerInteractionController : NetworkBehaviour
     {
         Debug.Log("ALT CLICK");
 
-        if (_hoveredInteractable is BaseStation station && station.NetworkObject != null)
+        if (_hoveredInteractable is Component component)
         {
-            Debug.Log("Sending ALT RPC to: " + station.name);
-            InteractAlternateServerRpc(station.NetworkObjectId);
+            NetworkObject networkObject =
+                component.GetComponentInParent<NetworkObject>();
+
+            if (networkObject != null)
+                InteractAlternateServerRpc(networkObject.NetworkObjectId);
         }
     }
 
     private void Throw()
     {
-        if(IsInteracting) return;
-        
-        if(_playerStatusController.HasIngredient())
+        if (IsInteracting) return;
+
+        ThrowServerRpc(transform.right);
+    }
+    
+    [ServerRpc]
+    private void ThrowServerRpc(Vector2 direction)
+    {
+        var playerObj = NetworkManager.Singleton.SpawnManager
+            .GetPlayerNetworkObject(OwnerClientId);
+
+        if (playerObj == null) return;
+
+        PlayerStatusController player =
+            playerObj.GetComponent<PlayerStatusController>();
+
+        if (player == null) return;
+
+        if (player.HasIngredient())
         {
-            _playerStatusController.GetIngredient().ThrowSelf(transform.right, throwForce, throwAngle);
-            _playerStatusController.ClearIngredient();
-        }else if (_playerStatusController.HasOrder())
+            Ingredient ingredient = player.GetIngredient();
+            if (ingredient == null) return;
+
+            player.ClearIngredient();
+            ingredient.ThrowSelf(direction, throwForce, throwAngle);
+        }
+        else if (player.HasOrder())
         {
-            _playerStatusController.GetOrder().ThrowSelf(transform.right, throwForce, throwAngle);
-            _playerStatusController.ClearOrder();
+            Order order = player.GetOrder();
+            if (order == null) return;
+
+            player.ClearOrder();
+            order.ThrowSelf(direction, throwForce, throwAngle);
         }
     }
 

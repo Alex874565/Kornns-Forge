@@ -8,7 +8,17 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     [SerializeField] private Transform holdPoint;
 
-    // ---------------- FOLLOW POINT ----------------
+    private NetworkVariable<ulong> heldIngredientId = new(
+        ulong.MaxValue,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
+    private NetworkVariable<ulong> heldOrderId = new(
+        ulong.MaxValue,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     public Transform GetIngredientFollowTransform()
     {
@@ -28,6 +38,10 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         if (IsHoldingSomething()) return false;
 
         ingredient = newIngredient;
+
+        if (IsServer)
+            heldIngredientId.Value = newIngredient.NetworkObjectId;
+
         return true;
     }
 
@@ -36,14 +50,35 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         return ingredient;
     }
 
+    public Ingredient GetIngredientNetworked()
+    {
+        if (heldIngredientId.Value == ulong.MaxValue)
+            return null;
+
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                heldIngredientId.Value,
+                out NetworkObject obj))
+            return null;
+
+        return obj.GetComponent<Ingredient>();
+    }
+
     public void ClearIngredient()
     {
         ingredient = null;
+
+        if (IsServer)
+            heldIngredientId.Value = ulong.MaxValue;
     }
 
     public bool HasIngredient()
     {
         return ingredient != null;
+    }
+
+    public bool HasIngredientNetworked()
+    {
+        return heldIngredientId.Value != ulong.MaxValue;
     }
 
     // ---------------- ORDER ----------------
@@ -59,6 +94,10 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         if (IsHoldingSomething()) return false;
 
         order = newOrder;
+
+        if (IsServer)
+            heldOrderId.Value = newOrder.NetworkObjectId;
+
         return true;
     }
 
@@ -70,11 +109,19 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     public void ClearOrder()
     {
         order = null;
+
+        if (IsServer)
+            heldOrderId.Value = ulong.MaxValue;
     }
 
     public bool HasOrder()
     {
         return order != null;
+    }
+
+    public bool HasOrderNetworked()
+    {
+        return heldOrderId.Value != ulong.MaxValue;
     }
 
     // ---------------- SHARED ----------------
@@ -84,9 +131,8 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         return ingredient != null || order != null;
     }
 
-    public void ClearHeldItem()
+    public bool IsHoldingSomethingNetworked()
     {
-        ingredient = null;
-        order = null;
+        return HasIngredientNetworked() || HasOrderNetworked();
     }
 }

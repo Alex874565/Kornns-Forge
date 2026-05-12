@@ -16,4 +16,10 @@ public class UIHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         OnHoverExit?.Invoke();
     }
+    
+    public void Clear()
+    {
+        OnHoverEnter = null;
+        OnHoverExit = null;
+    }
 }

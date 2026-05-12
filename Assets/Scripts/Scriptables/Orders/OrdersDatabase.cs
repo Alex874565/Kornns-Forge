@@ -6,12 +6,17 @@ public class OrdersDatabase : ScriptableObject
 {
     public OrderData[] orders;
 
-    public int GetIndex(OrderData order)
+    // ---------------- ORDERS ----------------
+
+    public int GetOrderIndex(OrderData order)
     {
+        if (order == null)
+            return -1;
+
         return System.Array.IndexOf(orders, order);
     }
 
-    public OrderData GetOrder(int index)
+    public OrderData GetOrderByIndex(int index)
     {
         if (index < 0 || index >= orders.Length)
             return null;
@@ -19,15 +24,16 @@ public class OrdersDatabase : ScriptableObject
         return orders[index];
     }
 
-    public OrderData GetCraftableOrder(List<Ingredient> ingredients)
+    // ---------------- CRAFTING ----------------
+
+    public OrderData GetCraftableOrder(List<IngredientSO> ingredients)
     {
-        foreach(OrderData order in orders)
+        foreach (OrderData order in orders)
         {
-            if (order.CanCraft(ingredients))
-            {
+            if (order != null && order.CanCraft(ingredients))
                 return order;
-            }
         }
+
         return null;
     }
 }
