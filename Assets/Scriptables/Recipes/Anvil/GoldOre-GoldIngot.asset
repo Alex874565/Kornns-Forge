@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 11400000, guid: 1a2b81d344c44384abb1643bfa8c4edf, type: 2}
   output: {fileID: 11400000, guid: 37ad0bde15c32804aadcb8907ceaf29c, type: 2}
+  hammeringProgressMax: 4
