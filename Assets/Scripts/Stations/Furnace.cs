@@ -2,8 +2,10 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
-public class Furnace : BaseStation
+public class Furnace : BaseStation, IHasProgress
 {
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+
     private enum State
     {
         Idle,
@@ -151,6 +153,10 @@ public class Furnace : BaseStation
         burningRecipeSO = null;
 
         StopProcessing();
+
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+            progressNormalized = 0f
+        });
     }
 
     // ---------------- PROCESSING ----------------
@@ -164,6 +170,10 @@ public class Furnace : BaseStation
         }
 
         heatingTimer += Time.deltaTime;
+
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                progressNormalized = heatingTimer / furnaceRecipeSO.heatingTimerMax
+            });
 
         if (heatingTimer < furnaceRecipeSO.heatingTimerMax)
             return;
@@ -199,6 +209,10 @@ public class Furnace : BaseStation
             return;
 
         burningTimer += Time.deltaTime;
+
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                progressNormalized = burningTimer / burningRecipeSO.burningTimerMax
+            });
 
         if (burningTimer < burningRecipeSO.burningTimerMax)
             return;

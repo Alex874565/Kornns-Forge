@@ -5,4 +5,5 @@ public class AnvilRecipeSO : ScriptableObject
 {
     public IngredientSO input;
     public IngredientSO output;
+    public int hammeringProgressMax;
 }

@@ -1,8 +1,13 @@
+using System;
 using UnityEngine;
 
-public class Anvil : BaseStation
+public class Anvil : BaseStation, IHasProgress
 {
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+
     [SerializeField] private AnvilRecipeSO[] anvilRecipeSOArray;
+
+    private int hammeringProgress;
 
     public override bool CanInteract(PlayerStatusController player)
     {
@@ -34,6 +39,15 @@ public class Anvil : BaseStation
             if (ingredient == null) return;
 
             ingredient.SetIngredientParent(this);
+
+            hammeringProgress = 0;
+
+            IngredientSO input = ingredient.GetIngredientSO();
+            AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+
+            OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
+            });
         }
         else
         {
@@ -55,19 +69,54 @@ public class Anvil : BaseStation
         if (ingredient == null) return;
 
         IngredientSO input = ingredient.GetIngredientSO();
-        IngredientSO output = GetOutputForInput(input);
 
-        if (output == null)
+        hammeringProgress++;
+
+        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
+            });
+
+        if (hammeringProgress >= anvilRecipeSO.hammeringProgressMax)
         {
-            Debug.LogError("No matching anvil recipe found!");
-            return;
+            IngredientSO output = GetOutputForInput(input);
+
+            if (output == null)
+            {
+                Debug.LogError("No matching anvil recipe found!");
+                return;
+            }
+
+            ingredient.DestroySelf();
+            Ingredient.SpawnIngredient(output, this);
         }
 
-        ingredient.DestroySelf();
-        Ingredient.SpawnIngredient(output, this);
+        
+    }
+
+    private bool HasRecipeWithInput(IngredientSO input)
+    {
+        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+        return anvilRecipeSO != null;
     }
 
     private IngredientSO GetOutputForInput(IngredientSO input)
+    {
+        if (input == null) return null;
+
+        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+
+        if (anvilRecipeSO != null)
+        {
+            return anvilRecipeSO.output;
+        } else
+        {
+            return null;
+        }
+    }
+
+    private AnvilRecipeSO GetAnvilRecipeSOWithInput(IngredientSO input)
     {
         if (input == null) return null;
 
@@ -77,7 +126,7 @@ public class Anvil : BaseStation
                 continue;
 
             if (recipe.input == input)
-                return recipe.output;
+                return recipe;
         }
 
         return null;
