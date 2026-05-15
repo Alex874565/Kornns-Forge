@@ -365,10 +365,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaterialSpawner_GoldOre
       objectReference: {fileID: 0}
-    - target: {fileID: 7133601205898325397, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
-      propertyPath: ingredientSO
-      value: 
-      objectReference: {fileID: 11400000, guid: 1673d7dd97656b3458585dfd9dfd97e3, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1598,11 +1594,21 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -11, y: -4, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 16
+      m_TileSpriteIndex: 16
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -10, y: -4, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 15
-      m_TileSpriteIndex: 13
+      m_TileIndex: 9
+      m_TileSpriteIndex: 9
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1658,26 +1664,6 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
-  - first: {x: -9, y: -1, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 11
-      m_TileSpriteIndex: 11
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: -8, y: -1, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 9
-      m_TileSpriteIndex: 9
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
   - first: {x: -1, y: -1, z: 0}
     second:
       serializedVersion: 2
@@ -1728,6 +1714,16 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -9, y: 0, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 15
+      m_TileSpriteIndex: 13
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -5, y: 0, z: 0}
     second:
       serializedVersion: 2
@@ -1768,6 +1764,36 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -8, y: 2, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 15
+      m_TileSpriteIndex: 13
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: -7, y: 2, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 15
+      m_TileSpriteIndex: 13
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: -6, y: 2, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 15
+      m_TileSpriteIndex: 13
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 0
@@ -1792,17 +1818,17 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 2ffb333b9a816da4798ae22e52b5015d, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: 41fd0bc37cf556a4b9f79304b49118f3, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: 867c0e03035196e489abe338105f489a, type: 2}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: a12f1c1603277754f99db6db66bc1303, type: 2}
   - m_RefCount: 5
     m_Data: {fileID: 11400000, guid: 0df13fadd2cdd7d44881370d1a527c00, type: 2}
-  - m_RefCount: 4
+  - m_RefCount: 7
     m_Data: {fileID: 11400000, guid: 7811d8a9b57ed9f4a9f678bfc9c04643, type: 2}
-  - m_RefCount: 6
+  - m_RefCount: 7
     m_Data: {fileID: 11400000, guid: 3b529d16d77af1a4f86859e767dbb5cd, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 0
@@ -1827,20 +1853,20 @@ Tilemap:
     m_Data: {fileID: 796046767, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: -347702476747834141, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 3
     m_Data: {fileID: -1848210679, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
-  - m_RefCount: 4
+  - m_RefCount: 7
     m_Data: {fileID: -637321011, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -395106011, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
   - m_RefCount: 5
     m_Data: {fileID: -639764317051121795, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
-  - m_RefCount: 6
+  - m_RefCount: 7
     m_Data: {fileID: -1561965720, guid: 3c61945cdc43a234c9c3f25a8e6b6f52, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 31
+  - m_RefCount: 34
     m_Data:
       e00: 1
       e01: 0
@@ -1859,7 +1885,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 31
+  - m_RefCount: 34
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -2158,18 +2184,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 601590155885010844, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -1524773800, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 2650244742579052238, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2071153591
       objectReference: {fileID: 0}
-    - target: {fileID: 3414294694369582863, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -1524773800, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 6948524987435461656, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
       propertyPath: m_Name
       value: MaterialSpawner_CopperOre
@@ -2370,6 +2388,14 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 2638971
       objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2076626599
+      objectReference: {fileID: 0}
     - target: {fileID: 8792913412297427010, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
       propertyPath: m_Name
       value: Furnace
@@ -2428,12 +2454,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2254823584630296221, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
+      propertyPath: energy
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254823584630296221, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
       propertyPath: orderManager
       value: 
       objectReference: {fileID: 1846033337}
     - target: {fileID: 4516869690726873748, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3278798600
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2007194386
       objectReference: {fileID: 0}
     - target: {fileID: 8792913412297427010, guid: 0ed8c1a6bb3524f4893cc93b6dd7082a, type: 3}
       propertyPath: m_Name
@@ -3839,11 +3877,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 536622606521230774, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.77
+      value: -5.67
       objectReference: {fileID: 0}
     - target: {fileID: 536622606521230774, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.32
+      value: 5.35
       objectReference: {fileID: 0}
     - target: {fileID: 536622606521230774, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3885,10 +3923,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaterialSpawner_DiamondOre
       objectReference: {fileID: 0}
-    - target: {fileID: 7133601205898325397, guid: c6484d71c143dcf44959061ab7272a95, type: 3}
-      propertyPath: ingredientSO
-      value: 
-      objectReference: {fileID: 11400000, guid: f495253b1aaac3f43b8ef7898093868f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4082,6 +4116,14 @@ PrefabInstance:
     - target: {fileID: 2650244742579052238, guid: 97023d87938802f4a9f77b9c63994918, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 318336824
+      objectReference: {fileID: 0}
+    - target: {fileID: 2650244742579052238, guid: 97023d87938802f4a9f77b9c63994918, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2650244742579052238, guid: 97023d87938802f4a9f77b9c63994918, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2737641544
       objectReference: {fileID: 0}
     - target: {fileID: 6948524987435461656, guid: 97023d87938802f4a9f77b9c63994918, type: 3}
       propertyPath: m_Name
@@ -4996,6 +5038,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 223517373}
     m_Modifications:
+    - target: {fileID: -8448383130418424921, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
+      propertyPath: energy
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.6
@@ -5039,6 +5085,14 @@ PrefabInstance:
     - target: {fileID: 4516869690726873748, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 138478526
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2237247867
       objectReference: {fileID: 0}
     - target: {fileID: 8792913412297427010, guid: abb0421ca538ef840a95b0914b313f76, type: 3}
       propertyPath: m_Name
@@ -5120,6 +5174,14 @@ PrefabInstance:
     - target: {fileID: 4516869690726873748, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 4270191953
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2763597679
       objectReference: {fileID: 0}
     - target: {fileID: 4772263122317581630, guid: 571ce8e2fee60cb4a80fa835579a76be, type: 3}
       propertyPath: m_AnchorMax.y
@@ -7168,17 +7230,53 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -448249908, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
+    - target: {fileID: 601590155885010844, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 683521685737595965, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 683521685737595965, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121472992644251653, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121472992644251653, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2650244742579052238, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1422707062
+      objectReference: {fileID: 0}
+    - target: {fileID: 2650244742579052238, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2650244742579052238, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 1748921244
       objectReference: {fileID: 0}
     - target: {fileID: 3414294694369582863, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -448249908, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
+    - target: {fileID: 3414294694369582863, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6948524987435461656, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
       propertyPath: m_Name
       value: MaterialSpawner_SilverOre
+      objectReference: {fileID: 0}
+    - target: {fileID: 7133601205898325397, guid: 39a88d0340bc2d643bd40a5039a78f14, type: 3}
+      propertyPath: energy
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -26,11 +26,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.9
+      value: -4.24
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.33
+      value: 3.34
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -98,7 +98,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1422707062
+      value: 3040838739
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -114,12 +114,12 @@ PrefabInstance:
       objectReference: {fileID: 7133601205898325397}
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: energy
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: ingredientSO
       value: 
-      objectReference: {fileID: 11400000, guid: 81c592f1d8db27248ae895a700cde5ea, type: 2}
+      objectReference: {fileID: 11400000, guid: 1673d7dd97656b3458585dfd9dfd97e3, type: 2}
     - target: {fileID: 8792913412297427010, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Name
       value: MaterialSpawner_GoldOre
