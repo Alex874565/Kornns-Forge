@@ -19,7 +19,7 @@ PrefabInstance:
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1583605217300005862, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
+      objectReference: {fileID: -1524773800, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -91,7 +91,7 @@ PrefabInstance:
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1583605217300005862, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
+      objectReference: {fileID: -1524773800, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -114,12 +114,12 @@ PrefabInstance:
       objectReference: {fileID: 7133601205898325397}
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: energy
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: ingredientSO
       value: 
-      objectReference: {fileID: 11400000, guid: c461a5be6bba4a541b856de6114eb33a, type: 2}
+      objectReference: {fileID: 11400000, guid: f495253b1aaac3f43b8ef7898093868f, type: 2}
     - target: {fileID: 8792913412297427010, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Name
       value: MaterialSpawner_DiamondOre

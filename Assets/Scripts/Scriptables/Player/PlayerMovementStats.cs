@@ -24,7 +24,7 @@ public class PlayerMovementStats : ScriptableObject
     public float AirDeceleration { get; private set; } = 5f;
     
     [field: Header("Jumping")]
-    [field: SerializeField] public float JumpHeight { get; private set; }
+    [field: SerializeField] public float JumpHeight { get; private set; } = 2.5f;
     [field: SerializeField] public float JumpHeightCompensationFactor { get; private set; } = 1.025f;
     [field: SerializeField] public float TimeTillJumpApex { get; private set; } = .25f;
     [field: SerializeField] public float ApexThreshold { get; private set; } = .97f;

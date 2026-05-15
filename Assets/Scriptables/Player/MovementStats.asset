@@ -17,7 +17,7 @@ MonoBehaviour:
   <Deceleration>k__BackingField: 10
   <AirAcceleration>k__BackingField: 5
   <AirDeceleration>k__BackingField: 10
-  <JumpHeight>k__BackingField: 1.5
+  <JumpHeight>k__BackingField: 2.1
   <JumpHeightCompensationFactor>k__BackingField: 1.025
   <TimeTillJumpApex>k__BackingField: 0.3
   <ApexThreshold>k__BackingField: 1.4
