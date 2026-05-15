@@ -489,6 +489,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
+      value: 4270191953
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2763597679
       objectReference: {fileID: 0}
     - target: {fileID: 6159186152463263796, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
@@ -525,11 +533,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 11.630399
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -4.409171
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -541,15 +549,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -599,6 +607,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   maxIngredients: 3
-  ordersDatabase: {fileID: 0}
-  ingredientsDatabase: {fileID: 0}
+  ordersDatabase: {fileID: 11400000, guid: 693f4b989a8919d4488e0afb001a29c8, type: 2}
+  ingredientsDatabase: {fileID: 11400000, guid: 77c3a400dac317a499465f24498f0712, type: 2}
   craftingUI: {fileID: 0}

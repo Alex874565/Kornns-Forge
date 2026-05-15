@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93be012066f3574e8d04d6645f3f6f1, type: 3}
+  m_Name: CopperOre-CopperIngot
+  m_EditorClassIdentifier: 
+  input: {fileID: 11400000, guid: 65856c1bf325538478c8fc9fe82e8def, type: 2}
+  output: {fileID: 11400000, guid: 8f78527c7ede0e8479d11da8c26505df, type: 2}
+  hammeringProgressMax: 4

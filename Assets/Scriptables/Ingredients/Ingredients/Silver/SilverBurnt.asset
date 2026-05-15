@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d327844647a21b1419230f835eaf9ab8, type: 3}
+  m_Name: SilverBurnt
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 542483656882917983, guid: 2ce02ee9dc2ced1468fae471719f7fb0, type: 3}
+  sprite: {fileID: -3669959474357932013, guid: 9f742a8ee87a91f4bbf1abad73e03edd, type: 3}
+  objectName: Silver Burnt

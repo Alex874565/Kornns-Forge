@@ -19,18 +19,18 @@ PrefabInstance:
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1994067193690870337, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+      objectReference: {fileID: 608108305, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -8.9
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.33
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -42,15 +42,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -91,13 +91,21 @@ PrefabInstance:
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1994067193690870337, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+      objectReference: {fileID: 608108305, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: GlobalObjectIdHash
+      value: 1422707062
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 1748921244
       objectReference: {fileID: 0}
     - target: {fileID: 6535197797842613731, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
@@ -111,7 +119,7 @@ PrefabInstance:
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: ingredientSO
       value: 
-      objectReference: {fileID: 11400000, guid: 1673d7dd97656b3458585dfd9dfd97e3, type: 2}
+      objectReference: {fileID: 11400000, guid: 81c592f1d8db27248ae895a700cde5ea, type: 2}
     - target: {fileID: 8792913412297427010, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Name
       value: MaterialSpawner_GoldOre

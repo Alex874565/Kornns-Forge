@@ -19,18 +19,18 @@ PrefabInstance:
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -6752915232109121509, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+      objectReference: {fileID: 21300000, guid: ec6b86b318fbdd7449b4f5e76f5fb764, type: 3}
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 4.32
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.29
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -42,15 +42,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2097232576906379756, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -91,13 +91,21 @@ PrefabInstance:
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -6752915232109121509, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+      objectReference: {fileID: 21300000, guid: ec6b86b318fbdd7449b4f5e76f5fb764, type: 3}
     - target: {fileID: 3822052430445804373, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: GlobalObjectIdHash
+      value: 318336824
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2737641544
       objectReference: {fileID: 0}
     - target: {fileID: 6535197797842613731, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}

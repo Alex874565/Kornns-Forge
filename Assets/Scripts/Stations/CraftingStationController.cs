@@ -124,7 +124,14 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         if (!TryGetPlayer(playerId, out PlayerStatusController player))
             return;
 
+        if (player.IsHoldingSomething())
+        {
+            Debug.Log($"{player.name} tried to craft but hand is not empty.");
+            return;
+        }
+
         Craft();
+        TakeCraftedResult(player);
     }
 
     [ServerRpc(RequireOwnership = false)]
