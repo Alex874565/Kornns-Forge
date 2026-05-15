@@ -155,6 +155,20 @@ public class PlayerMovementController : NetworkBehaviour
         OnBumpHead?.Invoke();
     }
     public void InvokeOnStartFalling() => OnStartFalling?.Invoke();
-    public void InvokeOnStartWalking() => OnStartWalking?.Invoke();
-    public void InvokeOnEnterIdle() => OnEnterIdle?.Invoke();
+
+    public void InvokeOnStartWalking()
+    {
+        if (Animator != null)
+            Animator.SetBool("Moving", true);
+
+        OnStartWalking?.Invoke();
+    }
+
+    public void InvokeOnEnterIdle()
+    {
+        if (Animator != null)
+            Animator.SetBool("Moving", false);
+
+        OnEnterIdle?.Invoke();
+    }
 }
