@@ -1,10 +1,14 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 {
     private Ingredient ingredient;
     private Order order;
+    [SerializeField] private float energy_level = 100;
+    [SerializeField] private Slider energy_bar;
 
     [SerializeField] private Transform holdPoint;
 
@@ -134,5 +138,122 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     public bool IsHoldingSomethingNetworked()
     {
         return HasIngredientNetworked() || HasOrderNetworked();
+    }
+
+    private Coroutine updateEnergyCoroutine;
+
+    public void GetTired(float energy_points)
+    {
+        energy_level -= energy_points;
+        if (energy_level < 0)
+        {
+            energy_level = 0f;
+            Debug.Log("Energy depleted. Consider sleeping or restarting.");
+        }
+
+        if (updateEnergyCoroutine != null)
+        {
+            StopCoroutine(updateEnergyCoroutine);
+        }
+        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
+    }
+
+    public void GetEnegy(float energy_points)
+    {
+        energy_level += energy_points;
+        if (energy_level > 100f)
+        {
+            energy_level = 100f;
+            Debug.Log("Maximum Energy reached.");
+        }
+
+        if (updateEnergyCoroutine != null)
+        {
+            StopCoroutine(updateEnergyCoroutine);
+        }
+        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
+    }
+
+    public float GetEnergyLevel()
+    {
+        return energy_level;
+    }
+
+    private IEnumerator UpdateEnergyBar()
+    {
+        float time = 0;
+        float duration = 0.5f;
+        float startValue = energy_bar.value;
+
+        while (time < duration)
+        {
+            energy_bar.value = Mathf.Lerp(startValue, energy_level, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        energy_bar.value = energy_level;
+    }
+
+    [SerializeField] private Animator animator;
+    [SerializeField] private string animatorSleepingBool = "isSleeping";
+
+    [ClientRpc]
+    public void StartSleepingClientRpc(float duration)
+    {
+        if (!IsOwner) return;
+
+        PlayerInputController input = GetComponent<PlayerInputController>();
+        if (input != null)
+            input.SetActive(false);
+
+        PlayerMovementController movement = GetComponent<PlayerMovementController>();
+        if (movement != null)
+            movement.IsInteracting = true;
+
+        PlayerInteractionController interaction = GetComponent<PlayerInteractionController>();
+        if (interaction != null)
+            interaction.IsInteracting = true;
+
+        Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
+        if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))
+        {
+            anim.SetBool(animatorSleepingBool, true);
+        }
+
+        StartCoroutine(EndLocalSleepAfter(duration));
+    }
+
+    private IEnumerator EndLocalSleepAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        StopSleepingLocal();
+    }
+
+    [ClientRpc]
+    public void StopSleepingClientRpc()
+    {
+        if (!IsOwner) return;
+        StopSleepingLocal();
+    }
+
+    private void StopSleepingLocal()
+    {
+        PlayerInputController input = GetComponent<PlayerInputController>();
+        if (input != null)
+            input.SetActive(true);
+
+        PlayerMovementController movement = GetComponent<PlayerMovementController>();
+        if (movement != null)
+            movement.IsInteracting = false;
+
+        PlayerInteractionController interaction = GetComponent<PlayerInteractionController>();
+        if (interaction != null)
+            interaction.IsInteracting = false;
+
+        Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
+        if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))
+        {
+            anim.SetBool(animatorSleepingBool, false);
+        }
     }
 }

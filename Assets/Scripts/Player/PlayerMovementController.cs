@@ -8,6 +8,7 @@ public class PlayerMovementController : NetworkBehaviour
 {
     [Header("References")]
     [field: SerializeField] public PlayerMovementStats MovementStats { get; private set; }
+    [field: SerializeField] public Animator Animator { get; private set; }
 
     public event Action OnRotation;
     public event Action OnInitiateJump;
@@ -21,7 +22,7 @@ public class PlayerMovementController : NetworkBehaviour
     private MovementFSM _fsm;
 
     private bool _isFacingRight;
-    
+
     public bool IsInteracting { get; set; }
 
     public override void OnNetworkSpawn()
@@ -38,8 +39,14 @@ public class PlayerMovementController : NetworkBehaviour
         };
 
         _fsm = new MovementFSM(_ctx, this);
-        
+
         _ctx.Input.enabled = IsOwner;
+
+        if (Animator == null)
+            Animator = GetComponentInChildren<Animator>();
+
+        if (Animator == null)
+            Debug.LogWarning("PlayerMovementController: Animator not assigned or found on children — jump animation won't play.");
 
         _ctx.Input.OnMove += TryToRotate;
         _ctx.Input.OnJumpPressed += HandleJumpPressed;
@@ -58,7 +65,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (!IsOwner) return;
 
         UpdateTimers();
-        
+
         _fsm?.Update();
     }
 
@@ -123,10 +130,30 @@ public class PlayerMovementController : NetworkBehaviour
 
         OnRotation?.Invoke();
     }
-    
-    public void InvokeOnInitiateJump() => OnInitiateJump?.Invoke();
-    public void InvokeOnLand() => OnLand?.Invoke();
-    public void InvokeOnBumpHead() => OnBumpHead?.Invoke();
+
+    public void InvokeOnInitiateJump()
+    {
+        if (Animator != null)
+            Animator.CrossFadeInFixedTime("Jump", 0f);
+
+        OnInitiateJump?.Invoke();
+    }
+
+    public void InvokeOnLand()
+    {
+        if (Animator != null)
+            Animator.SetBool("Jump", false);
+
+        OnLand?.Invoke();
+    }
+
+    public void InvokeOnBumpHead()
+    {
+        if (Animator != null)
+            Animator.SetBool("Jump", false);
+
+        OnBumpHead?.Invoke();
+    }
     public void InvokeOnStartFalling() => OnStartFalling?.Invoke();
     public void InvokeOnStartWalking() => OnStartWalking?.Invoke();
     public void InvokeOnEnterIdle() => OnEnterIdle?.Invoke();

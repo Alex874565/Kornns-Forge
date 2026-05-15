@@ -7,6 +7,8 @@ public class MaterialSpawner : BaseStation
     public event EventHandler OnPlayerGrabbedMaterial;
 
     [SerializeField] private IngredientSO ingredientSO;
+    [Header("Tiredness")]
+    [SerializeField] private float energy = 2f;
 
     public override bool CanInteract(PlayerStatusController player)
     {
@@ -47,6 +49,10 @@ public class MaterialSpawner : BaseStation
         if (!CanInteract(player)) return;
 
         Ingredient.SpawnIngredient(ingredientSO, player);
+
+        // consume a small amount of player's energy when grabbing material
+        if (player != null && IsServer)
+            player.GetTired(this.energy);
 
         OnPlayerGrabbedMaterial?.Invoke(this, EventArgs.Empty);
     }

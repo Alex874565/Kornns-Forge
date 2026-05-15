@@ -5130,6 +5130,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db8469749ccfd784eaf0d81003c3d846, type: 2}
   burningRecipeSOArray:
   - {fileID: 11400000, guid: 86f5cd9e680e5b849af36927d039dd2c, type: 2}
+  energy: 10
 --- !u!114 &8845731755215607282
 MonoBehaviour:
   m_ObjectHideFlags: 0

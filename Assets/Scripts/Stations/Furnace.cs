@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
-public class Furnace : BaseStation, IHasProgress
+public class Furnace : BaseStation, IHasProgress, ITiredness
 {
     public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
 
@@ -25,6 +25,9 @@ public class Furnace : BaseStation, IHasProgress
 
     private float burningTimer;
     private BurningRecipeSO burningRecipeSO;
+
+    //TIREDNESS
+    [SerializeField] private float energy;
 
     private bool isProcessing;
 
@@ -120,6 +123,12 @@ public class Furnace : BaseStation, IHasProgress
 
         if (recipe == null)
             return;
+
+        // For testing: consuming player's energy when they start using the furnace
+        if (player != null)
+        {
+            player.GetTired(this.energy);
+        }
 
         playerIngredient.SetIngredientParent(this);
 
@@ -262,5 +271,15 @@ public class Furnace : BaseStation, IHasProgress
         }
 
         return null;
+    }
+
+    public float GetTired(float energy_points)
+    {
+        return energy;
+    }
+
+    public float GetEnegy(float energy_points)
+    {
+        return 0;
     }
 }

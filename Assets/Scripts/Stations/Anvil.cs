@@ -6,6 +6,8 @@ public class Anvil : BaseStation, IHasProgress
     public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
 
     [SerializeField] private AnvilRecipeSO[] anvilRecipeSOArray;
+    [Header("Tiredness")]
+    [SerializeField] private float energy = 5f;
 
     private int hammeringProgress;
 
@@ -38,6 +40,9 @@ public class Anvil : BaseStation, IHasProgress
             Ingredient ingredient = player.GetIngredient();
             if (ingredient == null) return;
 
+            // consume player energy for placing ingredient on anvil
+            player.GetTired(this.energy);
+
             ingredient.SetIngredientParent(this);
 
             hammeringProgress = 0;
@@ -55,6 +60,9 @@ public class Anvil : BaseStation, IHasProgress
 
             Ingredient ingredient = GetIngredient();
             if (ingredient == null) return;
+
+            // taking ingredient from anvil also costs small effort
+            player.GetTired(this.energy * 0.5f);
 
             ingredient.SetIngredientParent(player);
         }
@@ -77,10 +85,10 @@ public class Anvil : BaseStation, IHasProgress
         OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
                 progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
             });
-
+ IngredientSO output = GetOutputForInput(input);
         if (hammeringProgress >= anvilRecipeSO.hammeringProgressMax)
         {
-            IngredientSO output = GetOutputForInput(input);
+           
 
             if (output == null)
             {
@@ -92,6 +100,11 @@ public class Anvil : BaseStation, IHasProgress
             Ingredient.SpawnIngredient(output, this);
         }
 
+        // crafting on the anvil consumes more energy
+        player.GetTired(this.energy * 1.5f);
+
+        ingredient.DestroySelf();
+        Ingredient.SpawnIngredient(output, this);
         
     }
 

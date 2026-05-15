@@ -105,6 +105,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7133601205898325397}
     - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: energy
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8689429401128634831, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: ingredientSO
       value: 
       objectReference: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}

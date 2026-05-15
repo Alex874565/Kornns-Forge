@@ -277,6 +277,7 @@ MonoBehaviour:
   anvilRecipeSOArray:
   - {fileID: 11400000, guid: 71684a2faf7515f4488d46d39da4f0a6, type: 2}
   - {fileID: 11400000, guid: 2fba0f41052f2bb4a927beaa8158ed9e, type: 2}
+  energy: 20
 --- !u!4 &9144390710817269946 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 905480207488178287, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}

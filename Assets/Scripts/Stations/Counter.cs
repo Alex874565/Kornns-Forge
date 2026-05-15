@@ -5,6 +5,8 @@ using UnityEngine;
 public class Counter : BaseStation
 {
     [SerializeField] private OrderManager orderManager;
+    [Header("Tiredness")]
+    [SerializeField] private float energy = 1f;
 
     public override bool CanInteract(PlayerStatusController player)
     {
@@ -54,6 +56,9 @@ public class Counter : BaseStation
         heldOrder.DestroySelf();
         player.ClearOrder();
 
+        // small energy cost for fulfilling an order
+        player.GetTired(this.energy);
+
         Debug.Log($"Completed {targetOrder.order.name} (+{targetOrder.points} pts)");
 
         if (ScoreManager.Instance != null)
@@ -61,4 +66,4 @@ public class Counter : BaseStation
 
         orderManager.CompleteOrder(targetOrder);
     }
-}   
+}
