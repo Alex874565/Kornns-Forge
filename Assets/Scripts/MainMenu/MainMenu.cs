@@ -11,11 +11,9 @@ public class MainMenu : MonoBehaviour
     }
     public void OnPlayButton()
     {
-        string sceneToLoad = "TestAlex";
-
         SoundManager.PlaySound(SoundType.ButtonClick);
 
-        SceneManager.LoadScene(sceneToLoad);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void OnOptionsButton()

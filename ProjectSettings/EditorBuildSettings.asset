@@ -9,11 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: bb3228932ca0f284dab455bfa20ce449
   - enabled: 1
-    path: Assets/Scenes/TestAlex.unity
+    path: Assets/Scenes/FirstLevel.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
-    path: Assets/Scenes/TestFlaviaCod.unity
-    guid: 2b63aa77b7e7aaf4b865e3f37235ed10
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

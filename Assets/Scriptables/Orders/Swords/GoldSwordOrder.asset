@@ -15,8 +15,8 @@ MonoBehaviour:
   prefab: {fileID: 2557834597547689182, guid: 0927f03b09f535942b5a20969a91c8d2, type: 3}
   sprite: {fileID: -1128947775675819744, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
   orderName: Gold Sword Order
-  timeToComplete: 0
-  reward: 150
+  timeToComplete: 60
+  reward: 120
   requirements:
   - ingredient: {fileID: 11400000, guid: 37ad0bde15c32804aadcb8907ceaf29c, type: 2}
     quantity: 1

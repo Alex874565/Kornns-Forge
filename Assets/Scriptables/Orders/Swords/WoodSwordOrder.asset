@@ -10,22 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d26d7cda0b96e6246a180b05ee8a39d3, type: 3}
-  m_Name: IronSwordOrder
+  m_Name: WoodSwordOrder
   m_EditorClassIdentifier: 
-  resultIcon: {fileID: -2048730905889478084, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
-  orderName: Iron Sword Order
-  description: I need an iron sword
-  reward: 100
+  prefab: {fileID: 2557834597547689182, guid: dff3b6b8394af7c4b945b454c4f55612, type: 3}
+  sprite: {fileID: 956663983, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
+  orderName: Wood Sword Order
+  timeToComplete: 60
+  reward: 80
   requirements:
-  - itemType: 0
-    materialType: 0
-    state: 0
+  - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
     quantity: 1
-  - itemType: 0
-    materialType: 0
-    state: 1
-    quantity: 1
-  - itemType: 0
-    materialType: 5
-    state: 2
-    quantity: 1
+    processIcon: {fileID: 0}
