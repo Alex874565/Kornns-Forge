@@ -78,17 +78,21 @@ public class Anvil : BaseStation, IHasProgress
 
         IngredientSO input = ingredient.GetIngredientSO();
 
-        hammeringProgress++;
-
         AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+
+        hammeringProgress++;
 
         OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
                 progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
             });
- IngredientSO output = GetOutputForInput(input);
+
+        // crafting on the anvil consumes more energy
+        player.GetTired(this.energy * 1.5f);
+
+        /*Check if the hammering finished*/
         if (hammeringProgress >= anvilRecipeSO.hammeringProgressMax)
         {
-           
+            IngredientSO output = GetOutputForInput(input);
 
             if (output == null)
             {
@@ -99,13 +103,6 @@ public class Anvil : BaseStation, IHasProgress
             ingredient.DestroySelf();
             Ingredient.SpawnIngredient(output, this);
         }
-
-        // crafting on the anvil consumes more energy
-        player.GetTired(this.energy * 1.5f);
-
-        ingredient.DestroySelf();
-        Ingredient.SpawnIngredient(output, this);
-        
     }
 
     private bool HasRecipeWithInput(IngredientSO input)

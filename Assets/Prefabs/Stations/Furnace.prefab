@@ -4911,7 +4911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6330488463103339934, guid: 0447439912d238f418436d3da24d104d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2
+      value: 1.78
       objectReference: {fileID: 0}
     - target: {fileID: 6330488463103339934, guid: 0447439912d238f418436d3da24d104d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4989,6 +4989,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
+      value: 2638971
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2076626599
       objectReference: {fileID: 0}
     - target: {fileID: 6159186152463263796, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
@@ -5029,11 +5037,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 7.99
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.23
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5045,15 +5053,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5128,8 +5136,12 @@ MonoBehaviour:
   selectedVisual: {fileID: 6535197797842613731}
   furnaceRecipeSOArray:
   - {fileID: 11400000, guid: db8469749ccfd784eaf0d81003c3d846, type: 2}
+  - {fileID: 11400000, guid: 42c48855365d06340b30c83a29f60d4b, type: 2}
+  - {fileID: 11400000, guid: ef863328b3b78764ea2ceb509e7b21e0, type: 2}
   burningRecipeSOArray:
   - {fileID: 11400000, guid: 86f5cd9e680e5b849af36927d039dd2c, type: 2}
+  - {fileID: 11400000, guid: ccc96a2f87a5c2242a2e04bdb168e52f, type: 2}
+  - {fileID: 11400000, guid: c5196fd58174fc24495b6ebab022b3bc, type: 2}
   energy: 10
 --- !u!114 &8845731755215607282
 MonoBehaviour:

@@ -1,4 +1,6 @@
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameOverUI : MonoBehaviour
@@ -23,12 +25,17 @@ public class GameOverUI : MonoBehaviour
 
     private void RestartGame()
     {
-        Time.timeScale = 1f; // unpause
+        Debug.Log("Restart Game was clicked");
+        Time.timeScale = 1f;
 
-        // optional: reload scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+
+        NetworkAutoStarter.ShouldAutoStartHost = true;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private void OnDestroy()

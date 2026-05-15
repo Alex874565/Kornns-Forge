@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d327844647a21b1419230f835eaf9ab8, type: 3}
+  m_Name: CopperIngot
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 542483656882917983, guid: f03eb79c86b180e4cb2e845b734ae680, type: 3}
+  sprite: {fileID: -4381812301800334281, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+  objectName: Copper Ingot
