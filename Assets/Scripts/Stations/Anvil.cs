@@ -85,10 +85,10 @@ public class Anvil : BaseStation, IHasProgress
         OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
                 progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
             });
-
+ IngredientSO output = GetOutputForInput(input);
         if (hammeringProgress >= anvilRecipeSO.hammeringProgressMax)
         {
-            IngredientSO output = GetOutputForInput(input);
+           
 
             if (output == null)
             {

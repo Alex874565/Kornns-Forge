@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BedStation
       objectReference: {fileID: 0}
+    - target: {fileID: 608333111417010327, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: m_TagString
+      value: Bed
+      objectReference: {fileID: 0}
     - target: {fileID: 5151317511907314560, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_Size.x
       value: 2
@@ -30,15 +34,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
+      value: 3981030981
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3135658648
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -7.86
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -4.93
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -103,6 +115,7 @@ MonoBehaviour:
   selectedVisual: {fileID: 3139009584545331205}
   sprite: {fileID: 297185087686264632, guid: ba5e371e00f1b5048842648e99e76873, type: 3}
   energy: 25
+  sleepDuration: 5
 --- !u!114 &3139009584545331205 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2938071339951260982, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}

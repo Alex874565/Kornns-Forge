@@ -19,7 +19,7 @@ public class PlayerInteractionController : NetworkBehaviour
     private IPlayerInteractable _hoveredInteractable;
     
     private PlayerInputController _playerInputController;
-    private PlayerStatusController _playerStatusController;
+    private PlayerStatusController playerStatusController;
     
     private ContactFilter2D _contactFilter;
     
@@ -31,11 +31,17 @@ public class PlayerInteractionController : NetworkBehaviour
     private int _interactableLayer;
     private int _itemLayer;
     
+    private Vector3 lastInteractDir;
+
+    private void Awake()
+    {
+        playerStatusController = GetComponent<PlayerStatusController>();
+    }
+
     public override void OnNetworkSpawn()
     {
         if(!IsOwner) return;
         _playerInputController = GetComponent<PlayerInputController>();
-        _playerStatusController = GetComponent<PlayerStatusController>();
         
         _playerInputController.OnInteract += InteractClick;
         _playerInputController.OnInteractAlternate += InteractAlternateClick;
@@ -132,7 +138,7 @@ public class PlayerInteractionController : NetworkBehaviour
         _selectedStation = playerInteractable as BaseStation;
 
         if (_hoveredInteractable == null ||
-            !_hoveredInteractable.CanInteract(_playerStatusController))
+            !_hoveredInteractable.CanInteract(playerStatusController))
             return;
 
         _hoveredInteractable.Highlight();
@@ -140,44 +146,21 @@ public class PlayerInteractionController : NetworkBehaviour
 
     private void InteractClick()
     {
-        if (IsInteracting)
-        {
-            IsInteracting = false;
-            return;
-        }
+        if (IsInteracting) return;
 
-        if (_hoveredInteractable == null ||
-            !_hoveredInteractable.CanInteract(_playerStatusController))
+        if (_hoveredInteractable != null)
         {
-            OnInteractFailed?.Invoke();
-            return;
-        }
+            bool isBed = (_hoveredInteractable as Component).CompareTag("Bed");
+            if (!isBed && playerStatusController.GetEnergyLevel() <= 0)
+            {
+                return;
+            }
 
-        IsInteracting = true;
-
-        // Client-only interaction, no RPC
-        if (_hoveredInteractable is CraftingStationController craftingStation)
-        {
-            craftingStation.OpenUIClientOnly(_playerStatusController);
+            _hoveredInteractable.Interact(playerStatusController);
         }
-        else if (_hoveredInteractable is Component component &&
-                 component.gameObject.layer == _interactableLayer)
-        {
-            NetworkObject networkObject =
-                component.GetComponentInParent<NetworkObject>();
-
-            if (networkObject != null)
-                InteractServerRpc(networkObject.NetworkObjectId);
-        }
-        else
-        {
-            _hoveredInteractable.Interact(_playerStatusController);
-        }
-
-        IsInteracting = false;
     }
 
-    public void InteractAlternateClick()
+    private void InteractAlternateClick()
     {
         Debug.Log("ALT CLICK");
 

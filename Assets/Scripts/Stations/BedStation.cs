@@ -28,15 +28,18 @@ public class BedStation : BaseStation, ITiredness
 
     public override void Interact(PlayerStatusController player)
     {
+        if (player == null || IsOccupied) return;
+
+        // Tell the owner client to enter sleeping state (locks input/animation)
+        if (player.IsOwner)
+        {
+            player.StartSleepingClientRpc(sleepDuration);
+        }
+
         if (!IsServer) return;
-        if (player == null) return;
-        if (IsOccupied) return;
 
         // Occupy the bed with this player
         occupantId.Value = player.NetworkObjectId;
-
-        // Tell the owner client to enter sleeping state (locks input/animation)
-        player.StartSleepingClientRpc(sleepDuration);
 
         // Start server-side coroutine to recharge player over time and free bed
         sleepCoroutine = StartCoroutine(HandleSleepRoutine(player, sleepDuration, energy));

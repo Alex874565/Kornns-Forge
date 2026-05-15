@@ -1,12 +1,14 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 {
     private Ingredient ingredient;
     private Order order;
     [SerializeField] private float energy_level = 100;
+    [SerializeField] private Slider energy_bar;
 
     [SerializeField] private Transform holdPoint;
 
@@ -138,6 +140,8 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         return HasIngredientNetworked() || HasOrderNetworked();
     }
 
+    private Coroutine updateEnergyCoroutine;
+
     public void GetTired(float energy_points)
     {
         energy_level -= energy_points;
@@ -146,6 +150,12 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
             energy_level = 0f;
             Debug.Log("Energy depleted. Consider sleeping or restarting.");
         }
+
+        if (updateEnergyCoroutine != null)
+        {
+            StopCoroutine(updateEnergyCoroutine);
+        }
+        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
     }
 
     public void GetEnegy(float energy_points)
@@ -156,11 +166,32 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
             energy_level = 100f;
             Debug.Log("Maximum Energy reached.");
         }
+
+        if (updateEnergyCoroutine != null)
+        {
+            StopCoroutine(updateEnergyCoroutine);
+        }
+        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
     }
 
     public float GetEnergyLevel()
     {
         return energy_level;
+    }
+
+    private IEnumerator UpdateEnergyBar()
+    {
+        float time = 0;
+        float duration = 0.5f;
+        float startValue = energy_bar.value;
+
+        while (time < duration)
+        {
+            energy_bar.value = Mathf.Lerp(startValue, energy_level, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        energy_bar.value = energy_level;
     }
 
     [SerializeField] private Animator animator;
