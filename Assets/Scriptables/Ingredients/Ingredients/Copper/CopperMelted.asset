@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CopperMelted
   m_EditorClassIdentifier: 
   prefab: {fileID: 542483656882917983, guid: ea838574245230f448bc11cfc3f173f9, type: 3}
-  sprite: {fileID: 1194134363, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+  sprite: {fileID: 1287283581, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
   objectName: Copper Melted

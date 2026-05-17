@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CopperIngot
   m_EditorClassIdentifier: 
   prefab: {fileID: 542483656882917983, guid: f03eb79c86b180e4cb2e845b734ae680, type: 3}
-  sprite: {fileID: -4381812301800334281, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
+  sprite: {fileID: 482485394193971003, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
   objectName: Copper Ingot
