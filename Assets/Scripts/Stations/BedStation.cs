@@ -38,6 +38,9 @@ public class BedStation : BaseStation, ITiredness
 
         if (!IsServer) return;
 
+        TriggerInteract();
+        TriggerStartProcessing();
+
         // Occupy the bed with this player
         occupantId.Value = player.NetworkObjectId;
 
@@ -74,6 +77,7 @@ public class BedStation : BaseStation, ITiredness
         if (player != null)
             player.StopSleepingClientRpc();
 
+        TriggerStopProcessing();
         occupantId.Value = ulong.MaxValue;
         sleepCoroutine = null;
     }
@@ -96,8 +100,9 @@ public class BedStation : BaseStation, ITiredness
         // Ensure client restores controls/animation
         player.StopSleepingClientRpc();
 
+        TriggerStopProcessing();
         occupantId.Value = ulong.MaxValue;
-    }
+        }
 
     // ITiredness compatibility methods - beds primarily recharge
     public float GetTired(float energy_points) => 0f;

@@ -33,6 +33,8 @@ public class Anvil : BaseStation, IHasProgress
         if (!IsServer) return;
         if (player == null) return;
 
+        TriggerInteract();
+
         if (!HasIngredient())
         {
             if (!player.HasIngredient()) return;
@@ -72,6 +74,8 @@ public class Anvil : BaseStation, IHasProgress
     {
         if (!IsServer) return;
         if (!HasIngredient()) return;
+
+        TriggerInteract();
 
         Ingredient ingredient = GetIngredient();
         if (ingredient == null) return;

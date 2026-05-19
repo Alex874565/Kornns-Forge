@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SelectedVisual
       objectReference: {fileID: 0}
+    - target: {fileID: 3864569257246280592, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: station
+      value: 
+      objectReference: {fileID: 2254823584630296221}
     - target: {fileID: 5151317511907314560, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_Size.x
       value: 1
@@ -54,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3278798600
+      value: 2719953478
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: SceneMigrationSynchronization

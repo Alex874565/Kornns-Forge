@@ -20,9 +20,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: SelectedVisual
       objectReference: {fileID: 0}
+    - target: {fileID: 3864569257246280592, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: station
+      value: 
+      objectReference: {fileID: 8689429401128634831}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 619689085
+      value: 2358384551
       objectReference: {fileID: 0}
     - target: {fileID: 8029164412969300281, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -105,6 +109,7 @@ MonoBehaviour:
   stationTopPoint: {fileID: 9144390710817269946}
   selectedVisual: {fileID: 6535197797842613731}
   ingredientSO: {fileID: 0}
+  energy: 2
 --- !u!4 &9144390710817269946 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 905480207488178287, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}

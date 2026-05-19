@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Bed
       objectReference: {fileID: 0}
+    - target: {fileID: 3864569257246280592, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: station
+      value: 
+      objectReference: {fileID: -1698840285647994773}
     - target: {fileID: 5151317511907314560, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_Size.x
       value: 2
@@ -34,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3981030981
+      value: 885715389
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: SceneMigrationSynchronization

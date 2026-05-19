@@ -48,6 +48,8 @@ public class MaterialSpawner : BaseStation
     {
         if (!CanInteract(player)) return;
 
+        TriggerInteract();
+
         Ingredient.SpawnIngredient(ingredientSO, player);
 
         // consume a small amount of player's energy when grabbing material

@@ -66,7 +66,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         if (isProcessing) return;
 
         isProcessing = true;
-        OnStartProcessing?.Invoke();
+        TriggerStartProcessing();
     }
 
     private void StopProcessing()
@@ -74,7 +74,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         if (!isProcessing) return;
 
         isProcessing = false;
-        OnStopProcessing?.Invoke();
+        TriggerStopProcessing();
     }
 
     // ---------------- INTERACTION ----------------
@@ -100,6 +100,8 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
     {
         if (!IsServer) return;
         if (player == null) return;
+
+        TriggerInteract();
 
         if (!HasIngredient())
         {

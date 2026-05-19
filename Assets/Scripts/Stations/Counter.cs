@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,6 +21,8 @@ public class Counter : BaseStation
     public override void Interact(PlayerStatusController player)
     {
         if (!IsServer) return;
+
+        TriggerInteract();
 
         SubmitOrder(player);
     }

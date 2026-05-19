@@ -26,6 +26,50 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
     public Action OnStopProcessing;
     public Action OnInteract;
 
+    // ---------------- NETWORK TRIGGERS ----------------
+
+    public void TriggerInteract()
+    {
+        if (!IsServer) return;
+        OnInteract?.Invoke();
+        TriggerInteractClientRpc();
+    }
+
+    [ClientRpc]
+    private void TriggerInteractClientRpc()
+    {
+        if (IsServer) return;
+        OnInteract?.Invoke();
+    }
+
+    public void TriggerStartProcessing()
+    {
+        if (!IsServer) return;
+        OnStartProcessing?.Invoke();
+        TriggerStartProcessingClientRpc();
+    }
+
+    [ClientRpc]
+    private void TriggerStartProcessingClientRpc()
+    {
+        if (IsServer) return;
+        OnStartProcessing?.Invoke();
+    }
+
+    public void TriggerStopProcessing()
+    {
+        if (!IsServer) return;
+        OnStopProcessing?.Invoke();
+        TriggerStopProcessingClientRpc();
+    }
+
+    [ClientRpc]
+    private void TriggerStopProcessingClientRpc()
+    {
+        if (IsServer) return;
+        OnStopProcessing?.Invoke();
+    }
+
     // ---------------- INTERACTION ----------------
 
     public virtual bool CanInteract(PlayerStatusController player)
