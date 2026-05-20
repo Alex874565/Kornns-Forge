@@ -8,6 +8,10 @@ public class OrderManager : MonoBehaviour
     public System.Action OnOrdersUpdated;
     private IOrderFactory orderFactory;
 
+    [SerializeField] private int maxActiveOrders = 7;
+
+    private Queue<(OrderData order, float timer, int points)> queuedOrders = new();
+
     private void Awake()
     {
         orderFactory = new OrderFactory();
@@ -43,6 +47,7 @@ public class OrderManager : MonoBehaviour
             {
                 Debug.Log($"Order expired: {order.order.orderName}");
                 activeOrders.RemoveAt(i);
+                TryFillOrderSlot();
                 changed = true;
             }
         }
@@ -91,17 +96,46 @@ public class OrderManager : MonoBehaviour
         Debug.Log($"Delivered {progress.order.orderName}! Reward: {progress.order.reward}");
 
         activeOrders.Remove(progress);
+
+        TryFillOrderSlot();
+
         OnOrdersUpdated?.Invoke();
     }
 
     public void AddOrder(OrderData order, float timer, int points)
+    {
+        if (activeOrders.Count >= maxActiveOrders)
+        {
+            queuedOrders.Enqueue((order, timer, points));
+            Debug.Log($"Queued order: {order.orderName}");
+            return;
+        }
+
+        CreateAndAddOrder(order, timer, points);
+        OnOrdersUpdated?.Invoke();
+    }
+
+    private void CreateAndAddOrder(OrderData order, float timer, int points)
     {
         OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points);
 
         if (newOrder == null) return;
 
         activeOrders.Add(newOrder);
-        OnOrdersUpdated?.Invoke();
+
+        Debug.Log($"Added order: {order.orderName}");
+    }
+
+    private void TryFillOrderSlot()
+    {
+        if (queuedOrders.Count == 0) return;
+
+        if (activeOrders.Count >= maxActiveOrders)
+            return;
+
+        var queued = queuedOrders.Dequeue();
+
+        CreateAndAddOrder(queued.order, queued.timer, queued.points);
     }
     
     public IReadOnlyList<OrderProgress> GetActiveOrders()
@@ -114,6 +148,9 @@ public class OrderManager : MonoBehaviour
         if (orderProgress == null) return;
 
         activeOrders.Remove(orderProgress);
+
+        TryFillOrderSlot();
+
         OnOrdersUpdated?.Invoke();
     }
 }

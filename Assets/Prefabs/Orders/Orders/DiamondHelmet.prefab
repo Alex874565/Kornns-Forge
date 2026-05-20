@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8744135167966358179, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
+  m_Sprite: {fileID: -5473900096767226145, guid: 7fa6fb51e61d0f5458f1bbfde35ffb0b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 3549096810074672896}
   - component: {fileID: -7527697082341913784}
   m_Layer: 8
-  m_Name: DiamondShield
+  m_Name: DiamondHelmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 470612495
+  GlobalObjectIdHash: 1280630416
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  orderData: {fileID: 11400000, guid: 560ef5c334166c547acd7090a6de3d46, type: 2}
+  orderData: {fileID: 11400000, guid: e75086279c2a7bf48af4fe63d7d9ef11, type: 2}
   rb: {fileID: 8777750914950124683}
   coll: {fileID: 3549096810074672896}
 --- !u!50 &8777750914950124683
