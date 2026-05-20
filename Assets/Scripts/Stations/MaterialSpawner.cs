@@ -12,6 +12,8 @@ public class MaterialSpawner : BaseStation
 
     public override bool CanInteract(PlayerStatusController player)
     {
+        Debug.Log("Checking if player can interact with material spawner");
+        Debug.Log($"Player is holding something: {player != null && player.IsHoldingSomething()}");
         return player != null && !player.IsHoldingSomething();
     }
 

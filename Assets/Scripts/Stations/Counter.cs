@@ -13,17 +13,41 @@ public class Counter : BaseStation
         if (player == null) return false;
 
         // Client + server safe if HasOrder() uses heldOrderId
-        if (!player.HasOrderNetworked()) return false;
+        if (!player.HasOrder()) return false;
 
         return true;
     }
 
     public override void Interact(PlayerStatusController player)
     {
-        if (!IsServer) return;
+        if (player == null) return;
+
+        if (!IsServer)
+        {
+            InteractServerRpc(player.NetworkObjectId);
+            return;
+        }
+
+        InteractServer(player);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractServerRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        InteractServer(player);
+    }
+
+    private void InteractServer(PlayerStatusController player)
+    {
+        if (!CanInteract(player)) return;
 
         TriggerInteract();
-
         SubmitOrder(player);
     }
 

@@ -65,6 +65,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     public void Interact(PlayerStatusController player)
     {
+        Debug.Log($"{player.name} interacted with crafting station {name}");
         OpenUIClientOnly(player);
     }
 
@@ -162,9 +163,9 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
     private void PlaceIngredient(int index, PlayerStatusController player)
     {
         if (player == null) return;
-        if (!player.HasIngredientNetworked()) return;
+        if (!player.HasIngredient()) return;
 
-        Ingredient ingredient = player.GetIngredientNetworked();
+        Ingredient ingredient = player.GetIngredient();
         if (ingredient == null) return;
 
         IngredientSO ingredientSO = ingredient.GetIngredientSO();

@@ -25,7 +25,8 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
     public Action OnStartProcessing;
     public Action OnStopProcessing;
     public Action OnInteract;
-
+    public Action OnInteractAlternate;
+    
     // ---------------- NETWORK TRIGGERS ----------------
 
     public void TriggerInteract()
@@ -35,11 +36,25 @@ public class BaseStation : NetworkBehaviour, IPlayerInteractable, IIngredientPar
         TriggerInteractClientRpc();
     }
 
+    public void TriggerInteractAlternate()
+    {
+        if (!IsServer) return;
+        OnInteractAlternate?.Invoke();
+        TriggerInteractAlternateClientRpc();
+    }
+
     [ClientRpc]
     private void TriggerInteractClientRpc()
     {
         if (IsServer) return;
         OnInteract?.Invoke();
+    }
+
+    [ClientRpc]
+    private void TriggerInteractAlternateClientRpc()
+    {
+        if (IsServer) return;
+        OnInteractAlternate?.Invoke();
     }
 
     public void TriggerStartProcessing()

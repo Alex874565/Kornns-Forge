@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Anvil : BaseStation, IHasProgress
@@ -6,6 +7,7 @@ public class Anvil : BaseStation, IHasProgress
     public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
 
     [SerializeField] private AnvilRecipeSO[] anvilRecipeSOArray;
+
     [Header("Tiredness")]
     [SerializeField] private float energy = 5f;
 
@@ -15,12 +17,17 @@ public class Anvil : BaseStation, IHasProgress
     {
         if (player == null) return false;
 
-        bool playerHasIngredient = player.HasIngredientNetworked();
-        bool playerHoldingSomething = player.IsHoldingSomethingNetworked();
+        bool playerHasIngredient = player.HasIngredient();
+        bool playerHoldingSomething = player.IsHoldingSomething();
         bool anvilHasIngredient = HasIngredient();
 
         if (!anvilHasIngredient && playerHasIngredient)
-            return true;
+        {
+            Ingredient ingredient = player.GetIngredient();
+            if (ingredient == null) return false;
+
+            return HasRecipeWithInput(ingredient.GetIngredientSO());
+        }
 
         if (anvilHasIngredient && !playerHoldingSomething)
             return true;
@@ -30,31 +37,49 @@ public class Anvil : BaseStation, IHasProgress
 
     public override void Interact(PlayerStatusController player)
     {
-        if (!IsServer) return;
         if (player == null) return;
+
+        if (!IsServer)
+        {
+            InteractServerRpc(player.NetworkObjectId);
+            return;
+        }
+
+        InteractServer(player);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractServerRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        InteractServer(player);
+    }
+
+    private void InteractServer(PlayerStatusController player)
+    {
+        if (!CanInteract(player)) return;
 
         TriggerInteract();
 
         if (!HasIngredient())
         {
-            if (!player.HasIngredient()) return;
-
             Ingredient ingredient = player.GetIngredient();
             if (ingredient == null) return;
 
-            // consume player energy for placing ingredient on anvil
-            player.GetTired(this.energy);
+            AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(ingredient.GetIngredientSO());
+            if (anvilRecipeSO == null) return;
+
+            player.GetTired(energy);
 
             ingredient.SetIngredientParent(this);
 
             hammeringProgress = 0;
-
-            IngredientSO input = ingredient.GetIngredientSO();
-            AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
-
-            OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
-            });
+            ProgressChangedClientRpc(0f);
         }
         else
         {
@@ -63,8 +88,7 @@ public class Anvil : BaseStation, IHasProgress
             Ingredient ingredient = GetIngredient();
             if (ingredient == null) return;
 
-            // taking ingredient from anvil also costs small effort
-            player.GetTired(this.energy * 0.5f);
+            player.GetTired(energy * 0.5f);
 
             ingredient.SetIngredientParent(player);
         }
@@ -72,62 +96,78 @@ public class Anvil : BaseStation, IHasProgress
 
     public override void InteractAlternate(PlayerStatusController player)
     {
-        if (!IsServer) return;
-        if (!HasIngredient()) return;
+        if (player == null) return;
 
-        TriggerInteract();
+        if (!IsServer)
+        {
+            InteractAlternateServerRpc(player.NetworkObjectId);
+            return;
+        }
+
+        InteractAlternateServer(player);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractAlternateServerRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        InteractAlternateServer(player);
+    }
+
+    private void InteractAlternateServer(PlayerStatusController player)
+    {
+        if (!HasIngredient()) return;
 
         Ingredient ingredient = GetIngredient();
         if (ingredient == null) return;
 
-        IngredientSO input = ingredient.GetIngredientSO();
+        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(ingredient.GetIngredientSO());
+        if (anvilRecipeSO == null) return;
 
-        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
+        TriggerInteractAlternateClientRpc();
 
         hammeringProgress++;
 
-        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                progressNormalized = (float)hammeringProgress / anvilRecipeSO.hammeringProgressMax
-            });
+        ProgressChangedClientRpc((float)hammeringProgress / anvilRecipeSO.hammeringProgressMax);
 
-        // crafting on the anvil consumes more energy
-        player.GetTired(this.energy * 1.5f);
+        player.GetTired(energy * 1.5f);
 
-        /*Check if the hammering finished*/
         if (hammeringProgress >= anvilRecipeSO.hammeringProgressMax)
         {
-            IngredientSO output = GetOutputForInput(input);
-
-            if (output == null)
-            {
-                Debug.LogError("No matching anvil recipe found!");
-                return;
-            }
+            IngredientSO output = anvilRecipeSO.output;
+            if (output == null) return;
 
             ingredient.DestroySelf();
             Ingredient.SpawnIngredient(output, this);
+
+            hammeringProgress = 0;
+            ProgressChangedClientRpc(0f);
         }
+    }
+    
+    [ClientRpc]
+    private void TriggerInteractAlternateClientRpc()
+    {
+        TriggerInteractAlternate();
+    }
+    
+    [ClientRpc]
+    private void ProgressChangedClientRpc(float progressNormalized)
+    {
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
+        {
+            progressNormalized = progressNormalized
+        });
     }
 
     private bool HasRecipeWithInput(IngredientSO input)
     {
-        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
-        return anvilRecipeSO != null;
-    }
-
-    private IngredientSO GetOutputForInput(IngredientSO input)
-    {
-        if (input == null) return null;
-
-        AnvilRecipeSO anvilRecipeSO = GetAnvilRecipeSOWithInput(input);
-
-        if (anvilRecipeSO != null)
-        {
-            return anvilRecipeSO.output;
-        } else
-        {
-            return null;
-        }
+        return GetAnvilRecipeSOWithInput(input) != null;
     }
 
     private AnvilRecipeSO GetAnvilRecipeSOWithInput(IngredientSO input)
@@ -136,10 +176,7 @@ public class Anvil : BaseStation, IHasProgress
 
         foreach (AnvilRecipeSO recipe in anvilRecipeSOArray)
         {
-            if (recipe == null || recipe.input == null)
-                continue;
-
-            if (recipe.input == input)
+            if (recipe != null && recipe.input == input)
                 return recipe;
         }
 

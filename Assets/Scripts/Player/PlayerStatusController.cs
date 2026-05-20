@@ -51,11 +51,6 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     public Ingredient GetIngredient()
     {
-        return ingredient;
-    }
-
-    public Ingredient GetIngredientNetworked()
-    {
         if (heldIngredientId.Value == ulong.MaxValue)
             return null;
 
@@ -67,6 +62,11 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         return obj.GetComponent<Ingredient>();
     }
 
+    public bool HasIngredient()
+    {
+        return heldIngredientId.Value != ulong.MaxValue;
+    }
+
     public void ClearIngredient()
     {
         ingredient = null;
@@ -75,21 +75,24 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
             heldIngredientId.Value = ulong.MaxValue;
     }
 
-    public bool HasIngredient()
-    {
-        return ingredient != null;
-    }
-
-    public bool HasIngredientNetworked()
-    {
-        return heldIngredientId.Value != ulong.MaxValue;
-    }
-
     // ---------------- ORDER ----------------
-
-    public void SetOrder(Order newOrder)
+    
+    public Order GetOrder()
     {
-        TrySetOrder(newOrder);
+        if (heldOrderId.Value == ulong.MaxValue)
+            return null;
+
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
+                heldOrderId.Value,
+                out NetworkObject obj))
+            return null;
+
+        return obj.GetComponent<Order>();
+    }
+
+    public bool HasOrder()
+    {
+        return heldOrderId.Value != ulong.MaxValue;
     }
 
     public bool TrySetOrder(Order newOrder)
@@ -104,12 +107,6 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
         return true;
     }
-
-    public Order GetOrder()
-    {
-        return order;
-    }
-
     public void ClearOrder()
     {
         order = null;
@@ -118,30 +115,14 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
             heldOrderId.Value = ulong.MaxValue;
     }
 
-    public bool HasOrder()
-    {
-        return order != null;
-    }
-
-    public bool HasOrderNetworked()
-    {
-        return heldOrderId.Value != ulong.MaxValue;
-    }
-
     // ---------------- SHARED ----------------
+    private Coroutine updateEnergyCoroutine;
 
     public bool IsHoldingSomething()
     {
-        return ingredient != null || order != null;
+        return HasIngredient() || HasOrder();
     }
-
-    public bool IsHoldingSomethingNetworked()
-    {
-        return HasIngredientNetworked() || HasOrderNetworked();
-    }
-
-    private Coroutine updateEnergyCoroutine;
-
+    
     public void GetTired(float energy_points)
     {
         energy_level -= energy_points;

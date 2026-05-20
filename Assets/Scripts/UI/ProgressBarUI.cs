@@ -26,13 +26,8 @@ public class ProgressBarUI : MonoBehaviour
     {
         barImage.fillAmount = e.progressNormalized;
 
-        if (e.progressNormalized == 0f || e.progressNormalized == 1f)
-        {
-            Hide();
-        } else
-        {
-            Show();
-        }
+        bool show = e.progressNormalized > 0f && e.progressNormalized < 1f;
+        gameObject.SetActive(show);
     }
 
     private void Show()

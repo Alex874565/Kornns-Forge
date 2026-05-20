@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class OrderManager : MonoBehaviour
+public class OrderManager : NetworkBehaviour
 {
     public List<OrderProgress> activeOrders = new();
 
@@ -21,7 +22,7 @@ public class OrderManager : MonoBehaviour
         {
             if (progress.TryAddItem(ingredient))
             {
-                OnOrdersUpdated?.Invoke();
+                OrdersUpdatedClientRpc();
                 return;
             }
         }
@@ -31,6 +32,8 @@ public class OrderManager : MonoBehaviour
 
     private void Update()
     {
+        if (!IsServer) return;
+
         bool changed = false;
 
         for (int i = activeOrders.Count - 1; i >= 0; i--)
@@ -48,7 +51,13 @@ public class OrderManager : MonoBehaviour
         }
 
         if (changed)
-            OnOrdersUpdated?.Invoke();
+            OrdersUpdatedClientRpc();
+    }
+    
+    [ClientRpc]
+    private void OrdersUpdatedClientRpc()
+    {
+        OnOrdersUpdated?.Invoke();
     }
 
     public void TryCraft()
@@ -62,7 +71,7 @@ public class OrderManager : MonoBehaviour
                 progress.MarkCrafted();
 
                 Debug.Log($"Crafted {progress.order.orderName}!");
-                OnOrdersUpdated?.Invoke();
+                OrdersUpdatedClientRpc();
                 return;
             }
         }
@@ -91,7 +100,7 @@ public class OrderManager : MonoBehaviour
         Debug.Log($"Delivered {progress.order.orderName}! Reward: {progress.order.reward}");
 
         activeOrders.Remove(progress);
-        OnOrdersUpdated?.Invoke();
+        OrdersUpdatedClientRpc();
     }
 
     public void AddOrder(OrderData order, float timer, int points)
@@ -101,7 +110,7 @@ public class OrderManager : MonoBehaviour
         if (newOrder == null) return;
 
         activeOrders.Add(newOrder);
-        OnOrdersUpdated?.Invoke();
+        OrdersUpdatedClientRpc();
     }
     
     public IReadOnlyList<OrderProgress> GetActiveOrders()
@@ -114,6 +123,6 @@ public class OrderManager : MonoBehaviour
         if (orderProgress == null) return;
 
         activeOrders.Remove(orderProgress);
-        OnOrdersUpdated?.Invoke();
+        OrdersUpdatedClientRpc();
     }
 }

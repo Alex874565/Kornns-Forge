@@ -188,7 +188,7 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
     public bool CanInteract(PlayerStatusController playerStatusController)
     {
         return playerStatusController != null &&
-               !playerStatusController.IsHoldingSomethingNetworked();
+               !playerStatusController.IsHoldingSomething();
     }
 
     // ---------------- SPAWNING / DESTROYING ----------------
