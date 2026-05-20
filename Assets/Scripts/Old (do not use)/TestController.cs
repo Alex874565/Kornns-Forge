@@ -52,8 +52,8 @@ public class TestController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.G))
             orderManager.TryCraft();
 
-        if (Input.GetKeyDown(KeyCode.Space))
-            orderManager.TryDeliver();
+        //if (Input.GetKeyDown(KeyCode.Space))
+           // orderManager.TryDeliver();
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]

@@ -9,25 +9,16 @@ public class OrderManager : NetworkBehaviour
     public System.Action OnOrdersUpdated;
     private IOrderFactory orderFactory;
 
+    [SerializeField] private int maxActiveOrders = 7;
+
+    [Header("Sync")]
+    [SerializeField] private OrdersDatabase ordersDatabase;
+
+    private Queue<(OrderData order, float timer, int points)> queuedOrders = new();
+
     private void Awake()
     {
         orderFactory = new OrderFactory();
-    }
-
-    public void AddItem(IngredientSO ingredient)
-    {
-        if (ingredient == null) return;
-
-        foreach (OrderProgress progress in activeOrders)
-        {
-            if (progress.TryAddItem(ingredient))
-            {
-                OrdersUpdatedClientRpc();
-                return;
-            }
-        }
-
-        Debug.Log($"No active order needs {ingredient.objectName}");
     }
 
     private void Update()
@@ -46,22 +37,36 @@ public class OrderManager : NetworkBehaviour
             {
                 Debug.Log($"Order expired: {order.order.orderName}");
                 activeOrders.RemoveAt(i);
+                TryFillOrderSlot();
                 changed = true;
             }
         }
 
         if (changed)
-            OrdersUpdatedClientRpc();
+            SyncOrdersClientRpc();
     }
-    
-    [ClientRpc]
-    private void OrdersUpdatedClientRpc()
+
+    public void AddItem(IngredientSO ingredient)
     {
-        OnOrdersUpdated?.Invoke();
+        if (!IsServer) return;
+        if (ingredient == null) return;
+
+        foreach (OrderProgress progress in activeOrders)
+        {
+            if (progress.TryAddItem(ingredient))
+            {
+                SyncOrdersClientRpc();
+                return;
+            }
+        }
+
+        Debug.Log($"No active order needs {ingredient.objectName}");
     }
 
     public void TryCraft()
     {
+        if (!IsServer) return;
+
         foreach (OrderProgress progress in activeOrders)
         {
             if (progress.crafted) continue;
@@ -71,7 +76,7 @@ public class OrderManager : NetworkBehaviour
                 progress.MarkCrafted();
 
                 Debug.Log($"Crafted {progress.order.orderName}!");
-                OrdersUpdatedClientRpc();
+                SyncOrdersClientRpc();
                 return;
             }
         }
@@ -79,40 +84,41 @@ public class OrderManager : NetworkBehaviour
         Debug.Log("No complete order to craft.");
     }
 
-    public void TryDeliver()
-    {
-        for (int i = 0; i < activeOrders.Count; i++)
-        {
-            if (activeOrders[i].crafted)
-            {
-                Deliver(activeOrders[i]);
-                return;
-            }
-        }
-
-        Debug.Log("No crafted order to deliver.");
-    }
-
-    private void Deliver(OrderProgress progress)
-    {
-        if (progress == null) return;
-
-        Debug.Log($"Delivered {progress.order.orderName}! Reward: {progress.order.reward}");
-
-        activeOrders.Remove(progress);
-        OrdersUpdatedClientRpc();
-    }
-
     public void AddOrder(OrderData order, float timer, int points)
     {
-        OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points);
+        if (!IsServer) return;
+        if (order == null) return;
 
+        if (activeOrders.Count >= maxActiveOrders)
+        {
+            queuedOrders.Enqueue((order, timer, points));
+            Debug.Log($"Queued order: {order.orderName}");
+            return;
+        }
+
+        CreateAndAddOrder(order, timer, points);
+        SyncOrdersClientRpc();
+    }
+
+    private void CreateAndAddOrder(OrderData order, float timer, int points)
+    {
+        OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points);
         if (newOrder == null) return;
 
         activeOrders.Add(newOrder);
-        OrdersUpdatedClientRpc();
+
+        Debug.Log($"Added order: {order.orderName}");
     }
-    
+
+    private void TryFillOrderSlot()
+    {
+        if (queuedOrders.Count == 0) return;
+        if (activeOrders.Count >= maxActiveOrders) return;
+
+        var queued = queuedOrders.Dequeue();
+        CreateAndAddOrder(queued.order, queued.timer, queued.points);
+    }
+
     public IReadOnlyList<OrderProgress> GetActiveOrders()
     {
         return activeOrders;
@@ -120,9 +126,71 @@ public class OrderManager : NetworkBehaviour
 
     public void CompleteOrder(OrderProgress orderProgress)
     {
+        if (!IsServer) return;
         if (orderProgress == null) return;
 
         activeOrders.Remove(orderProgress);
-        OrdersUpdatedClientRpc();
+
+        TryFillOrderSlot();
+
+        SyncOrdersClientRpc();
+    }
+
+    [ClientRpc]
+    private void SyncOrdersClientRpc()
+    {
+        int count = activeOrders.Count;
+
+        int[] orderIndexes = new int[count];
+        float[] timers = new float[count];
+        int[] points = new int[count];
+        bool[] crafted = new bool[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            OrderProgress progress = activeOrders[i];
+
+            orderIndexes[i] = GetOrderIndex(progress.order);
+            timers[i] = progress.timeRemaining;
+            points[i] = progress.points;
+            crafted[i] = progress.crafted;
+        }
+
+        ReceiveOrdersClientRpc(orderIndexes, timers, points, crafted);
+    }
+
+    [ClientRpc]
+    private void ReceiveOrdersClientRpc(int[] orderIndexes, float[] timers, int[] points, bool[] crafted)
+    {
+        activeOrders.Clear();
+
+        for (int i = 0; i < orderIndexes.Length; i++)
+        {
+            int orderIndex = orderIndexes[i];
+
+            OrderData orderData = ordersDatabase.GetOrderByIndex(orderIndex);
+
+            OrderProgress progress = orderFactory.CreateOrder(
+                orderData,
+                timers[i],
+                points[i]
+            );
+
+            progress.crafted = crafted[i];
+
+            activeOrders.Add(progress);
+        }
+
+        OnOrdersUpdated?.Invoke();
+    }
+
+    private int GetOrderIndex(OrderData order)
+    {
+        int index = ordersDatabase.GetOrderIndex(order);
+
+        if (index == -1)
+            Debug.LogError($"Order not found in OrdersDatabase: {order.name}");
+
+        return index;
     }
 }
