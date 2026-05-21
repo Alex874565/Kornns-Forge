@@ -63,6 +63,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
     private void StartProcessing()
     {
+        Debug.Log("Start processing");
         if (isProcessing) return;
 
         isProcessing = true;
@@ -84,22 +85,48 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         if (player == null) return false;
 
         bool furnaceHasIngredient = HasIngredient();
-        bool playerHasIngredient = player.HasIngredientNetworked();
-        bool playerHoldingSomething = player.IsHoldingSomethingNetworked();
 
-        if (!furnaceHasIngredient && playerHasIngredient)
+        if (!furnaceHasIngredient && player.HasIngredient())
+        {
+            Ingredient ingredient = player.GetIngredient();
+            if (ingredient == null) return false;
+
+            return GetFurnaceRecipeSOWithInput(ingredient.GetIngredientSO()) != null;
+        }
+
+        if (furnaceHasIngredient && !player.IsHoldingSomething())
             return true;
 
-        if (furnaceHasIngredient && !playerHoldingSomething)
-            return true;
-
-        return GetFurnaceRecipeSOWithInput(player.GetIngredientNetworked()?.GetIngredientSO()) != null;
+        return false;
     }
-
     public override void Interact(PlayerStatusController player)
     {
-        if (!IsServer) return;
         if (player == null) return;
+
+        if (!IsServer)
+        {
+            InteractServerRpc(player.NetworkObjectId);
+            return;
+        }
+
+        InteractServer(player);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractServerRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        InteractServer(player);
+    }
+
+    private void InteractServer(PlayerStatusController player)
+    {
+        if (!CanInteract(player)) return;
 
         TriggerInteract();
 
@@ -112,9 +139,19 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
             TryTakeIngredient(player);
         }
     }
+    
+    [ClientRpc]
+    private void ProgressChangedClientRpc(float progressNormalized)
+    {
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
+        {
+            progressNormalized = progressNormalized
+        });
+    }
 
     private void TryPlaceIngredient(PlayerStatusController player)
     {
+        Debug.Log("Trying to place ingredient in furnace");
         if (!player.HasIngredient()) return;
 
         Ingredient playerIngredient = player.GetIngredient();
@@ -165,9 +202,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         StopProcessing();
 
-        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-            progressNormalized = 0f
-        });
+        ProgressChangedClientRpc(0f);
     }
 
     // ---------------- PROCESSING ----------------
@@ -182,9 +217,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         heatingTimer += Time.deltaTime;
 
-        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                progressNormalized = heatingTimer / furnaceRecipeSO.heatingTimerMax
-            });
+        ProgressChangedClientRpc(heatingTimer / furnaceRecipeSO.heatingTimerMax);
 
         if (heatingTimer < furnaceRecipeSO.heatingTimerMax)
             return;
@@ -205,6 +238,8 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         burningTimer = 0f;
         burningRecipeSO = GetBurningRecipeSOWithInput(heatedOutput);
 
+        ProgressChangedClientRpc(0f);
+
         Debug.Log("Object heated");
 
         // No burning recipe = finished processing
@@ -221,10 +256,8 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         burningTimer += Time.deltaTime;
 
-        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                progressNormalized = burningTimer / burningRecipeSO.burningTimerMax
-            });
-
+        ProgressChangedClientRpc(burningTimer / burningRecipeSO.burningTimerMax);
+        
         if (burningTimer < burningRecipeSO.burningTimerMax)
             return;
 

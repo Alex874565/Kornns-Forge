@@ -215,9 +215,9 @@ public class CraftingStationUI : MonoBehaviour
 
         IngredientSO ingredientSO = station.GetIngredient(index);
 
-        if (ingredientSO == null && player.HasIngredientNetworked())
+        if (ingredientSO == null && player.HasIngredient())
             text.text = "Add";
-        else if (ingredientSO != null && !player.IsHoldingSomethingNetworked())
+        else if (ingredientSO != null && !player.IsHoldingSomething())
             text.text = "Remove";
         else
             text.text = "";
@@ -232,7 +232,7 @@ public class CraftingStationUI : MonoBehaviour
 
         if (text == null) return;
 
-        if (station.HasCrafted() && !player.IsHoldingSomethingNetworked())
+        if (station.HasCrafted() && !player.IsHoldingSomething())
             text.text = "Take";
         else
             text.text = "";

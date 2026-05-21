@@ -1,5 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class StationParticlesController : MonoBehaviour
 {
@@ -7,13 +8,15 @@ public class StationParticlesController : MonoBehaviour
     
     [Header("Particles")]
     [SerializeField] private ParticleSystem processingParticles;
-    [SerializeField] private ParticleSystem interactionParticles;
+    [FormerlySerializedAs("interactionParticles")] [SerializeField] private ParticleSystem interactParticles;
+    [SerializeField] private ParticleSystem interactAlternateParticles;
 
     private void OnEnable()
     {
         station.OnInteract += OnInteract;
         station.OnStartProcessing += OnStartProcessing;
         station.OnStopProcessing += OnStopProcessing;
+        station.OnInteractAlternate += OnInteractAlternate;
     }
 
     private void OnDisable()
@@ -21,12 +24,20 @@ public class StationParticlesController : MonoBehaviour
         station.OnInteract -= OnInteract;
         station.OnStartProcessing -= OnStartProcessing;
         station.OnStopProcessing -= OnStopProcessing;
+        station.OnInteractAlternate -= OnInteractAlternate;
     }
 
     private void OnInteract()
     {
-        if(interactionParticles)
-            interactionParticles.Play();
+        if(interactParticles)
+            interactParticles.Play();
+    }
+    
+    private void OnInteractAlternate()
+    {
+        Debug.Log("Alternate interact triggered");
+        if(interactAlternateParticles)
+            interactAlternateParticles.Play();
     }
     
     private void OnStartProcessing()

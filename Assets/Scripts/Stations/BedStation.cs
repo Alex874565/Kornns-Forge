@@ -22,7 +22,7 @@ public class BedStation : BaseStation, ITiredness
     {
         if (player == null) return false;
         if (IsOccupied) return false;
-        if (player.IsHoldingSomethingNetworked()) return false;
+        if (player.IsHoldingSomething()) return false;
         return player.GetEnergyLevel() < 100f;
     }
 

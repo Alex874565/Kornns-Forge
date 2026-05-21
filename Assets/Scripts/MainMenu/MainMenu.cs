@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public GameObject optionsMenu;
+    public GameObject multiplayerMenu;
 
     private void Start()
     {
@@ -13,7 +14,11 @@ public class MainMenu : MonoBehaviour
     {
         SoundManager.PlaySound(SoundType.ButtonClick);
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        if (multiplayerMenu != null)
+        {
+            multiplayerMenu.SetActive(true);
+            gameObject.SetActive(false);
+        }
     }
 
     public void OnOptionsButton()

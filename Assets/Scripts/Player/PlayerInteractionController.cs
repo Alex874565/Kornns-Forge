@@ -83,7 +83,7 @@ public class PlayerInteractionController : NetworkBehaviour
         int count = interactionCollider.Overlap(_contactFilter, results);
 
         IPlayerInteractable stationFallback = null;
-
+        
         for (int i = 0; i < count; i++)
         {
             Collider2D col = results[i];
@@ -91,7 +91,7 @@ public class PlayerInteractionController : NetworkBehaviour
 
             IPlayerInteractable interactable =
                 col.GetComponentInParent<IPlayerInteractable>();
-
+            
             if (interactable == null) continue;
 
             if (col.gameObject.layer == _itemLayer)
@@ -129,12 +129,10 @@ public class PlayerInteractionController : NetworkBehaviour
     
     private void ChangeHoveredInteractable(IPlayerInteractable playerInteractable)
     {
-        Debug.Log("Hovered: " + playerInteractable);
         _hoveredInteractable?.UnHighlight();
 
         _hoveredInteractable = playerInteractable;
 
-        // 🔥 THIS WAS MISSING
         _selectedStation = playerInteractable as BaseStation;
 
         if (_hoveredInteractable == null ||
@@ -147,17 +145,33 @@ public class PlayerInteractionController : NetworkBehaviour
     private void InteractClick()
     {
         if (IsInteracting) return;
+        if (_hoveredInteractable == null) return;
 
-        if (_hoveredInteractable != null)
+        if (!_hoveredInteractable.CanInteract(playerStatusController))
         {
-            bool isBed = (_hoveredInteractable as Component).CompareTag("Bed");
-            if (!isBed && playerStatusController.GetEnergyLevel() <= 0)
-            {
-                return;
-            }
-
-            _hoveredInteractable.Interact(playerStatusController);
+            OnInteractFailed?.Invoke();
+            return;
         }
+
+        bool isBed = (_hoveredInteractable as Component).CompareTag("Bed");
+        if (!isBed && playerStatusController.GetEnergyLevel() <= 0)
+            return;
+
+        Component component = _hoveredInteractable as Component;
+        if (component == null) return;
+
+        NetworkObject networkObject = component.GetComponentInParent<NetworkObject>();
+        if (networkObject == null) return;
+
+        // Stations go through server
+        if (_hoveredInteractable is BaseStation)
+        {
+            InteractServerRpc(networkObject.NetworkObjectId);
+            return;
+        }
+
+        // Items/orders can still use their own interaction logic
+        _hoveredInteractable.Interact(playerStatusController);
     }
 
     private void InteractAlternateClick()
@@ -212,7 +226,7 @@ public class PlayerInteractionController : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void InteractServerRpc(ulong stationId)
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
@@ -233,7 +247,7 @@ public class PlayerInteractionController : NetworkBehaviour
         station.Interact(player);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void InteractAlternateServerRpc(ulong stationId)
     {
         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects
