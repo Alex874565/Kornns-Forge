@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9129482578001290389}
   - component: {fileID: 4905335186386889593}
   m_Layer: 0
-  m_Name: ProcessingParticles
+  m_Name: ProcessingParticles 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

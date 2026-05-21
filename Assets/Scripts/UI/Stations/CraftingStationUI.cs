@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CraftingStationUI : MonoBehaviour
@@ -14,6 +15,18 @@ public class CraftingStationUI : MonoBehaviour
     [SerializeField] private Button resultButton;
     [SerializeField] private Button craftButton;
     [SerializeField] private Button closeButton;
+    
+    private EventSystem eventSystem;
+
+    private void OnEnable()
+    {
+        if (eventSystem == null)
+        {
+            eventSystem = EventSystem.current;
+        }
+        
+        eventSystem.firstSelectedGameObject = materialButtons[0].gameObject;
+    }
 
     public void Show(CraftingStationController s, PlayerStatusController p)
     {
