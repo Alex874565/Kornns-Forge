@@ -133,6 +133,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
         Craft();
         TakeCraftedResult(player);
+        craftingUI.Hide();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -142,6 +143,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
             return;
 
         TakeCraftedResult(player);
+        craftingUI.Hide();
     }
 
     // ---------------- SLOT LOGIC ----------------
@@ -230,7 +232,8 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         if (!IsServer) return;
         if (!HasPreview()) return;
         if (HasCrafted()) return;
-
+        if (previewOrderIndex.Value == -1) return;
+        
         craftedOrderIndex.Value = previewOrderIndex.Value;
         previewOrderIndex.Value = -1;
 

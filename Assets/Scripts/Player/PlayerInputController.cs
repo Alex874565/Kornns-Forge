@@ -1,22 +1,28 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using System;
+using System.Collections;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerInputController : NetworkBehaviour
 {
+    [Header("References")]
+    [SerializeField] private CursorVisibilityManager cursorVisibilityManager;
+    
     private InputSystem_Actions controls;
 
     public event Action<Vector2> OnMove;
     public event Action OnJumpPressed;
     public event Action OnJumpReleased;
     public event Action OnInteract;
-    public event Action OnEscape;
+    public event Action OnCancel;
     public event Action OnInteractAlternate;
+    public event Action OnInteractAlternateUI;
     public event Action OnThrow;
 
     public Vector2 Movement => controls.Player.Move.ReadValue<Vector2>();
-
+    
     private void Awake()
     {
         controls = new InputSystem_Actions();
@@ -26,16 +32,21 @@ public class PlayerInputController : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-
+        controls.UI.Submit.performed += ctx =>
+        {
+            Debug.Log("UI Submit key: " + ctx.control.path);
+        };
         controls.Player.Move.performed += HandleMove;
         controls.Player.Jump.performed += HandleJumpPressed;
         controls.Player.Jump.canceled += HandleJumpReleased;
         controls.Player.Interact.performed += HandleInteract;
-        controls.Player.Escape.performed += HandleEscape;
         controls.Player.InteractAlternate.performed += HandleInteractAlternate;
         controls.Player.Throw.performed += HandleThrow;
+        
+        controls.UI.Cancel.performed += HandleCancel;
+        controls.UI.InteractAlternate.performed += HandleInteractAlternateUI;
 
-        controls.Player.Enable();
+        SetUIMode(false);
     }
 
     public override void OnNetworkDespawn()
@@ -46,12 +57,46 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Move.performed -= HandleMove;
         controls.Player.Jump.performed -= HandleJumpPressed;
         controls.Player.Jump.canceled -= HandleJumpReleased;
-        controls.Player.Interact.started -= HandleInteract;
-        controls.Player.Escape.performed -= HandleEscape;
+        controls.Player.Interact.performed -= HandleInteract;
         controls.Player.InteractAlternate.performed -= HandleInteractAlternate;
         controls.Player.Throw.performed -= HandleThrow;
+        
+        controls.UI.Cancel.performed -= HandleCancel;
+        controls.UI.InteractAlternate.performed -= HandleInteractAlternateUI;
 
         controls.Player.Disable();
+    }
+    
+    public void SetUIMode(bool uiMode, GameObject firstSelected = null)
+    {
+        if (!IsOwner) return;
+
+        if (cursorVisibilityManager == null)
+            cursorVisibilityManager = FindObjectOfType<CursorVisibilityManager>();
+
+        StopAllCoroutines();
+        StartCoroutine(SetUIModeCoroutine(uiMode, firstSelected));
+    }
+
+    private IEnumerator SetUIModeCoroutine(bool uiMode, GameObject firstSelected)
+    {
+        if (uiMode)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            controls.Player.Disable();
+            controls.UI.Enable();
+            cursorVisibilityManager.CursorVisibilityPossible = true;
+            yield return !controls.UI.Submit.IsPressed();
+            EventSystem.current.SetSelectedGameObject(firstSelected);
+        }
+        else
+        {
+            controls.UI.Disable();
+            controls.Player.Enable();
+            cursorVisibilityManager.SetCursorVisibility(false);
+            cursorVisibilityManager.CursorVisibilityPossible = false;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     // Enable or disable the input action map at runtime.
@@ -82,24 +127,26 @@ public class PlayerInputController : NetworkBehaviour
 
     private void HandleInteract(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Interact fired");
         OnInteract?.Invoke();
     }
 
-    private void HandleEscape(InputAction.CallbackContext ctx)
+    private void HandleCancel(InputAction.CallbackContext ctx)
     {
-        OnEscape?.Invoke();
+        OnCancel?.Invoke();
     }
 
     private void HandleInteractAlternate(InputAction.CallbackContext ctx)
     {
-        Debug.Log("HandleInteractAlternate fired");
         OnInteractAlternate?.Invoke();
+    }
+    
+    private void HandleInteractAlternateUI(InputAction.CallbackContext ctx)
+    {
+        OnInteractAlternateUI?.Invoke();
     }
 
     private void HandleThrow(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Throw fired");
         OnThrow?.Invoke();
     }
 }

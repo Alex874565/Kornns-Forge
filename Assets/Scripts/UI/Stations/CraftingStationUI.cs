@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,16 +19,8 @@ public class CraftingStationUI : MonoBehaviour
     
     private EventSystem eventSystem;
 
-    private void OnEnable()
-    {
-        if (eventSystem == null)
-        {
-            eventSystem = EventSystem.current;
-        }
-        
-        eventSystem.firstSelectedGameObject = materialButtons[0].gameObject;
-    }
-
+    private int clickedMaterialIndex = 0;
+    
     public void Show(CraftingStationController s, PlayerStatusController p)
     {
         Unsubscribe();
@@ -38,44 +31,72 @@ public class CraftingStationUI : MonoBehaviour
             ? player.GetComponent<PlayerInputController>()
             : null;
 
-        if (station != null)
-            station.OnCraftingChanged += Refresh;
-
-        if (input != null)
-            input.OnInteract += Hide;
-
-        SetupButtons();
-
         gameObject.SetActive(true);
+        
+        EnterUIMode();
+        
+        SetupButtons();
 
         Refresh();
     }
 
+    private void EnterUIMode()
+    {
+        if (eventSystem == null)
+        {
+            eventSystem = EventSystem.current;
+        }
+        
+        input.SetUIMode(true, materialButtons[0].gameObject);
+    }
+    
     public void Hide()
     {
+        input.SetUIMode(false);
         gameObject.SetActive(false);
         Unsubscribe();
+    }
+
+    private void Subscribe()
+    {
+        if(station != null)
+        {
+            station.OnCraftingChanged += Refresh;
+        }
+
+        if (input != null)
+        {
+            input.OnCancel += Hide;
+            input.OnInteractAlternateUI += HandleInteractAlternateUI;
+        }
     }
 
     private void Unsubscribe()
     {
         if (station != null)
+        {
             station.OnCraftingChanged -= Refresh;
+        }
 
         if (input != null)
-            input.OnInteract -= Hide;
+        {
+            input.OnCancel -= Hide;
+            input.OnInteractAlternateUI -= HandleInteractAlternateUI;
+        }
     }
 
     // ---------------- SETUP ----------------
-
+    
     private void SetupButtons()
     {
+        clickedMaterialIndex = 0;
+        
         if (closeButton != null)
         {
             closeButton.onClick.RemoveAllListeners();
             closeButton.onClick.AddListener(Hide);
         }
-
+        
         for (int i = 0; i < materialButtons.Count; i++)
         {
             int index = i;
@@ -88,14 +109,30 @@ public class CraftingStationUI : MonoBehaviour
             {
                 if (station != null && player != null)
                     station.RequestToggleIngredientSlot(index, player);
+                
+                clickedMaterialIndex = index;
             });
 
             AddHover(
                 button,
-                () => HoverMaterial(index),
+                () =>
+                {
+                    eventSystem.SetSelectedGameObject(button.gameObject);
+                    HoverMaterial(index);
+                },
+                () => ClearText(button)
+            );
+            
+            AddSelection(button, 
+                () =>
+                {
+                    HoverMaterial(index);
+                },
                 () => ClearText(button)
             );
         }
+        
+        HoverMaterial(0);
 
         if (craftButton != null)
         {
@@ -105,6 +142,12 @@ public class CraftingStationUI : MonoBehaviour
                 if (station != null && player != null)
                     station.RequestCraft(player);
             });
+            
+            AddHover(
+                craftButton,
+                () => eventSystem.SetSelectedGameObject(craftButton.gameObject),
+                () => { }
+            );
         }
 
         if (resultButton != null)
@@ -118,10 +161,16 @@ public class CraftingStationUI : MonoBehaviour
 
             AddHover(
                 resultButton,
-                HoverResult,
+                () =>
+                {
+                    eventSystem.SetSelectedGameObject(resultButton.gameObject);
+                    HoverResult();
+                },
                 () => ClearText(resultButton)
             );
         }
+        
+        Subscribe();
     }
 
     // ---------------- REFRESH ----------------
@@ -159,6 +208,13 @@ public class CraftingStationUI : MonoBehaviour
 
             ClearText(button);
         }
+        
+        HoverMaterial(clickedMaterialIndex);
+    }
+
+    private void HandleInteractAlternateUI()
+    {
+        station.RequestCraft(player);
     }
 
     private void RefreshResult()
@@ -221,6 +277,18 @@ public class CraftingStationUI : MonoBehaviour
             text.text = "Remove";
         else
             text.text = "";
+        
+        Navigation craftNav = craftButton.navigation;
+        craftNav.mode = Navigation.Mode.Explicit;
+        craftNav.selectOnUp = materialButtons[index];
+        craftButton.navigation = craftNav;
+
+        Navigation closeNav = closeButton.navigation;
+        closeNav.mode = Navigation.Mode.Explicit;
+        closeNav.selectOnDown = materialButtons[index];
+        closeButton.navigation = closeNav;
+        
+        Debug.Log($"Hovering material slot {index}");
     }
 
     private void HoverResult()
@@ -252,15 +320,25 @@ public class CraftingStationUI : MonoBehaviour
     {
         if (button == null) return;
 
-        UIHoverHandler hover = button.GetComponent<UIHoverHandler>();
+        UIButtonHandler btnHandler = button.GetComponent<UIButtonHandler>();
 
-        if (hover == null)
-            hover = button.gameObject.AddComponent<UIHoverHandler>();
+        if (btnHandler == null)
+            btnHandler = button.gameObject.AddComponent<UIButtonHandler>();
 
-        hover.Clear();
+        btnHandler.ClearHover();
 
-        hover.OnHoverEnter += enter;
-        hover.OnHoverExit += exit;
+        btnHandler.OnHoverEnter += enter;
+        btnHandler.OnHoverExit += exit;
+    }
+
+    private void AddSelection(Button button, System.Action select, System.Action deselect)
+    {
+        UIButtonHandler btnHandler = button.GetComponent<UIButtonHandler>();
+        
+        btnHandler.ClearSelection();
+        
+        btnHandler.OnSelectAction += select;
+        btnHandler.OnDeselectAction += deselect;
     }
 
     private void OnDisable()
