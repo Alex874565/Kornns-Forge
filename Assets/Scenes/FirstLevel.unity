@@ -7140,6 +7140,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   activeOrders: []
   maxActiveOrders: 7
+  clientPrefab: {fileID: 5353635862983903457, guid: 4f6e724cb48ac7b488784ac43315f3ca, type: 3}
   ordersDatabase: {fileID: 11400000, guid: 693f4b989a8919d4488e0afb001a29c8, type: 2}
 --- !u!4 &1846033338
 Transform:

@@ -10,6 +10,7 @@ public class OrderManager : NetworkBehaviour
     private IOrderFactory orderFactory;
 
     [SerializeField] private int maxActiveOrders = 7;
+    [SerializeField] private NetworkBehaviour clientPrefab;
 
     [Header("Sync")]
     [SerializeField] private OrdersDatabase ordersDatabase;
@@ -108,6 +109,8 @@ public class OrderManager : NetworkBehaviour
         activeOrders.Add(newOrder);
 
         Debug.Log($"Added order: {order.orderName}");
+        
+        SpawnClientServerRpc();
     }
 
     private void TryFillOrderSlot()
@@ -134,6 +137,14 @@ public class OrderManager : NetworkBehaviour
         TryFillOrderSlot();
 
         SyncOrdersClientRpc();
+    }
+
+    [ServerRpc]
+    private void SpawnClientServerRpc()
+    {
+        GameObject clientObj = Instantiate(clientPrefab.gameObject);
+        NetworkObject networkObject = clientObj.GetComponent<NetworkObject>();
+        networkObject.Spawn();
     }
 
     [ClientRpc]
