@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -5650614369418398292}
   - component: {fileID: -5603633225358997432}
   m_Layer: 8
-  m_Name: GoldBurnt
+  m_Name: BurntMetal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 43723355
   m_SortingLayer: 4
   m_SortingOrder: -2
-  m_Sprite: {fileID: -3669959474357932013, guid: 9f742a8ee87a91f4bbf1abad73e03edd, type: 3}
+  m_Sprite: {fileID: -1351146242, guid: c5d801fb17d6da447a5b24aa3fe319b4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -171,7 +171,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.375, y: 0.4375}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
