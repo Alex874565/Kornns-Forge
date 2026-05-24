@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,11 +7,12 @@ public class OrderManager : NetworkBehaviour
 {
     public List<OrderProgress> activeOrders = new();
 
-    public System.Action OnOrdersUpdated;
+    public event Action OnOrdersUpdated;
+    public event Action<OrderProgress> OnOrderSpawned;
+    
     private IOrderFactory orderFactory;
 
     [SerializeField] private int maxActiveOrders = 7;
-    [SerializeField] private NetworkBehaviour clientPrefab;
 
     [Header("Sync")]
     [SerializeField] private OrdersDatabase ordersDatabase;
@@ -37,6 +39,7 @@ public class OrderManager : NetworkBehaviour
             if (order.IsExpired())
             {
                 Debug.Log($"Order expired: {order.order.orderName}");
+                order.Expire();
                 activeOrders.RemoveAt(i);
                 TryFillOrderSlot();
                 changed = true;
@@ -110,7 +113,7 @@ public class OrderManager : NetworkBehaviour
 
         Debug.Log($"Added order: {order.orderName}");
         
-        SpawnClientServerRpc();
+        OnOrderSpawned?.Invoke(newOrder);
     }
 
     private void TryFillOrderSlot()
@@ -132,19 +135,13 @@ public class OrderManager : NetworkBehaviour
         if (!IsServer) return;
         if (orderProgress == null) return;
 
+        orderProgress.Complete();
+        
         activeOrders.Remove(orderProgress);
 
         TryFillOrderSlot();
 
         SyncOrdersClientRpc();
-    }
-
-    [ServerRpc]
-    private void SpawnClientServerRpc()
-    {
-        GameObject clientObj = Instantiate(clientPrefab.gameObject);
-        NetworkObject networkObject = clientObj.GetComponent<NetworkObject>();
-        networkObject.Spawn();
     }
 
     [ClientRpc]
@@ -173,23 +170,27 @@ public class OrderManager : NetworkBehaviour
     [ClientRpc]
     private void ReceiveOrdersClientRpc(int[] orderIndexes, float[] timers, int[] points, bool[] crafted)
     {
-        activeOrders.Clear();
-
-        for (int i = 0; i < orderIndexes.Length; i++)
+        if (!IsServer)
         {
-            int orderIndex = orderIndexes[i];
 
-            OrderData orderData = ordersDatabase.GetOrderByIndex(orderIndex);
+            activeOrders.Clear();
 
-            OrderProgress progress = orderFactory.CreateOrder(
-                orderData,
-                timers[i],
-                points[i]
-            );
+            for (int i = 0; i < orderIndexes.Length; i++)
+            {
+                int orderIndex = orderIndexes[i];
 
-            progress.crafted = crafted[i];
+                OrderData orderData = ordersDatabase.GetOrderByIndex(orderIndex);
 
-            activeOrders.Add(progress);
+                OrderProgress progress = orderFactory.CreateOrder(
+                    orderData,
+                    timers[i],
+                    points[i]
+                );
+
+                progress.crafted = crafted[i];
+
+                activeOrders.Add(progress);
+            }
         }
 
         OnOrdersUpdated?.Invoke();

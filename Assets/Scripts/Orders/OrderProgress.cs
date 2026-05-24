@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,6 +15,9 @@ public class OrderProgress
     public float maxTime;
 
     public int points;
+
+    public event Action OnOrderCompleted;
+    public event Action OnOrderExpired;
 
     public OrderProgress(OrderData order, float duration, int points)
     {
@@ -92,5 +96,15 @@ public class OrderProgress
     {
         if (IsComplete())
             crafted = true;
+    }
+
+    public void Expire()
+    {
+        OnOrderExpired?.Invoke();
+    }
+    
+    public void Complete()
+    {
+        OnOrderCompleted?.Invoke();
     }
 }

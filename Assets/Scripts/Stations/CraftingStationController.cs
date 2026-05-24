@@ -102,12 +102,6 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
         CraftServerRpc(player.NetworkObjectId);
     }
 
-    public void RequestTakeCraftedResult(PlayerStatusController player)
-    {
-        if (player == null) return;
-        TakeCraftedResultServerRpc(player.NetworkObjectId);
-    }
-
     // ---------------- SERVER RPCS ----------------
 
     [ServerRpc(RequireOwnership = false)]
@@ -121,31 +115,28 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
     [ServerRpc(RequireOwnership = false)]
     private void CraftServerRpc(ulong playerId)
-    {
+    {        
         if (!TryGetPlayer(playerId, out PlayerStatusController player))
             return;
-
-        if (player.IsHoldingSomething())
-        {
-            Debug.Log($"{player.name} tried to craft but hand is not empty.");
-            return;
-        }
 
         Craft();
-        TakeCraftedResult(player);
-        craftingUI.Hide();
+
+        bool success = TakeCraftedResult(player);
+
+        if (success)
+            HideUIClientRpc(player.OwnerClientId);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void TakeCraftedResultServerRpc(ulong playerId)
+    [ClientRpc]
+    private void HideUIClientRpc(ulong targetClientId)
     {
-        if (!TryGetPlayer(playerId, out PlayerStatusController player))
+        if (NetworkManager.Singleton.LocalClientId != targetClientId)
             return;
 
-        TakeCraftedResult(player);
-        craftingUI.Hide();
+        if (craftingUI != null)
+            craftingUI.Hide();
     }
-
+    
     // ---------------- SLOT LOGIC ----------------
 
     private void ToggleIngredientSlot(int index, PlayerStatusController player)
@@ -227,39 +218,42 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
             );
     }
 
-    private void Craft()
+    private bool Craft()
     {
-        if (!IsServer) return;
-        if (!HasPreview()) return;
-        if (HasCrafted()) return;
-        if (previewOrderIndex.Value == -1) return;
+        if (!IsServer) return false;
+        if (!HasPreview()) return false;
+        if (HasCrafted()) return false;
+        if (previewOrderIndex.Value == -1) return false;
         
         craftedOrderIndex.Value = previewOrderIndex.Value;
         previewOrderIndex.Value = -1;
 
         for (int i = 0; i < ingredientIndexes.Count; i++)
             ingredientIndexes[i] = -1;
+
+        return true;
     }
 
-    private void TakeCraftedResult(PlayerStatusController player)
+    private bool TakeCraftedResult(PlayerStatusController player)
     {
-        if (!IsServer) return;
-        if (player == null) return;
-        if (!HasCrafted()) return;
-        if (player.IsHoldingSomething()) return;
+        if (!IsServer) return false;
+        if (player == null) return false;
+        if (!HasCrafted()) return false;
 
         OrderData craftedOrder = GetCraftedOrder();
 
         if (craftedOrder == null || craftedOrder.prefab == null)
         {
             Debug.LogError("Crafted order prefab missing.");
-            return;
+            return false;
         }
 
         Order.SpawnOrder(craftedOrder, player, craftedOrder.prefab);
 
         craftedOrderIndex.Value = -1;
         UpdatePreview();
+
+        return true;
     }
 
     // ---------------- GETTERS FOR UI ----------------

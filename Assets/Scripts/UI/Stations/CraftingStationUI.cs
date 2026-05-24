@@ -149,26 +149,6 @@ public class CraftingStationUI : MonoBehaviour
                 () => { }
             );
         }
-
-        if (resultButton != null)
-        {
-            resultButton.onClick.RemoveAllListeners();
-            resultButton.onClick.AddListener(() =>
-            {
-                if (station != null && player != null)
-                    station.RequestTakeCraftedResult(player);
-            });
-
-            AddHover(
-                resultButton,
-                () =>
-                {
-                    eventSystem.SetSelectedGameObject(resultButton.gameObject);
-                    HoverResult();
-                },
-                () => ClearText(resultButton)
-            );
-        }
         
         Subscribe();
     }
@@ -272,9 +252,9 @@ public class CraftingStationUI : MonoBehaviour
         IngredientSO ingredientSO = station.GetIngredient(index);
 
         if (ingredientSO == null && player.HasIngredient())
-            text.text = "Add";
+            text.text = "Add (E)";
         else if (ingredientSO != null && !player.IsHoldingSomething())
-            text.text = "Remove";
+            text.text = "Remove (E)";
         else
             text.text = "";
         
