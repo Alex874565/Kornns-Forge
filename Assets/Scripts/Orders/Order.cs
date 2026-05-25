@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
@@ -7,6 +8,7 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
     [SerializeField] private OrderData orderData;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D coll;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private Transform followTarget;
     private PlayerStatusController playerParent;
@@ -15,6 +17,12 @@ public class Order : NetworkBehaviour, IThrowable, IPlayerInteractable
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (coll == null) coll = GetComponent<Collider2D>();
+        if(spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        spriteRenderer.transform.DOScale(Vector3.one, 0.3f).From(Vector3.zero).SetEase(Ease.OutBack, 5);
     }
 
     private void LateUpdate()

@@ -40,7 +40,7 @@ public class IdleState : MovementState
             return MovementStateType.Interacting;
         
         if (Ctx.JumpBufferTimer > 0f &&
-            (Ctx.Collision.IsGrounded || Ctx.JumpCoyoteTimer > 0f))
+            (Ctx.Collision.IsGrounded || Ctx.JumpCoyoteTimer > 0f) && Ctx.CanMove)
         {
             return MovementStateType.Jumping;
         }
@@ -48,7 +48,7 @@ public class IdleState : MovementState
         if (!Ctx.Collision.IsGrounded)
             return MovementStateType.Falling;
 
-        if (Mathf.Abs(Ctx.Input.Movement.x) > 0.01f)
+        if (Mathf.Abs(Ctx.Input.Movement.x) > 0.01f && Ctx.CanMove)
             return MovementStateType.Walking;
 
         return null;

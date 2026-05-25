@@ -611,7 +611,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.2
+      scalar: 1.4
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -4867,7 +4867,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 43723355
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_MeshDistribution: 0

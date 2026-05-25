@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,10 +25,23 @@ public class ProgressBarUI : MonoBehaviour
 
     private void HasProgress_OnProgressChanged(object sender, IHasProgress.OnProgressChangedEventArgs e)
     {
-        barImage.fillAmount = e.progressNormalized;
+        if (e.progressNormalized <= 0f)
+        {
+            gameObject.transform.DOScale(Vector3.one, 0.3f).From(new Vector3(1.2f, 1.2f, 1.2f)).SetEase(Ease.InOutBack).OnComplete(() =>
+            {
+                barImage.fillAmount = e.progressNormalized;
+                bool show = e.progressNormalized > 0f && e.progressNormalized < 1f;
+                gameObject.SetActive(show);
+            });
+        }
+        else
+        {
 
-        bool show = e.progressNormalized > 0f && e.progressNormalized < 1f;
-        gameObject.SetActive(show);
+            barImage.fillAmount = e.progressNormalized;
+            
+            bool show = e.progressNormalized > 0f && e.progressNormalized < 1f;
+            gameObject.SetActive(show);
+        }
     }
 
     private void Show()

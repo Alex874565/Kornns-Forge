@@ -39,8 +39,8 @@ public class WalkingState : MovementState
         if (!Ctx.Collision.IsGrounded)
             return MovementStateType.Falling;
 
-        if (Mathf.Abs(Ctx.Input.Movement.x) > 0.01f)
-            return MovementStateType.Walking;
+        if (Mathf.Abs(Ctx.Rb.linearVelocity.x) <= 0.1f)
+            return MovementStateType.Idle;
 
         return null;
     }
@@ -72,6 +72,13 @@ public class WalkingState : MovementState
 
     private void ApplyVelocity()
     {
-        Ctx.Rb.linearVelocity = Ctx.Velocity;
+        if (Ctx.CanMove)
+        {
+            Ctx.Rb.linearVelocity = Ctx.Velocity;
+        }
+        else
+        {
+            Ctx.Rb.linearVelocity = Vector2.zero;
+        }
     }
 }

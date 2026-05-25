@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
     [SerializeField] private IngredientSO ingredientSO;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D coll;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private IIngredientParent ingredientParent;
     private Transform followTarget;
@@ -18,12 +20,17 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (coll == null) coll = GetComponent<Collider2D>();
         if (networkTransform == null) networkTransform = GetComponent<NetworkTransform>();
+        if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        
+        spriteRenderer.transform.localScale = Vector3.zero;
     }
-
+    
     public override void OnNetworkSpawn()
     {
         if (networkTransform == null)
             networkTransform = GetComponent<NetworkTransform>();
+
+        spriteRenderer.transform.DOScale(Vector3.one, 0.3f).From(Vector3.zero).SetEase(Ease.OutBack, 3);
     }
 
     private void LateUpdate()

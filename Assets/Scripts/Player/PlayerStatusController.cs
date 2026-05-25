@@ -179,7 +179,7 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     [SerializeField] private string animatorSleepingBool = "isSleeping";
 
     [ClientRpc]
-    public void StartSleepingClientRpc(float duration)
+    public void StartSleepingClientRpc(float duration, Vector3 position)
     {
         if (!IsOwner) return;
 
@@ -189,11 +189,10 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
         PlayerMovementController movement = GetComponent<PlayerMovementController>();
         if (movement != null)
-            movement.IsInteracting = true;
-
-        PlayerInteractionController interaction = GetComponent<PlayerInteractionController>();
-        if (interaction != null)
-            interaction.IsInteracting = true;
+        {
+            movement.StopMovement();
+            movement.MoveTo(position);
+        }
 
         Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
         if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))
@@ -225,11 +224,7 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
         PlayerMovementController movement = GetComponent<PlayerMovementController>();
         if (movement != null)
-            movement.IsInteracting = false;
-
-        PlayerInteractionController interaction = GetComponent<PlayerInteractionController>();
-        if (interaction != null)
-            interaction.IsInteracting = false;
+            movement.StartMovement();
 
         Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
         if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))

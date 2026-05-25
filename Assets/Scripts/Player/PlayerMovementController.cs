@@ -36,6 +36,7 @@ public class PlayerMovementController : NetworkBehaviour
             Interaction = GetComponent<PlayerInteractionController>(),
             Stats = MovementStats,
             Velocity = Vector2.zero,
+            CanMove = true
         };
 
         _fsm = new MovementFSM(_ctx, this);
@@ -74,6 +75,21 @@ public class PlayerMovementController : NetworkBehaviour
         if (!IsOwner) return;
 
         _fsm?.FixedUpdate();
+    }
+
+    public void StopMovement()
+    {
+        _ctx.CanMove = false;
+    }
+
+    public void StartMovement()
+    {
+        _ctx.CanMove = true;
+    }
+
+    public void MoveTo(Vector2 position)
+    {
+        _ctx.Rb.MovePosition(position);
     }
 
     private void UpdateTimers()
@@ -134,7 +150,7 @@ public class PlayerMovementController : NetworkBehaviour
     public void InvokeOnInitiateJump()
     {
         if (Animator != null)
-            Animator.CrossFadeInFixedTime("Jump", 0f);
+            Animator.SetBool("Jump", true);
 
         OnInitiateJump?.Invoke();
     }
@@ -149,9 +165,6 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void InvokeOnBumpHead()
     {
-        if (Animator != null)
-            Animator.SetBool("Jump", false);
-
         OnBumpHead?.Invoke();
     }
     public void InvokeOnStartFalling() => OnStartFalling?.Invoke();

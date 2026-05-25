@@ -23,4 +23,6 @@ public class PlayerMovementContext
     public float JumpBufferTimer;
 
     public float JumpCoyoteTimer;
+
+    public bool CanMove = false;
 }

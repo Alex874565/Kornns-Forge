@@ -33,7 +33,7 @@ public class BedStation : BaseStation, ITiredness
         // Tell the owner client to enter sleeping state (locks input/animation)
         if (player.IsOwner)
         {
-            player.StartSleepingClientRpc(sleepDuration);
+            player.StartSleepingClientRpc(sleepDuration, gameObject.transform.position);
         }
 
         if (!IsServer) return;
