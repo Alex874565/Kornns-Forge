@@ -46,6 +46,11 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     {
         energyLevel.OnValueChanged += HandleEnergyChanged;
 
+        if (!IsOwner)
+        {
+            energy_bar.gameObject.SetActive(false);
+        }
+        
         if (energy_bar != null)
             energy_bar.value = energyLevel.Value;
     }
