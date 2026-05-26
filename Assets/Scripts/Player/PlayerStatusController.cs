@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
@@ -7,10 +8,12 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 {
     private Ingredient ingredient;
     private Order order;
-    [SerializeField] private float energy_level = 100;
     [SerializeField] private Slider energy_bar;
 
     [SerializeField] private Transform holdPoint;
+    
+    [SerializeField] private Animator animator;
+    [SerializeField] private string animatorSleepingBool = "isSleeping";
 
     private NetworkVariable<ulong> heldIngredientId = new(
         ulong.MaxValue,
@@ -23,6 +26,44 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
+    
+    private NetworkVariable<float> energyLevel = new(
+        100f,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    
+    private NetworkVariable<bool> isSleeping = new(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
+    public event Action OnStartSleeping;
+    public event Action OnStopSleeping;
+    
+    public override void OnNetworkSpawn()
+    {
+        energyLevel.OnValueChanged += HandleEnergyChanged;
+
+        if (energy_bar != null)
+            energy_bar.value = energyLevel.Value;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        energyLevel.OnValueChanged -= HandleEnergyChanged;
+    }
+
+    private void HandleEnergyChanged(float oldValue, float newValue)
+    {
+        if (!IsOwner) return;
+        
+        if (updateEnergyCoroutine != null)
+            StopCoroutine(updateEnergyCoroutine);
+
+        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar(oldValue, newValue));
+    }
 
     public Transform GetIngredientFollowTransform()
     {
@@ -125,64 +166,47 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     
     public void GetTired(float energy_points)
     {
-        energy_level -= energy_points;
-        if (energy_level < 0)
-        {
-            energy_level = 0f;
-            Debug.Log("Energy depleted. Consider sleeping or restarting.");
-        }
+        if (!IsServer) return;
 
-        if (updateEnergyCoroutine != null)
-        {
-            StopCoroutine(updateEnergyCoroutine);
-        }
-        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
+        energyLevel.Value = Mathf.Max(0f, energyLevel.Value - energy_points);
     }
 
-    public void GetEnegy(float energy_points)
+    public void GetEnergy(float energy_points)
     {
-        energy_level += energy_points;
-        if (energy_level > 100f)
-        {
-            energy_level = 100f;
-            Debug.Log("Maximum Energy reached.");
-        }
+        if (!IsServer) return;
 
-        if (updateEnergyCoroutine != null)
-        {
-            StopCoroutine(updateEnergyCoroutine);
-        }
-        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar());
+        energyLevel.Value = Mathf.Min(100f, energyLevel.Value + energy_points);
     }
 
     public float GetEnergyLevel()
     {
-        return energy_level;
+        return energyLevel.Value;
     }
 
-    private IEnumerator UpdateEnergyBar()
+    private IEnumerator UpdateEnergyBar(float from, float to)
     {
-        float time = 0;
+        if (energy_bar == null)
+            yield break;
+
+        float time = 0f;
         float duration = 0.5f;
-        float startValue = energy_bar.value;
 
         while (time < duration)
         {
-            energy_bar.value = Mathf.Lerp(startValue, energy_level, time / duration);
+            energy_bar.value = Mathf.Lerp(from, to, time / duration);
             time += Time.deltaTime;
             yield return null;
         }
-        energy_bar.value = energy_level;
+
+        energy_bar.value = to;
     }
 
-    [SerializeField] private Animator animator;
-    [SerializeField] private string animatorSleepingBool = "isSleeping";
-
-    [ClientRpc]
-    public void StartSleepingClientRpc(float duration, Vector3 position)
+    public void StartSleeping(float duration, Vector3 position)
     {
+        OnStartSleeping?.Invoke();
+        
         if (!IsOwner) return;
-
+        
         PlayerInputController input = GetComponent<PlayerInputController>();
         if (input != null)
             input.SetActive(false);
@@ -193,31 +217,14 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
             movement.StopMovement();
             movement.MoveTo(position);
         }
-
-        Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
-        if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))
-        {
-            anim.SetBool(animatorSleepingBool, true);
-        }
-
-        StartCoroutine(EndLocalSleepAfter(duration));
     }
 
-    private IEnumerator EndLocalSleepAfter(float duration)
+    public void StopSleeping()
     {
-        yield return new WaitForSeconds(duration);
-        StopSleepingLocal();
-    }
-
-    [ClientRpc]
-    public void StopSleepingClientRpc()
-    {
+        OnStopSleeping?.Invoke();
+        
         if (!IsOwner) return;
-        StopSleepingLocal();
-    }
-
-    private void StopSleepingLocal()
-    {
+        
         PlayerInputController input = GetComponent<PlayerInputController>();
         if (input != null)
             input.SetActive(true);
@@ -225,11 +232,5 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
         PlayerMovementController movement = GetComponent<PlayerMovementController>();
         if (movement != null)
             movement.StartMovement();
-
-        Animator anim = animator != null ? animator : GetComponentInChildren<Animator>();
-        if (anim != null && !string.IsNullOrEmpty(animatorSleepingBool))
-        {
-            anim.SetBool(animatorSleepingBool, false);
-        }
     }
 }

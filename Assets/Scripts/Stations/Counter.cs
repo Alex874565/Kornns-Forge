@@ -46,8 +46,6 @@ public class Counter : BaseStation
     private void InteractServer(PlayerStatusController player)
     {
         if (!CanInteract(player)) return;
-
-        TriggerInteract();
         SubmitOrder(player);
     }
 
@@ -91,5 +89,7 @@ public class Counter : BaseStation
             ScoreManager.Instance.AddScore(targetOrder.points);
 
         orderManager.CompleteOrder(targetOrder);
+        
+        TriggerInteract();
     }
 }

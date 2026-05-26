@@ -24,7 +24,7 @@ public abstract class Tiredness : MonoBehaviour, ITiredness
    protected void ApplyRecharge(float amount)
    {
       if (playerStatusController == null) return;
-      playerStatusController.GetEnegy(amount);
+      playerStatusController.GetEnergy(amount);
    }
 
    // Interface compatibility for existing station classes that expect float-returning methods

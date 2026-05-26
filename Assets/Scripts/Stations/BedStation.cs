@@ -18,6 +18,7 @@ public class BedStation : BaseStation, ITiredness
     private bool IsOccupied => occupantId.Value != ulong.MaxValue;
     private Coroutine sleepCoroutine;
 
+    
     public override bool CanInteract(PlayerStatusController player)
     {
         if (player == null) return false;
@@ -28,24 +29,69 @@ public class BedStation : BaseStation, ITiredness
 
     public override void Interact(PlayerStatusController player)
     {
-        if (player == null || IsOccupied) return;
+        if (player == null) return;
 
-        // Tell the owner client to enter sleeping state (locks input/animation)
-        if (player.IsOwner)
+        if (!IsServer)
         {
-            player.StartSleepingClientRpc(sleepDuration, gameObject.transform.position);
+            InteractServerRpc(player.NetworkObjectId);
+            return;
         }
 
-        if (!IsServer) return;
+        InteractServer(player);
+    }
 
-        TriggerInteract();
-        TriggerStartProcessing();
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractServerRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
 
-        // Occupy the bed with this player
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        InteractServer(player);
+    }
+
+    private void InteractServer(PlayerStatusController player)
+    {
+        if (player == null) return;
+        if (IsOccupied) return;
+        if (!CanInteract(player)) return;
+
         occupantId.Value = player.NetworkObjectId;
 
-        // Start server-side coroutine to recharge player over time and free bed
+        StartSleepingClientRpc(player.NetworkObjectId);
+
+        if (sleepCoroutine != null)
+            StopCoroutine(sleepCoroutine);
+
         sleepCoroutine = StartCoroutine(HandleSleepRoutine(player, sleepDuration, energy));
+    }
+
+    [ClientRpc]
+    private void StartSleepingClientRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+        
+        TriggerInteract(); // particles on every client
+        
+        player.StartSleeping(sleepDuration, transform.position);
+    }
+
+    [ClientRpc]
+    private void StopSleepingClientRpc(ulong playerNetworkObjectId)
+    {
+        if (!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(playerNetworkObjectId, out NetworkObject playerNetworkObject))
+            return;
+
+        PlayerStatusController player = playerNetworkObject.GetComponent<PlayerStatusController>();
+        if (player == null) return;
+
+        player.StopSleeping();
     }
 
     private IEnumerator HandleSleepRoutine(PlayerStatusController player, float duration, float totalEnergy)
@@ -64,45 +110,23 @@ public class BedStation : BaseStation, ITiredness
         {
             yield return new WaitForSeconds(interval);
             if (player != null)
-                player.GetEnegy(perTick);
+                player.GetEnergy(perTick);
             elapsed += interval;
         }
 
         // Ensure full amount applied (small remainder)
         float finalEnergy = totalEnergy - (perTick * Mathf.Floor(duration / interval));
         if (finalEnergy > 0f && player != null)
-            player.GetEnegy(finalEnergy);
+            player.GetEnergy(finalEnergy);
 
         // Free bed and notify client to stop sleeping animation/input lock
         if (player != null)
-            player.StopSleepingClientRpc();
+            StopSleepingClientRpc(player.NetworkObjectId);
 
         TriggerStopProcessing();
         occupantId.Value = ulong.MaxValue;
         sleepCoroutine = null;
     }
-
-    public override void InteractAlternate(PlayerStatusController player)
-    {
-        if (!IsServer) return;
-        if (player == null) return;
-
-        // Allow the occupying player to wake early
-        if (!IsOccupied) return;
-        if (occupantId.Value != player.NetworkObjectId) return;
-
-        if (sleepCoroutine != null)
-        {
-            StopCoroutine(sleepCoroutine);
-            sleepCoroutine = null;
-        }
-
-        // Ensure client restores controls/animation
-        player.StopSleepingClientRpc();
-
-        TriggerStopProcessing();
-        occupantId.Value = ulong.MaxValue;
-        }
 
     // ITiredness compatibility methods - beds primarily recharge
     public float GetTired(float energy_points) => 0f;
