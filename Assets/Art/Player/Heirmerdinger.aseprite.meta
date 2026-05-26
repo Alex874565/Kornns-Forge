@@ -131,32 +131,11 @@ ScriptedImporter:
     customData: 
     rect:
       serializedVersion: 2
-      x: 71
+      x: 4
       y: 4
       width: 51
       height: 59
     spriteID: 74d5f3c110ec54b4e8af595ec9f44b45
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 71, y: 4}
-  - name: Frame_1
-    originalName: 
-    pivot: {x: 0.5423729, y: 0}
-    alignment: 9
-    border: {x: 0, y: 0, z: 0, w: 0}
-    customData: 
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 4
-      width: 59
-      height: 64
-    spriteID: 7d0353744a5f5a44dbc9da2320e25dd0
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -179,7 +158,7 @@ ScriptedImporter:
     layerType: 0
     blendMode: 0
     cells:
-    - name: Frame_0
+    - name: Heirmerdinger
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -188,15 +167,6 @@ ScriptedImporter:
         width: 51
         height: 59
       spriteId: 74d5f3c110ec54b4e8af595ec9f44b45
-    - name: Frame_1
-      frameIndex: 1
-      additiveSortOrder: 0
-      cellRect:
-        x: 0
-        y: 0
-        width: 59
-        height: 64
-      spriteId: 7d0353744a5f5a44dbc9da2320e25dd0
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -264,4 +234,4 @@ ScriptedImporter:
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
-  previousTextureSize: {x: 128, y: 128}
+  previousTextureSize: {x: 64, y: 128}
