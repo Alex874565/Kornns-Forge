@@ -31,7 +31,7 @@ PrefabInstance:
     - target: {fileID: 2938071339951260982, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: baseStation
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1698840285647994773}
     - target: {fileID: 3864569257246280592, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: station
       value: 
@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3981030981
+      value: 3135658648
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -80,6 +80,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 04160ac0b20a4204f8613de648e38279, type: 3}
+    - target: {fileID: 6937340146597464851, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: m_Color.b
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 6937340146597464851, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: m_Color.g
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 6937340146597464851, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
+      propertyPath: m_Color.r
+      value: 0.78431374
+      objectReference: {fileID: 0}
     - target: {fileID: 6937340146597464851, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: m_SortingLayer
       value: 3

@@ -21,6 +21,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 608108305, guid: 20f3871825578a849a792f783fbbbafb, type: 3}
     - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: m_Color.b
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: m_Color.g
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
+      propertyPath: m_Color.r
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 1311090165248195526, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: m_SortingLayer
       value: 3
       objectReference: {fileID: 0}
@@ -146,7 +158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3040838739
+      value: 1748921244
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: 0f55da1d6491f61409d0c444d577a3c1, type: 3}
       propertyPath: SceneMigrationSynchronization

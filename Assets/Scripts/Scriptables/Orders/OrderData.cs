@@ -24,43 +24,52 @@ public class OrderData : ScriptableObject
         if (requirements == null || ingredients == null)
             return false;
 
-        // Count provided ingredients
+        // ---------------- PROVIDED COUNTS ----------------
+
         Dictionary<IngredientSO, int> providedCounts = new();
 
-        int providedTotal = 0;
-
-        foreach (IngredientSO so in ingredients)
+        foreach (IngredientSO ingredient in ingredients)
         {
-            if (so == null)
+            if (ingredient == null)
                 continue;
 
-            if (!providedCounts.ContainsKey(so))
-                providedCounts[so] = 0;
+            if (!providedCounts.ContainsKey(ingredient))
+                providedCounts[ingredient] = 0;
 
-            providedCounts[so]++;
-            providedTotal++;
+            providedCounts[ingredient]++;
         }
 
-        // Count required ingredients
-        int requiredTotal = 0;
+        // ---------------- REQUIRED COUNTS ----------------
+
+        Dictionary<IngredientSO, int> requiredCounts = new();
 
         foreach (OrderRequirement req in requirements)
         {
             if (req == null || req.ingredient == null)
                 return false;
 
-            requiredTotal += req.quantity;
+            if (!requiredCounts.ContainsKey(req.ingredient))
+                requiredCounts[req.ingredient] = 0;
 
-            if (!providedCounts.TryGetValue(req.ingredient, out int count))
-                return false;
-
-            if (count != req.quantity)
-                return false;
+            requiredCounts[req.ingredient] += req.quantity;
         }
 
-        // Reject extra ingredients
-        if (providedTotal != requiredTotal)
+        // ---------------- COMPARE ----------------
+
+        if (providedCounts.Count != requiredCounts.Count)
             return false;
+
+        foreach (var pair in requiredCounts)
+        {
+            IngredientSO ingredient = pair.Key;
+            int requiredAmount = pair.Value;
+
+            if (!providedCounts.TryGetValue(ingredient, out int providedAmount))
+                return false;
+
+            if (providedAmount != requiredAmount)
+                return false;
+        }
 
         return true;
     }

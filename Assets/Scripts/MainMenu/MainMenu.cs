@@ -1,10 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject optionsMenu;
     public GameObject multiplayerMenu;
+
+    [SerializeField] private GameObject firstMainMenuButton;
+    [SerializeField] private GameObject firstMultiplayerButton;
+    [SerializeField] private GameObject firstOptionsButton;
+
+    private void OnEnable()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstMainMenuButton);
+    }
 
     private void Start()
     {
@@ -18,6 +29,9 @@ public class MainMenu : MonoBehaviour
         {
             multiplayerMenu.SetActive(true);
             gameObject.SetActive(false);
+
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstMultiplayerButton);
         }
     }
 
@@ -27,6 +41,9 @@ public class MainMenu : MonoBehaviour
 
         optionsMenu.SetActive(true);
         gameObject.SetActive(false);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstOptionsButton);
     }
 
     public void OnQuitButton()
