@@ -22,5 +22,8 @@ MonoBehaviour:
     quantity: 1
     processIcon: {fileID: 21300000, guid: bf8664626af277e48928de7d7badd563, type: 3}
   - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
-    quantity: 2
+    quantity: 1
+    processIcon: {fileID: 0}
+  - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
+    quantity: 1
     processIcon: {fileID: 0}

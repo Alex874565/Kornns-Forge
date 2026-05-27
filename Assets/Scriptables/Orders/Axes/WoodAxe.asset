@@ -19,5 +19,11 @@ MonoBehaviour:
   reward: 200
   requirements:
   - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
-    quantity: 3
+    quantity: 1
+    processIcon: {fileID: 0}
+  - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
+    quantity: 1
+    processIcon: {fileID: 0}
+  - ingredient: {fileID: 11400000, guid: 375aebb47617fce46b283c20f188ed91, type: 2}
+    quantity: 1
     processIcon: {fileID: 0}
