@@ -4,9 +4,13 @@ using TMPro;
 public class TimerUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
+    private Color defaultColor;
 
     private void Start()
     {
+        if (timerText != null)
+            defaultColor = timerText.color;
+
         if (KornnGameManager.Instance != null)
         {
             KornnGameManager.Instance.OnTimeChanged += UpdateTimer;
@@ -23,7 +27,14 @@ public class TimerUI : MonoBehaviour
 
     private void UpdateTimer(float time)
     {
+        if (timerText == null) return;
+
         timerText.text = FormatTime(time);
+
+        if (time <= 60f)
+            timerText.color = Color.red;
+        else
+            timerText.color = defaultColor;
     }
 
     private string FormatTime(float time)

@@ -11,16 +11,31 @@ public class TrashBin : BaseStation
     {
         if (!CanInteract(player)) return;
 
-        Ingredient heldIngredient = player.GetIngredient();
-        if (heldIngredient == null) return;
-
         if (IsServer)
         {
-            ICommand discard = new DiscardIngredientCommand(heldIngredient);
-            discard.Execute();
-            player.ClearIngredient();
-        }
+            Ingredient heldIngredient = player.GetIngredient();
+            if (heldIngredient != null)
+            {
+                ICommand discard = new DiscardIngredientCommand(heldIngredient);
+                discard.Execute();
+                player.ClearIngredient();
+                TriggerInteract();
+                return;
+            }
 
-        TriggerInteract();
+            Order heldOrder = player.GetOrder();
+            if (heldOrder != null)
+            {
+                ICommand discard = new DiscardOrderCommand(heldOrder);
+                discard.Execute();
+                player.ClearOrder();
+                TriggerInteract();
+                return;
+            }
+        }
+        else
+        {
+            TriggerInteract();
+        }
     }
 }

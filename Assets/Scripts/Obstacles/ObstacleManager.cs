@@ -24,6 +24,10 @@ public class ObstacleManager : NetworkBehaviour
     [Header("Spawn Area")]
     [SerializeField] private BoxCollider2D spawnArea;
 
+    [Header("Warning Settings")]
+    [SerializeField] private GameObject warningPrefab;  
+    [SerializeField] private float warningDuration = 0.5f; 
+
     private int totalWeight;
 
     public override void OnNetworkSpawn()
@@ -69,15 +73,26 @@ public class ObstacleManager : NetworkBehaviour
         if (string.IsNullOrEmpty(obstacleTag)) return;
 
         Vector3 spawnPosition = GetRandomSpawnPosition();
+        StartCoroutine(ShowWarningAndSpawn(obstacleTag, spawnPosition));
+    }
 
-        Debug.Log($"Spawning '{obstacleTag}' at position: {spawnPosition}");
+    private IEnumerator ShowWarningAndSpawn(string obstacleTag, Vector3 spawnPosition)
+    {
+        GameObject warningInstance = null;
+        if (warningPrefab != null)
+        {
+            warningInstance = Instantiate(warningPrefab, spawnPosition, Quaternion.identity);
+            warningInstance.transform.position -= Vector3.up * 1f;
+        }
+
+        yield return new WaitForSeconds(warningDuration);
+
+        if (warningInstance != null)
+            Destroy(warningInstance);
 
         GameObject obstacleInstance = ObjectPooler.Instance.SpawnFromPool(obstacleTag, spawnPosition, fallDelay);
-
         if (obstacleInstance == null)
-        {
             Debug.LogWarning($"ObjectPooler failed to spawn an obstacle with tag '{obstacleTag}'.");
-        }
     }
 
     private string GetRandomObstacleTag()
