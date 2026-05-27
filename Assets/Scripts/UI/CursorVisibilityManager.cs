@@ -18,8 +18,8 @@ public class CursorVisibilityManager : MonoBehaviour
             InputAction inputAction = (InputAction) obj;
             InputControl inputControl = inputAction.activeControl;
             InputDevice inputDevice = inputControl.device;
-            
-            SetCursorVisibility(CursorVisibilityPossible && inputDevice is Mouse);
+            if(inputDevice is Mouse && CursorVisibilityPossible)
+                SetCursorVisibility(true);
         }
     }
     

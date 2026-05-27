@@ -3208,7 +3208,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7.359375
+  orthographic size: 8.4375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4517,6 +4517,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreakingTile (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7477368749042562060, guid: b9310064ce6cdb4439ffd1b4478240db, type: 3}
+      propertyPath: 'crackStages.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6574086317575624163, guid: 6c641bb8f2c964d42aed91d389a60f2e, type: 3}
+    - target: {fileID: 7477368749042562060, guid: b9310064ce6cdb4439ffd1b4478240db, type: 3}
+      propertyPath: 'crackStages.Array.data[1]'
+      value: 
+      objectReference: {fileID: 3823185729371738461, guid: 3f85518531b57d34580ca49da086e877, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8890,6 +8898,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreakingTile
       objectReference: {fileID: 0}
+    - target: {fileID: 7477368749042562060, guid: b9310064ce6cdb4439ffd1b4478240db, type: 3}
+      propertyPath: 'crackStages.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6574086317575624163, guid: 6c641bb8f2c964d42aed91d389a60f2e, type: 3}
+    - target: {fileID: 7477368749042562060, guid: b9310064ce6cdb4439ffd1b4478240db, type: 3}
+      propertyPath: 'crackStages.Array.data[1]'
+      value: 
+      objectReference: {fileID: 3823185729371738461, guid: 3f85518531b57d34580ca49da086e877, type: 3}
     - target: {fileID: 8562287303886848947, guid: b9310064ce6cdb4439ffd1b4478240db, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 515080626

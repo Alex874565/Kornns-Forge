@@ -102,8 +102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4241165027
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2301353720
+  InScenePlacedSourceGlobalObjectIdHash: 1249021753
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -130,8 +130,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 3
   crackStages:
-  - {fileID: -1425260270, guid: 6c641bb8f2c964d42aed91d389a60f2e, type: 3}
   - {fileID: 6574086317575624163, guid: 6c641bb8f2c964d42aed91d389a60f2e, type: 3}
+  - {fileID: 3823185729371738461, guid: 3f85518531b57d34580ca49da086e877, type: 3}
   - {fileID: -1220869728, guid: 3f85518531b57d34580ca49da086e877, type: 3}
   respawnDelay: 5
 --- !u!61 &1867086877188513113
