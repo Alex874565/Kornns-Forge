@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class OrderFactory : IOrderFactory
 {
-    public OrderProgress CreateOrder(OrderData order, float timer, int points)
+    public OrderProgress CreateOrder(OrderData order, float timer, int points, float timeRemaining)
     {
         if(order == null)
         {
@@ -10,6 +10,6 @@ public class OrderFactory : IOrderFactory
             return null;
         }
 
-        return new OrderProgress(order, timer, points);
+        return new OrderProgress(order, timer, points, timeRemaining);
     }
 }

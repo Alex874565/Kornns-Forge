@@ -26,19 +26,32 @@ public class OrderManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsServer) return;
-
+        if (IsServer)
+        {
+            UpdateServerOrders();
+        }
+            
+        UpdateClientTimers();
+    }
+    
+    private void UpdateClientTimers()
+    {
+        foreach (OrderProgress order in activeOrders)
+        {
+            order.UpdateTimer(Time.deltaTime);
+        }
+    }
+    
+    private void UpdateServerOrders()
+    {
         bool changed = false;
 
         for (int i = activeOrders.Count - 1; i >= 0; i--)
         {
             OrderProgress order = activeOrders[i];
-
-            order.UpdateTimer(Time.deltaTime);
-
+            
             if (order.IsExpired())
             {
-                Debug.Log($"Order expired: {order.order.orderName}");
                 order.Expire();
                 activeOrders.RemoveAt(i);
                 TryFillOrderSlot();
@@ -106,7 +119,7 @@ public class OrderManager : NetworkBehaviour
 
     private void CreateAndAddOrder(OrderData order, float timer, int points)
     {
-        OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points);
+        OrderProgress newOrder = orderFactory.CreateOrder(order, timer, points, timer);
         if (newOrder == null) return;
 
         activeOrders.Add(newOrder);
@@ -143,14 +156,15 @@ public class OrderManager : NetworkBehaviour
 
         SyncOrdersClientRpc();
     }
-
+    
     [ClientRpc]
     private void SyncOrdersClientRpc()
     {
         int count = activeOrders.Count;
 
         int[] orderIndexes = new int[count];
-        float[] timers = new float[count];
+        float[] maxTimes = new float[count];
+        float[] timesRemaining = new float[count];
         int[] points = new int[count];
         bool[] crafted = new bool[count];
 
@@ -159,32 +173,36 @@ public class OrderManager : NetworkBehaviour
             OrderProgress progress = activeOrders[i];
 
             orderIndexes[i] = GetOrderIndex(progress.order);
-            timers[i] = progress.timeRemaining;
+            maxTimes[i] = progress.maxTime;
+            timesRemaining[i] = progress.timeRemaining;
             points[i] = progress.points;
             crafted[i] = progress.crafted;
         }
 
-        ReceiveOrdersClientRpc(orderIndexes, timers, points, crafted);
+        ReceiveOrdersClientRpc(orderIndexes, maxTimes, timesRemaining, points, crafted);
     }
 
     [ClientRpc]
-    private void ReceiveOrdersClientRpc(int[] orderIndexes, float[] timers, int[] points, bool[] crafted)
+    private void ReceiveOrdersClientRpc(
+        int[] orderIndexes,
+        float[] maxTimes,
+        float[] timesRemaining,
+        int[] points,
+        bool[] crafted)
     {
         if (!IsServer)
         {
-
             activeOrders.Clear();
 
             for (int i = 0; i < orderIndexes.Length; i++)
             {
-                int orderIndex = orderIndexes[i];
-
-                OrderData orderData = ordersDatabase.GetOrderByIndex(orderIndex);
+                OrderData orderData = ordersDatabase.GetOrderByIndex(orderIndexes[i]);
 
                 OrderProgress progress = orderFactory.CreateOrder(
                     orderData,
-                    timers[i],
-                    points[i]
+                    maxTimes[i],
+                    points[i],
+                    timesRemaining[i]
                 );
 
                 progress.crafted = crafted[i];
@@ -195,7 +213,7 @@ public class OrderManager : NetworkBehaviour
 
         OnOrdersUpdated?.Invoke();
     }
-
+    
     private int GetOrderIndex(OrderData order)
     {
         int index = ordersDatabase.GetOrderIndex(order);

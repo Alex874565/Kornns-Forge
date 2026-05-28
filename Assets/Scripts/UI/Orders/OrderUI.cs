@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,19 +36,8 @@ public class OrderUI : MonoBehaviour
         }
 
         RefreshRequirements();
-        RefreshTimer();
-    }
 
-    public void Refresh()
-    {
-        if (progress == null)
-            return;
-
-        if (resultIcon != null)
-            resultIcon.color = progress.crafted ? Color.green : Color.white;
-
-        RefreshRequirements();
-        RefreshTimer();
+        progress.OnTimerUpdated += RefreshTimer;
     }
 
     private void RefreshRequirements()
@@ -73,14 +63,14 @@ public class OrderUI : MonoBehaviour
         }
     }
 
-    private void RefreshTimer()
+    private void RefreshTimer(float timeRemaining)
     {
         if (timerBar == null || progress == null)
             return;
 
         float timePercent = progress.maxTime <= 0f
             ? 0f
-            : progress.timeRemaining / progress.maxTime;
+            : timeRemaining / progress.maxTime;
 
         timePercent = Mathf.Clamp01(timePercent);
 
@@ -110,13 +100,5 @@ public class OrderUI : MonoBehaviour
             foreach (Transform child in ingredientsParent)
                 Destroy(child.gameObject);
         }
-    }
-
-    private void Update()
-    {
-        if (progress == null)
-            return;
-
-        RefreshTimer();
     }
 }

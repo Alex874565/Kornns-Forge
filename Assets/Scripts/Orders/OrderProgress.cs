@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
 [System.Serializable]
@@ -18,14 +19,15 @@ public class OrderProgress
 
     public event Action OnOrderCompleted;
     public event Action OnOrderExpired;
+    public event Action<float> OnTimerUpdated;
 
-    public OrderProgress(OrderData order, float duration, int points)
+    public OrderProgress(OrderData order, float duration, int points, float timeRemaining)
     {
         this.order = order;
         this.points = points;
 
         maxTime = duration;
-        timeRemaining = duration;
+        this.timeRemaining = timeRemaining;
     }
 
     public void UpdateTimer(float deltaTime)
@@ -34,6 +36,8 @@ public class OrderProgress
 
         timeRemaining -= deltaTime;
         timeRemaining = Mathf.Max(timeRemaining, 0f);
+        
+        OnTimerUpdated?.Invoke(timeRemaining);
     }
 
     public bool IsExpired()
