@@ -12,6 +12,8 @@ public class PlayerCollisionController : NetworkBehaviour
     
     public bool IsGrounded { get; private set; }
     public bool BumpedHead { get; private set; }
+    public MovingTile CurrentMovingPlatform { get; private set; }
+    
     private bool previousIsGrounded;
     
     private void FixedUpdate()
@@ -35,10 +37,12 @@ public class PlayerCollisionController : NetworkBehaviour
         bool nowGrounded = groundHit.collider != null;
 
         // Detect landing event (transition from not grounded -> grounded)
-        if (!previousIsGrounded && nowGrounded)
+        if (nowGrounded)
         {
-            // If the thing we landed on has a DestructibleTile, request damage
-            if (groundHit.collider != null)
+            var movingTile = groundHit.collider.GetComponent<MovingTile>();
+            CurrentMovingPlatform = movingTile;
+            
+            if (!previousIsGrounded)
             {
                 var destructible = groundHit.collider.GetComponent<DestructibleTile>();
                 if (destructible != null)
@@ -46,6 +50,10 @@ public class PlayerCollisionController : NetworkBehaviour
                     destructible.RequestDamage(1);
                 }
             }
+        }
+        else
+        {
+            CurrentMovingPlatform = null;
         }
 
         previousIsGrounded = nowGrounded;

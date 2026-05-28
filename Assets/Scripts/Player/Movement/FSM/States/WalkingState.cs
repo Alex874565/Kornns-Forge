@@ -25,7 +25,6 @@ public class WalkingState : MovementState
     public override void FixedUpdate()
     {
         HandleGroundMovement();
-        ApplyVelocity();
     }
 
     public override MovementStateType? NextState()
@@ -39,46 +38,52 @@ public class WalkingState : MovementState
         if (!Ctx.Collision.IsGrounded)
             return MovementStateType.Falling;
 
-        if (Mathf.Abs(Ctx.Rb.linearVelocity.x) <= 0.1f)
+        float movementVelocity = Ctx.Rb.linearVelocity.x;
+        if (Ctx.Collision.CurrentMovingPlatform != null)
+        {
+            movementVelocity -= Ctx.Collision.CurrentMovingPlatform.HorizontalVelocity;
+        }
+        
+        if (Mathf.Abs(movementVelocity) <= 0.1f)
             return MovementStateType.Idle;
-
+        
         return null;
     }
 
     private void HandleGroundMovement()
     {
-        Vector2 movement = Ctx.Input.Movement;
+        if(Ctx.CanMove){
+            Vector2 movement = Ctx.Input.Movement;
 
-        if (movement != Vector2.zero)
-        {
-            float targetVelocityX = movement.x * Ctx.Stats.MaxSpeed;
-            Ctx.Velocity.x = Mathf.Lerp(
-                Ctx.Velocity.x,
-                targetVelocityX,
-                Ctx.Stats.Acceleration * Time.fixedDeltaTime
-            );
+            if (Mathf.Abs(movement.x) > 0.1f)
+            {
+                float targetVelocityX = movement.x * Ctx.Stats.MaxSpeed;
+                Ctx.Velocity.x = Mathf.Lerp(
+                    Ctx.Velocity.x,
+                    targetVelocityX,
+                    Ctx.Stats.Acceleration * Time.fixedDeltaTime
+                );
+            }
+            else
+            {
+                Ctx.Velocity.x = Mathf.Lerp(
+                    Ctx.Velocity.x,
+                    0f,
+                    Ctx.Stats.Deceleration * Time.fixedDeltaTime
+                );
+            }
         }
         else
         {
-            Ctx.Velocity.x = Mathf.Lerp(
-                Ctx.Velocity.x,
-                0f,
-                Ctx.Stats.Deceleration * Time.fixedDeltaTime
-            );
+            Ctx.Velocity.x = 0f;
         }
+
+        float platformVelocity = 0f;
+        if(Ctx.Collision.CurrentMovingPlatform != null)
+            platformVelocity = Ctx.Collision.CurrentMovingPlatform.HorizontalVelocity;
 
         Ctx.Velocity.y = 0f;
-    }
-
-    private void ApplyVelocity()
-    {
-        if (Ctx.CanMove)
-        {
-            Ctx.Rb.linearVelocity = Ctx.Velocity;
-        }
-        else
-        {
-            Ctx.Rb.linearVelocity = Vector2.zero;
-        }
+        
+        Ctx.Rb.linearVelocity = new Vector2(Ctx.Velocity.x + platformVelocity, Ctx.Velocity.y);
     }
 }

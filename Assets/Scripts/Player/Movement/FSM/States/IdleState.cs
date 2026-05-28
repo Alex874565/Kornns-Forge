@@ -30,8 +30,12 @@ public class IdleState : MovementState
             Ctx.Stats.Deceleration * Time.fixedDeltaTime
         );
 
+        float platformVelocity = 0f;
+        if(Ctx.Collision.CurrentMovingPlatform != null)
+            platformVelocity = Ctx.Collision.CurrentMovingPlatform.HorizontalVelocity;
+
         Ctx.Velocity.y = 0f;
-        Ctx.Rb.linearVelocity = Ctx.Velocity;
+        Ctx.Rb.linearVelocity = new Vector2(Ctx.Velocity.x + platformVelocity, Ctx.Velocity.y);
     }
 
     public override MovementStateType? NextState()

@@ -4,26 +4,47 @@ public class MovingTile : MonoBehaviour
 {
     [Tooltip("Waypoints transforms the tile will move between (in order)")]
     public Transform[] waypoints;
+
     [Tooltip("Movement speed in world units per second")]
     public float speed = 2f;
+
     [Tooltip("If true the path loops; otherwise it ping-pongs")]
     public bool loop = true;
+
+    public float HorizontalVelocity { get; private set; }
 
     private int currentIndex = 0;
     private int direction = 1;
 
+    private Vector3 lastPosition;
+
     private void Start()
     {
-        if (waypoints == null || waypoints.Length == 0) return;
+        if (waypoints == null || waypoints.Length == 0)
+            return;
+
         transform.position = waypoints[0].position;
+        lastPosition = transform.position;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (waypoints == null || waypoints.Length == 0) return;
+        if (waypoints == null || waypoints.Length == 0)
+            return;
 
         Transform target = waypoints[currentIndex];
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            target.position,
+            speed * Time.fixedDeltaTime
+        );
+
+        // Only horizontal velocity
+        HorizontalVelocity =
+            (transform.position.x - lastPosition.x) / Time.fixedDeltaTime;
+
+        lastPosition = transform.position;
 
         if (Vector3.Distance(transform.position, target.position) < 0.01f)
         {
@@ -59,14 +80,25 @@ public class MovingTile : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (waypoints == null || waypoints.Length == 0) return;
+        if (waypoints == null || waypoints.Length == 0)
+            return;
+
         Gizmos.color = Color.cyan;
+
         for (int i = 0; i < waypoints.Length; i++)
         {
-            if (waypoints[i] == null) continue;
+            if (waypoints[i] == null)
+                continue;
+
             Gizmos.DrawSphere(waypoints[i].position, 0.05f);
+
             if (i + 1 < waypoints.Length && waypoints[i + 1] != null)
-                Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
+            {
+                Gizmos.DrawLine(
+                    waypoints[i].position,
+                    waypoints[i + 1].position
+                );
+            }
         }
     }
 }
