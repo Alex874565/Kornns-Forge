@@ -3,8 +3,11 @@ using System;
 
 public class FallingState : MovementState
 {
-    private readonly Action _onStartFalling, _onLand;
-    
+    private readonly Action _onStartFalling;
+    private readonly Action _onLand;
+
+    private float _lastFallVelocity;
+
     public FallingState(PlayerMovementContext ctx, Action onStartFalling, Action onLand) : base(ctx)
     {
         _onStartFalling = onStartFalling;
@@ -13,11 +16,14 @@ public class FallingState : MovementState
 
     public override void Enter()
     {
+        _lastFallVelocity = 0f;
         _onStartFalling?.Invoke();
     }
 
     public override void FixedUpdate()
     {
+        _lastFallVelocity = Ctx.Velocity.y;
+
         HandleAirMovement();
         HandleFall();
     }
@@ -27,8 +33,9 @@ public class FallingState : MovementState
         Ctx.IsFastFalling = false;
         Ctx.FastFallTime = 0f;
         Ctx.IsPastApexThreshold = false;
-        
-        _onLand?.Invoke();
+
+        if (_lastFallVelocity <= -Ctx.Stats.MinLandingVelocity)
+            _onLand?.Invoke();
     }
 
     public override MovementStateType? NextState()
@@ -79,7 +86,7 @@ public class FallingState : MovementState
 
         Ctx.FastFallTime += Time.fixedDeltaTime;
     }
-    
+
     private void HandleAirMovement()
     {
         Vector2 movement = Ctx.Input.Movement;
@@ -87,6 +94,7 @@ public class FallingState : MovementState
         if (movement != Vector2.zero)
         {
             float targetVelocityX = movement.x * Ctx.Stats.MaxSpeed;
+
             Ctx.Velocity.x = Mathf.Lerp(
                 Ctx.Velocity.x,
                 targetVelocityX,

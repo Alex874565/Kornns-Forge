@@ -36,6 +36,8 @@ public class PlayerMovementStats : ScriptableObject
     [field: SerializeField] public float TimeForUpwardsCancel { get; private set; } = 0.027f;
     [field: SerializeField] public float GravityReleaseMultiplier { get; private set; } = 2f;
     [field: SerializeField] public float MaxFallSpeed { get; private set; } = 25f;
+    [field: SerializeField] public float MinLandingVelocity { get; private set; } = 3f;
+
     
     public float Gravity { get; private set; }
     public float InitialJumpVelocity  { get; private set; }

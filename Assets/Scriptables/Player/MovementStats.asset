@@ -27,3 +27,4 @@ MonoBehaviour:
   <TimeForUpwardsCancel>k__BackingField: 0.027
   <GravityReleaseMultiplier>k__BackingField: 2
   <MaxFallSpeed>k__BackingField: 15
+  <MinLandingVelocity>k__BackingField: 4
