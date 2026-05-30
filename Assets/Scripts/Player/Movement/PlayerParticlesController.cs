@@ -10,7 +10,7 @@ public class PlayerParticlesController : NetworkBehaviour
     private struct ParticleEntry
     {
         public MovementParticleType type;
-        public ParticleSystem prefab;
+        public ParticleSystemController prefab;
         public Transform spawnPoint;
     }
 
@@ -74,8 +74,17 @@ public class PlayerParticlesController : NetworkBehaviour
         ParticleEntry? entry = GetEntry(type);
         if (entry == null) return;
 
-        ParticleSystem instance = Instantiate(entry?.prefab, position, Quaternion.identity);
-        StartCoroutine(DestroyAfterPlaying(instance));
+        ParticleSystemController particleSystemController;
+
+        if (entry?.prefab.parentToPlayer == true)
+        {
+            particleSystemController = Instantiate(entry?.prefab, position, Quaternion.identity, gameObject.transform);
+        }
+        else
+        {
+            particleSystemController = Instantiate(entry?.prefab, position, Quaternion.identity);
+        }
+        particleSystemController.PlayParticles();
     }
 
     private ParticleEntry? GetEntry(MovementParticleType type)
@@ -87,17 +96,5 @@ public class PlayerParticlesController : NetworkBehaviour
         }
 
         return null;
-    }
-
-    private IEnumerator DestroyAfterPlaying(ParticleSystem particles)
-    {
-        particles.Play();
-
-        float lifetime = particles.main.duration +
-                         particles.main.startLifetime.constantMax;
-
-        yield return new WaitForSeconds(lifetime);
-
-        Destroy(particles.gameObject);
     }
 }
