@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class ObstacleManager : NetworkBehaviour
 {
+    public static ObstacleManager Instance { get; private set; }
+
+    // Additional spawn delay to add to the next spawn (seconds)
+    private float spawnCooldownTimer = 0f;
+
     [System.Serializable]
     public struct ObstacleEntry
     {
@@ -19,19 +24,23 @@ public class ObstacleManager : NetworkBehaviour
     [SerializeField] private List<ObstacleEntry> obstacles;
     [SerializeField] private float minSpawnInterval = 0.5f;
     [SerializeField] private float maxSpawnInterval = 1.5f;
+    [Tooltip("Multiplier applied to the randomly chosen spawn interval (use >1 to slow spawns)")]
+    [SerializeField] private float spawnIntervalMultiplier = 1.5f;
     [SerializeField] private float fallDelay = 3f;
-    
+
     [Header("Spawn Area")]
     [SerializeField] private BoxCollider2D spawnArea;
 
     [Header("Warning Settings")]
-    [SerializeField] private GameObject warningPrefab;  
-    [SerializeField] private float warningDuration = 0.5f; 
+    [SerializeField] private GameObject warningPrefab;
+    [SerializeField] private float warningDuration = 0.5f;
 
     private int totalWeight;
 
     public override void OnNetworkSpawn()
     {
+        Instance = this;
+
         if (!IsServer)
         {
             enabled = false;
@@ -60,11 +69,22 @@ public class ObstacleManager : NetworkBehaviour
     {
         while (true)
         {
-            float spawnInterval = Random.Range(minSpawnInterval, maxSpawnInterval);
+            float spawnInterval = Random.Range(minSpawnInterval, maxSpawnInterval) * spawnIntervalMultiplier;
+            if (spawnCooldownTimer > 0f)
+            {
+                spawnInterval += spawnCooldownTimer;
+                spawnCooldownTimer = 0f;
+            }
             yield return new WaitForSeconds(spawnInterval);
 
             SpawnRandomObstacleFromPool();
         }
+    }
+
+    // Allow external code to set a multiplier at runtime (optional)
+    public void SetSpawnIntervalMultiplier(float multiplier)
+    {
+        spawnIntervalMultiplier = Mathf.Max(0.01f, multiplier);
     }
 
     private void SpawnRandomObstacleFromPool()
@@ -81,8 +101,11 @@ public class ObstacleManager : NetworkBehaviour
         GameObject warningInstance = null;
         if (warningPrefab != null)
         {
-            warningInstance = Instantiate(warningPrefab, spawnPosition, Quaternion.identity);
-            warningInstance.transform.position -= Vector3.up * 1f;
+            // Place the warning at the bottom of the spawn area (opposite the top spawn)
+            Vector3 warningPosition = new Vector3(spawnPosition.x, -8, spawnPosition.z);
+            // Slight upward offset so the warning is visible above the very bottom edge
+            warningPosition += Vector3.up * 0.5f;
+            warningInstance = Instantiate(warningPrefab, warningPosition, Quaternion.identity);
         }
 
         yield return new WaitForSeconds(warningDuration);
@@ -93,6 +116,13 @@ public class ObstacleManager : NetworkBehaviour
         GameObject obstacleInstance = ObjectPooler.Instance.SpawnFromPool(obstacleTag, spawnPosition, fallDelay);
         if (obstacleInstance == null)
             Debug.LogWarning($"ObjectPooler failed to spawn an obstacle with tag '{obstacleTag}'.");
+    }
+
+    // Add extra delay (in seconds) to the next spawn cycle. Server-only.
+    public void AddSpawnDelay(float seconds)
+    {
+        if (!IsServer) return;
+        spawnCooldownTimer += seconds;
     }
 
     private string GetRandomObstacleTag()
@@ -115,12 +145,12 @@ public class ObstacleManager : NetworkBehaviour
     private Vector3 GetRandomSpawnPosition()
     {
         Bounds bounds = spawnArea.bounds;
-        
+
         Debug.Log($"Spawn Area Bounds: min.x = {bounds.min.x}, max.x = {bounds.max.x}");
 
         float x = Random.Range(bounds.min.x, bounds.max.x);
         // Spawn at the top of the spawn area
-        float y = bounds.max.y; 
+        float y = bounds.max.y;
         return new Vector3(x, y, 0);
     }
 }

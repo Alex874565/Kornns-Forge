@@ -4301,8 +4301,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Game over
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
-  m_sharedMaterial: {fileID: 527839609675896801, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8244,6 +8244,7 @@ MonoBehaviour:
     weight: 10
   minSpawnInterval: 3
   maxSpawnInterval: 7
+  spawnIntervalMultiplier: 3
   fallDelay: 1
   spawnArea: {fileID: 1929133379}
   warningPrefab: {fileID: 6045056528683028256, guid: 869cce3ff2a0a3946ba5904ae84427cf, type: 3}
