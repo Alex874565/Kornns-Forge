@@ -4508,8 +4508,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "K\xF8rnn's Forge"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
-  m_sharedMaterial: {fileID: 527839609675896801, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7241,7 +7241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14706aea3d9b7e74f8d40ecb12843819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSceneName: FirstLevel
+  gameSceneName: Level2
   startGameButton: {fileID: 1008962776}
 --- !u!114 &2138501447
 MonoBehaviour:
