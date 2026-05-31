@@ -6,7 +6,7 @@ public class FallingState : MovementState
     private readonly Action _onStartFalling;
     private readonly Action _onLand;
 
-    private float _lastFallVelocity;
+    private bool executeFallEffects;
 
     public FallingState(PlayerMovementContext ctx, Action onStartFalling, Action onLand) : base(ctx)
     {
@@ -16,14 +16,13 @@ public class FallingState : MovementState
 
     public override void Enter()
     {
-        _lastFallVelocity = 0f;
-        _onStartFalling?.Invoke();
+        executeFallEffects = Ctx.Collision.ShouldFall;
+        if(executeFallEffects)
+            _onStartFalling?.Invoke();
     }
 
     public override void FixedUpdate()
     {
-        _lastFallVelocity = Ctx.Velocity.y;
-
         HandleAirMovement();
         HandleFall();
     }
@@ -34,7 +33,7 @@ public class FallingState : MovementState
         Ctx.FastFallTime = 0f;
         Ctx.IsPastApexThreshold = false;
 
-        if (_lastFallVelocity <= -Ctx.Stats.MinLandingVelocity)
+        if(executeFallEffects)
             _onLand?.Invoke();
     }
 

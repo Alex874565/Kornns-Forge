@@ -16,5 +16,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   <GroundCheckDistance>k__BackingField: 0.2
+  <MinGroundDistanceToFall>k__BackingField: 0.2
   <HeadCheckDistance>k__BackingField: 0.2
   <HeadSize>k__BackingField: 0.75
