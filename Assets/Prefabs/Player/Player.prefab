@@ -738,16 +738,20 @@ MonoBehaviour:
   TransitionStateInfoList: []
   AnimatorParameterEntries:
     ParameterEntries:
-    - name: isSleeping
-      NameHash: -1651249571
+    - name: IsSleeping
+      NameHash: -758190707
       Synchronize: 1
       ParameterType: 4
-    - name: Jump
-      NameHash: 125937960
+    - name: IsJumping
+      NameHash: 1749078233
       Synchronize: 1
       ParameterType: 4
-    - name: Moving
-      NameHash: 949806512
+    - name: IsMoving
+      NameHash: 120489994
+      Synchronize: 1
+      ParameterType: 4
+    - name: IsFalling
+      NameHash: 268975031
       Synchronize: 1
       ParameterType: 4
   AnimatorParametersExpanded: 0
@@ -765,6 +769,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   animator: {fileID: 0}
+  visualTransform: {fileID: 0}
 --- !u!114 &2338989543204145726
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@
         public event Action OnStartFalling;
         public event Action OnStartWalking;
         public event Action OnEnterIdle;
+        public event Action OnJumpEnded;
 
         private PlayerMovementContext _ctx;
         private MovementFSM _fsm;
@@ -164,5 +165,10 @@
         public void InvokeOnEnterIdle()
         {
             OnEnterIdle?.Invoke();
+        }
+
+        public void InvokeOnJumpEnded()
+        {
+            OnJumpEnded?.Invoke();
         }
     }

@@ -4,12 +4,14 @@ using System;
 public class JumpingState : MovementState
 {
     private readonly Action _onStartJumping;
+    private readonly Action _onJumpEnded;
     private readonly Action _onBumpedHead;
 
-    public JumpingState(PlayerMovementContext ctx, Action onStartJumping, Action onBumpedHead) : base(ctx)
+    public JumpingState(PlayerMovementContext ctx, Action onStartJumping, Action onBumpedHead, Action onJumpEnded) : base(ctx)
     {
         _onStartJumping = onStartJumping;
         _onBumpedHead = onBumpedHead;
+        _onJumpEnded = onJumpEnded;
     }
 
     public override void Enter()
@@ -74,6 +76,7 @@ public class JumpingState : MovementState
         Ctx.IsPastApexThreshold = false;
         Ctx.TimePastApexThreshold = 0f;
         Ctx.JumpReleased = false;
+        _onJumpEnded?.Invoke();
     }
 
     public override MovementStateType? NextState()

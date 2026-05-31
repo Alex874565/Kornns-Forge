@@ -13,6 +13,7 @@ public class PlayerCollisionController : NetworkBehaviour
     public bool IsGrounded { get; private set; }
     public bool BumpedHead { get; private set; }
     public MovingTile CurrentMovingPlatform { get; private set; }
+    public bool ShouldFall { get; private set; }
     
     private bool previousIsGrounded;
     
@@ -26,6 +27,7 @@ public class PlayerCollisionController : NetworkBehaviour
     private void CheckCollisions()
     {
         CheckGroundCollision();
+        CheckShouldFall();
         CheckHeadCollision();
     }
     
@@ -60,6 +62,23 @@ public class PlayerCollisionController : NetworkBehaviour
         IsGrounded = nowGrounded;
     }
 
+    private void CheckShouldFall()
+    {
+        Vector2 origin = new Vector2(
+            feetColl.bounds.center.x,
+            feetColl.bounds.min.y
+        );
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            origin,
+            Vector2.down,
+            collisionStats.MinGroundDistanceToFall,
+            collisionStats.GroundLayer
+        );
+
+        ShouldFall = !IsGrounded && hit.collider == null;
+    }
+    
     private void CheckHeadCollision()
     {
         Vector2 boxCastOrigin = new Vector2(feetColl.bounds.center.x, bodyColl.bounds.max.y);
