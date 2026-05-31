@@ -36,7 +36,9 @@ public class WalkingState : MovementState
         }
 
         if (!Ctx.Collision.IsGrounded)
+        {
             return MovementStateType.Falling;
+        }
 
         float movementVelocity = Ctx.Rb.linearVelocity.x;
         if (Ctx.Collision.CurrentMovingPlatform != null)

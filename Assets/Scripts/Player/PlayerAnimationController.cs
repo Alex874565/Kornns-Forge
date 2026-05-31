@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovementController))]
@@ -7,12 +8,15 @@ public class PlayerAnimationController : NetworkBehaviour
     [Header("References")]
     [SerializeField] private Animator animator;
 
+    [SerializeField] private Transform visualTransform;
+
     private PlayerMovementController movement;
     private PlayerStatusController status;
 
-    private static readonly int MovingHash = Animator.StringToHash("Moving");
-    private static readonly int JumpHash = Animator.StringToHash("Jump");
-    private static readonly int SleepingHash = Animator.StringToHash("isSleeping");
+    private static readonly int MovingHash = Animator.StringToHash("IsMoving");
+    private static readonly int JumpHash = Animator.StringToHash("IsJumping");
+    private static readonly int SleepingHash = Animator.StringToHash("IsSleeping");
+    private static readonly int FallHash = Animator.StringToHash("IsFalling");
 
     private void Awake()
     {
@@ -29,6 +33,8 @@ public class PlayerAnimationController : NetworkBehaviour
         movement.OnLand += HandleLand;
         movement.OnStartWalking += HandleStartWalking;
         movement.OnEnterIdle += HandleEnterIdle;
+        movement.OnJumpEnded += HandleJumpEnded;
+        movement.OnStartFalling += HandleStartFalling;
         status.OnStartSleeping += HandleStartSleeping;
         status.OnStopSleeping += HandleStopSleeping;
     }
@@ -39,6 +45,8 @@ public class PlayerAnimationController : NetworkBehaviour
         movement.OnLand -= HandleLand;
         movement.OnStartWalking -= HandleStartWalking;
         movement.OnEnterIdle -= HandleEnterIdle;
+        movement.OnJumpEnded -= HandleJumpEnded;
+        movement.OnStartFalling -= HandleStartFalling;
         status.OnStartSleeping -= HandleStartSleeping;
         status.OnStopSleeping -= HandleStopSleeping;
     }
@@ -46,25 +54,31 @@ public class PlayerAnimationController : NetworkBehaviour
     private void HandleInitiateJump()
     {
         if (!IsOwner) return;
-        SetJumpServerRpc(true);
+        SetBoolServerRpc(JumpHash, true);
+    }
+
+    private void HandleJumpEnded()
+    {
+        if (!IsOwner) return;
+        SetBoolServerRpc(JumpHash, false);
     }
 
     private void HandleLand()
     {
         if (!IsOwner) return;
-        SetJumpServerRpc(false);
+        SetBoolServerRpc(FallHash, false);
     }
 
     private void HandleStartWalking()
     {
         if (!IsOwner) return;
-        SetMovingServerRpc(true);
+        SetBoolServerRpc(MovingHash, true);
     }
 
     private void HandleEnterIdle()
     {
         if (!IsOwner) return;
-        SetMovingServerRpc(false);
+        SetBoolServerRpc(MovingHash, false);
     }
 
     private void HandleStartSleeping()
@@ -77,18 +91,18 @@ public class PlayerAnimationController : NetworkBehaviour
         SetSleeping(false);
     }
 
-    [ServerRpc]
-    private void SetMovingServerRpc(bool moving)
+    private void HandleStartFalling()
     {
-        if (animator == null) return;
-        animator.SetBool(MovingHash, moving);
+        if (!IsOwner) return;
+        Debug.Log("Start Falling");
+        SetBoolServerRpc(FallHash, true);
     }
 
     [ServerRpc]
-    private void SetJumpServerRpc(bool jumping)
+    private void SetBoolServerRpc(int param, bool value)
     {
         if (animator == null) return;
-        animator.SetBool(JumpHash, jumping);
+        animator.SetBool(param, value);
     }
     
     private void SetSleeping(bool sleeping)

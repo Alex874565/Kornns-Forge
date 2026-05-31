@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class MovementFSM
 {
@@ -11,7 +12,7 @@ public class MovementFSM
         {
             { MovementStateType.Idle, new IdleState(movementContext, movementController.InvokeOnEnterIdle) },
             { MovementStateType.Walking, new WalkingState(movementContext, movementController.InvokeOnStartWalking) },
-            { MovementStateType.Jumping, new JumpingState(movementContext, movementController.InvokeOnInitiateJump, movementController.InvokeOnBumpHead) },
+            { MovementStateType.Jumping, new JumpingState(movementContext, movementController.InvokeOnInitiateJump, movementController.InvokeOnBumpHead, movementController.InvokeOnJumpEnded) },
             { MovementStateType.Falling, new FallingState(movementContext, movementController.InvokeOnStartFalling, movementController.InvokeOnLand) },
             { MovementStateType.Interacting, new InteractionState(movementContext, movementContext.Interaction.OnBeginInteraction, movementContext.Interaction.OnEndInteraction, movementContext.Interaction.OnInteract) }
         };
@@ -21,16 +22,18 @@ public class MovementFSM
     public void Update()
     {
         _currentState.Update();
-        MovementStateType? nextStateType = _currentState.NextState();
-        if(nextStateType != null)
-        {
-            ChangeState((MovementStateType)nextStateType);
-        }
     }
 
     public void FixedUpdate()
     {
         _currentState.FixedUpdate();
+        
+        MovementStateType? nextStateType = _currentState.NextState();
+        Debug.Log($"Current State: {_currentState.GetType().Name}, Next State: {nextStateType}");
+        if(nextStateType != null)
+        {
+            ChangeState((MovementStateType)nextStateType);
+        }
     }
     
     public void ChangeState(MovementStateType newState)
