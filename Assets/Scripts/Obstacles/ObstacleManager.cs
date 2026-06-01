@@ -62,7 +62,11 @@ public class ObstacleManager : NetworkBehaviour
         }
 
         totalWeight = obstacles.Sum(o => o.weight);
-        StartCoroutine(SpawnObstacleRoutine());
+        
+        if (IsServer)
+        {
+            StartCoroutine(SpawnObstacleRoutine());
+        }
     }
 
     private IEnumerator SpawnObstacleRoutine()
@@ -93,6 +97,12 @@ public class ObstacleManager : NetworkBehaviour
         if (string.IsNullOrEmpty(obstacleTag)) return;
 
         Vector3 spawnPosition = GetRandomSpawnPosition();
+        SpawnObstacleClientRpc(obstacleTag, spawnPosition);
+    }
+
+    [ClientRpc]
+    private void SpawnObstacleClientRpc(string obstacleTag, Vector3 spawnPosition)
+    {
         StartCoroutine(ShowWarningAndSpawn(obstacleTag, spawnPosition));
     }
 
