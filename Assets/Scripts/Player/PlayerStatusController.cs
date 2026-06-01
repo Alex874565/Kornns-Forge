@@ -2,13 +2,13 @@
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine.UI;
 
 public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 {
     private Ingredient ingredient;
     private Order order;
-    [SerializeField] private Slider energy_bar;
 
     [SerializeField] private Transform holdPoint;
 
@@ -41,18 +41,13 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     public event Action OnStartSleeping;
     public event Action OnStopSleeping;
+    public event Action<float, float> OnEnergyChanged;
+    public event Action<float> OnGetEnergyLevel;
 
     public override void OnNetworkSpawn()
     {
+        HandleEnergyChanged(0f, energyLevel.Value);
         energyLevel.OnValueChanged += HandleEnergyChanged;
-
-        if (!IsOwner)
-        {
-            energy_bar.gameObject.SetActive(false);
-        }
-
-        if (energy_bar != null)
-            energy_bar.value = energyLevel.Value;
     }
 
     public override void OnNetworkDespawn()
@@ -62,12 +57,7 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     private void HandleEnergyChanged(float oldValue, float newValue)
     {
-        if (!IsOwner) return;
-
-        if (updateEnergyCoroutine != null)
-            StopCoroutine(updateEnergyCoroutine);
-
-        updateEnergyCoroutine = StartCoroutine(UpdateEnergyBar(oldValue, newValue));
+        OnEnergyChanged?.Invoke(oldValue, newValue);
     }
 
     public Transform GetIngredientFollowTransform()
@@ -162,7 +152,6 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
     }
 
     // ---------------- SHARED ----------------
-    private Coroutine updateEnergyCoroutine;
 
     public bool IsHoldingSomething()
     {
@@ -185,25 +174,8 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     public float GetEnergyLevel()
     {
+        OnGetEnergyLevel?.Invoke(energyLevel.Value);
         return energyLevel.Value;
-    }
-
-    private IEnumerator UpdateEnergyBar(float from, float to)
-    {
-        if (energy_bar == null)
-            yield break;
-
-        float time = 0f;
-        float duration = 0.5f;
-
-        while (time < duration)
-        {
-            energy_bar.value = Mathf.Lerp(from, to, time / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        energy_bar.value = to;
     }
 
     public void StartSleeping(float duration, Vector3 position)

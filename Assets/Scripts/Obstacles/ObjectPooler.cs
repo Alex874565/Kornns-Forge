@@ -60,6 +60,13 @@ public class ObjectPooler : MonoBehaviour
             if (pool != null)
             {
                 GameObject obj = Instantiate(pool.prefab);
+                Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb.simulated = true;
+                    rb.linearVelocity = Vector2.zero;
+                    rb.angularVelocity = 0f;
+                }
                 obj.transform.SetParent(poolContainer.Find(tag + "_Pool"));
                 obj.SetActive(false);
                 poolDictionary[tag].Enqueue(obj);
@@ -87,11 +94,14 @@ public class ObjectPooler : MonoBehaviour
     // Call this method to return an object to its pool
     public void ReturnToPool(string tag, GameObject objectToReturn)
     {
-        if (!poolDictionary.ContainsKey(tag))
+        if (objectToReturn == null) return;
+
+        Rigidbody2D rb = objectToReturn.GetComponent<Rigidbody2D>();
+        if (rb != null)
         {
-            Debug.LogWarning($"Pool with tag '{tag}' doesn't exist. Destroying object.");
-            Destroy(objectToReturn);
-            return;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = false;
         }
 
         objectToReturn.SetActive(false);

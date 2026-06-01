@@ -165,6 +165,7 @@ MonoBehaviour:
   orderData: {fileID: 11400000, guid: e75086279c2a7bf48af4fe63d7d9ef11, type: 2}
   rb: {fileID: 8777750914950124683}
   coll: {fileID: 3549096810074672896}
+  spriteRenderer: {fileID: 0}
 --- !u!50 &8777750914950124683
 Rigidbody2D:
   serializedVersion: 5
@@ -282,5 +283,5 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0
