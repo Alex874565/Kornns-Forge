@@ -7241,7 +7241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14706aea3d9b7e74f8d40ecb12843819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSceneName: Level2
+  gameSceneName: Level3
   startGameButton: {fileID: 1008962776}
 --- !u!114 &2138501447
 MonoBehaviour:
