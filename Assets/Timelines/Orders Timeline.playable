@@ -283,7 +283,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: GoldChestplateOrder
   - m_Version: 1
-    m_Start: 179.73333333333332
+    m_Start: 180
     m_ClipIn: 0
     m_Asset: {fileID: 6577786884183249156}
     m_Duration: 5.26666666666668

@@ -83,7 +83,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: WoodSwordOrder
+    m_DisplayName: GoldShieldOrder
   - m_Version: 1
     m_Start: 120
     m_ClipIn: 0
@@ -335,9 +335,57 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: WoodAxeOrder
+    m_DisplayName: DiamondShieldOrder
+  - m_Version: 1
+    m_Start: 180
+    m_ClipIn: 0
+    m_Asset: {fileID: -1125584892877618263}
+    m_Duration: 5
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: -3324271944926396337}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: -1
+    m_BlendOutDuration: -1
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: GoldShieldOrder
   m_Markers:
     m_Objects: []
+--- !u!114 &-1125584892877618263
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7dba94ae1f4a9197cfafa7aa127a26, type: 3}
+  m_Name: OrderTimelineClip(Clone)
+  m_EditorClassIdentifier: 
+  order: {fileID: 11400000, guid: c4a6e1a50fb095d4c95bec41ca3e7989, type: 2}
+  orderTimer: 120
+  points: 80
 --- !u!114 &-541437588288176869
 MonoBehaviour:
   m_ObjectHideFlags: 1
