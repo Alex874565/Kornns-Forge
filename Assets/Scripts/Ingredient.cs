@@ -1,13 +1,8 @@
-using System.Collections;
-using DG.Tweening;
-using Unity.Netcode;
-using Unity.Netcode.Components;
-using UnityEngine;
+using DG.Tweening;using Unity.Netcode;using Unity.Netcode.Components;using UnityEngine;
 
 public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
 {
-    [Header("Setup")]
-    [SerializeField] private IngredientSO ingredientSO;
+    [Header("Setup")] [SerializeField] private IngredientSO ingredientSO;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D coll;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -22,10 +17,10 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         if (coll == null) coll = GetComponent<Collider2D>();
         if (networkTransform == null) networkTransform = GetComponent<NetworkTransform>();
         if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        
+
         spriteRenderer.transform.localScale = Vector3.zero;
     }
-    
+
     public override void OnNetworkSpawn()
     {
         if (networkTransform == null)
@@ -43,7 +38,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         transform.rotation = followTarget.rotation;
     }
 
-    // ---------------- GETTERS ----------------
+// ---------------- GETTERS ----------------
 
     public IngredientSO GetIngredientSO()
     {
@@ -55,7 +50,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         return ingredientParent;
     }
 
-    // ---------------- PARENTING / HOLDING ----------------
+// ---------------- PARENTING / HOLDING ----------------
 
     public void SetIngredientParent(IIngredientParent parent)
     {
@@ -148,33 +143,18 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         ClearHeldState();
     }
 
-    // ---------------- THROWING ----------------
+// ---------------- THROWING ----------------
 
     public void ThrowSelf(Vector2 direction, float force, float angle)
     {
         if (!IsServer) return;
         if (direction == Vector2.zero) return;
 
-        Vector3 throwStartPosition = transform.position;
-        Quaternion throwStartRotation = transform.rotation;
-
         ClearHeldState();
-
-        transform.position = throwStartPosition;
-        transform.rotation = throwStartRotation;
+        ClearHeldStateClientRpc();
 
         SetNetworkTransformEnabled(true);
-
-        if (networkTransform != null)
-        {
-            networkTransform.Teleport(
-                throwStartPosition,
-                throwStartRotation,
-                transform.localScale
-            );
-        }
-
-        PrepareThrowClientRpc(throwStartPosition, throwStartRotation);
+        SetNetworkTransformEnabledClientRpc(true);
 
         if (rb != null)
         {
@@ -194,35 +174,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
     }
 
-    [ClientRpc]
-    private void PrepareThrowClientRpc(Vector3 position, Quaternion rotation)
-    {
-        ClearHeldState();
-
-        SetVisualEnabled(false);
-        SetNetworkTransformEnabled(false);
-
-        transform.position = position;
-        transform.rotation = rotation;
-
-        StartCoroutine(EnableThrowVisualNextFrame());
-    }
-
-    private IEnumerator EnableThrowVisualNextFrame()
-    {
-        yield return null;
-
-        SetNetworkTransformEnabled(true);
-        SetVisualEnabled(true);
-    }
-    
-    private void SetVisualEnabled(bool enabled)
-    {
-        if (spriteRenderer != null)
-            spriteRenderer.enabled = enabled;
-    }
-
-    // ---------------- INTERACTION ----------------
+// ---------------- INTERACTION ----------------
 
     public void Interact(PlayerStatusController playerStatusController)
     {
@@ -267,7 +219,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
                !playerStatusController.IsHoldingSomething();
     }
 
-    // ---------------- SPAWNING / DESTROYING ----------------
+// ---------------- SPAWNING / DESTROYING ----------------
 
     public static Ingredient SpawnIngredient(
         IngredientSO ingredientSO,
@@ -335,7 +287,7 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         }
     }
 
-    // ---------------- NETWORK TRANSFORM ----------------
+// ---------------- NETWORK TRANSFORM ----------------
 
     private void SetNetworkTransformEnabled(bool enabled)
     {
@@ -352,8 +304,13 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         SetNetworkTransformEnabled(enabled);
     }
 
-    // ---------------- VISUAL ----------------
+// ---------------- VISUAL ----------------
 
-    public void Highlight() { }
-    public void UnHighlight() { }
+    public void Highlight()
+    {
+    }
+
+    public void UnHighlight()
+    {
+    }
 }

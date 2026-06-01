@@ -180,10 +180,12 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     public void StartSleeping(float duration, Vector3 position)
     {
-        OnStartSleeping?.Invoke();
-
         if (!IsOwner) return;
 
+        Debug.Log("Starting sleep");
+        
+        OnStartSleeping?.Invoke();
+        
         PlayerInputController input = GetComponent<PlayerInputController>();
         if (input != null)
             input.SetActive(false);
@@ -198,10 +200,11 @@ public class PlayerStatusController : NetworkBehaviour, IIngredientParent
 
     public void StopSleeping()
     {
-        OnStopSleeping?.Invoke();
-
         if (!IsOwner) return;
 
+        Debug.Log("Stopping sleep");
+        OnStopSleeping?.Invoke();
+        
         PlayerInputController input = GetComponent<PlayerInputController>();
         if (input != null)
             input.SetActive(true);

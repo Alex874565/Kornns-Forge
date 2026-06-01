@@ -83,12 +83,14 @@ public class PlayerAnimationController : NetworkBehaviour
 
     private void HandleStartSleeping()
     {
-        SetSleeping(true);
+        if (!IsOwner) return;
+        SetBoolServerRpc(SleepingHash, true);
     }
-    
+
     private void HandleStopSleeping()
     {
-        SetSleeping(false);
+        if (!IsOwner) return;
+        SetBoolServerRpc(SleepingHash, false);
     }
 
     private void HandleStartFalling()
@@ -101,14 +103,13 @@ public class PlayerAnimationController : NetworkBehaviour
     [ServerRpc]
     private void SetBoolServerRpc(int param, bool value)
     {
-        if (animator == null) return;
-        animator.SetBool(param, value);
+        SetBoolClientRpc(param, value);
     }
-    
-    private void SetSleeping(bool sleeping)
+
+    [ClientRpc]
+    private void SetBoolClientRpc(int param, bool value)
     {
         if (animator == null) return;
-
-        animator.SetBool(SleepingHash, sleeping);
+        animator.SetBool(param, value);
     }
 }
