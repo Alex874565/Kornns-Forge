@@ -1,3 +1,4 @@
+using System.Collections;
 using DG.Tweening;
 using Unity.Netcode;
 using Unity.Netcode.Components;
@@ -154,11 +155,26 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         if (!IsServer) return;
         if (direction == Vector2.zero) return;
 
+        Vector3 throwStartPosition = transform.position;
+        Quaternion throwStartRotation = transform.rotation;
+
         ClearHeldState();
-        ClearHeldStateClientRpc();
+
+        transform.position = throwStartPosition;
+        transform.rotation = throwStartRotation;
 
         SetNetworkTransformEnabled(true);
-        SetNetworkTransformEnabledClientRpc(true);
+
+        if (networkTransform != null)
+        {
+            networkTransform.Teleport(
+                throwStartPosition,
+                throwStartRotation,
+                transform.localScale
+            );
+        }
+
+        PrepareThrowClientRpc(throwStartPosition, throwStartRotation);
 
         if (rb != null)
         {
@@ -176,6 +192,34 @@ public class Ingredient : NetworkBehaviour, IThrowable, IPlayerInteractable
         ).normalized;
 
         rb.AddForce(angledDirection * force, ForceMode2D.Impulse);
+    }
+
+    [ClientRpc]
+    private void PrepareThrowClientRpc(Vector3 position, Quaternion rotation)
+    {
+        ClearHeldState();
+
+        SetVisualEnabled(false);
+        SetNetworkTransformEnabled(false);
+
+        transform.position = position;
+        transform.rotation = rotation;
+
+        StartCoroutine(EnableThrowVisualNextFrame());
+    }
+
+    private IEnumerator EnableThrowVisualNextFrame()
+    {
+        yield return null;
+
+        SetNetworkTransformEnabled(true);
+        SetVisualEnabled(true);
+    }
+    
+    private void SetVisualEnabled(bool enabled)
+    {
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = enabled;
     }
 
     // ---------------- INTERACTION ----------------
