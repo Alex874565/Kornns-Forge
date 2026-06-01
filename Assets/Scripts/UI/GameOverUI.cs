@@ -7,6 +7,7 @@ public class GameOverUI : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
+    [SerializeField] private Button levelSelectButton;
 
     private void Start()
     {
@@ -14,8 +15,28 @@ public class GameOverUI : MonoBehaviour
 
         KornnGameManager.Instance.OnGameEnded += ShowGameOver;
 
-        if (restartButton != null)
-            restartButton.onClick.AddListener(RestartGame);
+        restartButton?.onClick.AddListener(RestartGame);
+        levelSelectButton?.onClick.AddListener(LoadLevelSelect);
+    }
+
+    private void LoadLevelSelect()
+    {
+        Time.timeScale = 1f;
+
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+            NetworkManager.Singleton.SceneManager.LoadScene("LevelSelect", LoadSceneMode.Single);
+        else
+            SceneManager.LoadScene("LevelSelect");
+    }
+
+    private void RestartGame()
+    {
+        Time.timeScale = 1f;
+
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+            NetworkManager.Singleton.SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void ShowGameOver()
@@ -23,26 +44,9 @@ public class GameOverUI : MonoBehaviour
         gameOverPanel.SetActive(true);
     }
 
-    private void RestartGame()
-    {
-        Debug.Log("Restart Game was clicked");
-        Time.timeScale = 1f;
-
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
-
-        NetworkAutoStarter.ShouldAutoStartHost = true;
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
     private void OnDestroy()
     {
         if (KornnGameManager.Instance != null)
-        {
             KornnGameManager.Instance.OnGameEnded -= ShowGameOver;
-        }
     }
 }

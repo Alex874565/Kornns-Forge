@@ -6,9 +6,11 @@ public class KornnGameManager : MonoBehaviour
     public static KornnGameManager Instance { get; private set; }
 
     [SerializeField] private float gameDuration = 120f; // seconds
+    [SerializeField] private int levelNumber;
 
     private float remainingTime;
     private bool isGameRunning;
+    
 
     public event Action<float> OnTimeChanged;
     public event Action OnGameEnded;
@@ -43,12 +45,31 @@ public class KornnGameManager : MonoBehaviour
             remainingTime = 0f;
             isGameRunning = false;
 
+            UnlockNextLevel();
+
             OnTimeChanged?.Invoke(remainingTime);
             OnGameEnded?.Invoke();
 
-            Time.timeScale = 0f; // 🔥 pauses the game
+            Time.timeScale = 0f;
 
-            Debug.Log("GAME OVER");
+            Debug.Log("LEVEL COMPLETE");
+        }
+    }
+
+    private void UnlockNextLevel()
+    {
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
+
+        if (levelNumber >= unlockedLevel)
+        {
+            int maxLevels = 3;
+
+            PlayerPrefs.SetInt(
+                "UnlockedLevel",
+                Mathf.Min(levelNumber + 1, maxLevels)
+            );
+
+            PlayerPrefs.Save();
         }
     }
 
