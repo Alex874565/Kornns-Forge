@@ -22,17 +22,14 @@ public class Obstacle : MonoBehaviour
 
     public void ActivateFall(float delay)
     {
-        Debug.Log($"ActivateFall called with delay: {delay}");
         StartCoroutine(FallRoutine(delay));
     }
 
     private IEnumerator FallRoutine(float delay)
     {
         canFall = false;
-        Debug.Log("Waiting for fall delay...");
         yield return new WaitForSeconds(delay);
         canFall = true;
-        Debug.Log("canFall is now true. Obstacle should start falling.");
     }
 
     private IEnumerator DeactivateAfterTime()

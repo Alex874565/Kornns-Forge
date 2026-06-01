@@ -156,8 +156,6 @@ public class ObstacleManager : NetworkBehaviour
     {
         Bounds bounds = spawnArea.bounds;
 
-        Debug.Log($"Spawn Area Bounds: min.x = {bounds.min.x}, max.x = {bounds.max.x}");
-
         float x = Random.Range(bounds.min.x, bounds.max.x);
         // Spawn at the top of the spawn area
         float y = bounds.max.y;

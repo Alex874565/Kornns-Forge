@@ -4,46 +4,54 @@ using UnityEngine;
 public class ParticleSystemController : MonoBehaviour
 {
     public bool parentToPlayer = false;
-    
+    public bool destroyAfterPlay = true;
+
     private ParticleSystem[] particles;
-    private float duration;
-    
+    private Coroutine playCoroutine;
+
     private void Awake()
     {
         particles = GetComponentsInChildren<ParticleSystem>();
-        foreach (var particle in particles)
-        {
-            if(particle.main.duration > duration)
-                duration = particle.main.duration;
-        }
     }
 
     public void PlayParticles()
     {
-        StartCoroutine(PlayParticlesCoroutine());
-    }
+        if (playCoroutine != null)
+            StopCoroutine(playCoroutine);
 
-    private IEnumerator PlayParticlesCoroutine()
-    {
         foreach (var particle in particles)
-            particle.Play();
+            particle.Play(true);
 
-        yield return new WaitForSeconds(duration);
-        
-        Destroy(gameObject); 
+        if (destroyAfterPlay)
+            playCoroutine = StartCoroutine(DestroyAfterPlayCoroutine());
     }
-    
-    #region Test
 
-    [ContextMenu("PlayParticles")]
-    private void PlayParticlesTest()
+    private IEnumerator DestroyAfterPlayCoroutine()
     {
-        particles = GetComponentsInChildren<ParticleSystem>();
+        yield return new WaitForSeconds(GetLifetime());
+        Destroy(gameObject);
+    }
+
+    public void StopParticles()
+    {
+        if (playCoroutine != null)
+            StopCoroutine(playCoroutine);
+
+        foreach (var particle in particles)
+            particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+    }
+
+    public float GetLifetime()
+    {
+        float maxLifetime = 0f;
+
         foreach (var particle in particles)
         {
-            particle.Play();
+            var main = particle.main;
+            float lifetime = main.duration + main.startLifetime.constantMax;
+            maxLifetime = Mathf.Max(maxLifetime, lifetime);
         }
+
+        return maxLifetime;
     }
-    
-    #endregion
 }
