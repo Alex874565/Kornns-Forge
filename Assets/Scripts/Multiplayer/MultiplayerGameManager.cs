@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class MultiplayerGameManager : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [SerializeField] private string gameSceneName = "Level2";
+    [SerializeField] private string gameSceneName = "Level3";
 
     [Header("UI References")]
     [SerializeField] private Button startGameButton;
