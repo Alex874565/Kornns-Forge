@@ -154,6 +154,8 @@ public class Anvil : BaseStation, IHasProgress
     private void TriggerInteractAlternateClientRpc()
     {
         TriggerInteractAlternate();
+
+        SoundManager.PlaySound(SoundType.AnvilHit);
     }
     
     [ClientRpc]

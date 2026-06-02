@@ -4,7 +4,13 @@ using UnityEngine;
 
 public enum SoundType
 {
-    ButtonClick
+    ButtonClick,
+    AnvilHit,
+    FurnanceBurning,
+    ItemCrafted,
+    DeliveryComplete,
+    OrderReceived,
+    Sleep
 }
 
 public enum MusicType
@@ -30,6 +36,7 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<SoundType, SoundData> soundDictionary;
     private Dictionary<MusicType, MusicData> musicDictionary;
+    private Dictionary<SoundType, AudioSource> activeLoopingSounds = new Dictionary<SoundType, AudioSource>();
 
     private Queue<AudioSource> sfxPool = new Queue<AudioSource>();
 
@@ -101,14 +108,48 @@ public class SoundManager : MonoBehaviour
 
     private IEnumerator ReturnToPool(AudioSource source)
     {
-        yield return new WaitWhile(() => source.isPlaying);
+        yield return new WaitWhile(() => source.isPlaying && source.loop == false);
+        
+        if (!source.loop)
+        {
+            source.clip = null;
+            source.gameObject.SetActive(false);
+            sfxPool.Enqueue(source);
+        }
+    }
 
-        source.clip = null;
-        source.loop = false;
+    public static AudioSource PlayLoopingSound(SoundType type)
+    {
+        if (Instance.soundDictionary.TryGetValue(type, out SoundData soundData))
+        {
+            AudioSource source = Instance.GetAudioSource();
+            source.clip = soundData.clip;
+            source.volume = soundData.volume;
+            source.loop = true;
+            source.Play();
 
-        source.gameObject.SetActive(false);
+            Instance.activeLoopingSounds[type] = source;
 
-        sfxPool.Enqueue(source);
+            return source;
+        }
+        else
+        {
+            Debug.LogWarning($"Sound not found: {type}");
+            return null;
+        }
+    }
+
+    public static void StopLoopingSound(SoundType type)
+    {
+        if (Instance.activeLoopingSounds.TryGetValue(type, out AudioSource source))
+        {
+            source.Stop();
+            source.loop = false;
+            source.clip = null;
+            source.gameObject.SetActive(false);
+            Instance.sfxPool.Enqueue(source);
+            Instance.activeLoopingSounds.Remove(type);
+        }
     }
 
     /* SFX */
