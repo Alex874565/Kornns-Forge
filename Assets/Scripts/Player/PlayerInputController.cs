@@ -12,6 +12,8 @@ public class PlayerInputController : NetworkBehaviour
     
     private InputSystem_Actions controls;
 
+    private PauseMenuUI pauseMenu;
+
     public event Action<Vector2> OnMove;
     public event Action OnJumpPressed;
     public event Action OnJumpReleased;
@@ -20,12 +22,15 @@ public class PlayerInputController : NetworkBehaviour
     public event Action OnInteractAlternate;
     public event Action OnInteractAlternateUI;
     public event Action OnThrow;
+    public event Action OnEscape;
 
     public Vector2 Movement => controls.Player.Move.ReadValue<Vector2>();
     
     private void Awake()
     {
         controls = new InputSystem_Actions();
+        pauseMenu  = FindFirstObjectByType<PauseMenuUI>()?.GetComponent<PauseMenuUI>();
+        pauseMenu.Controls = this;
     }
 
     public override void OnNetworkSpawn()
@@ -42,6 +47,7 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Interact.performed += HandleInteract;
         controls.Player.InteractAlternate.performed += HandleInteractAlternate;
         controls.Player.Throw.performed += HandleThrow;
+        controls.Player.Escape.performed += HandleEscape;
         
         controls.UI.Cancel.performed += HandleCancel;
         controls.UI.InteractAlternate.performed += HandleInteractAlternateUI;
@@ -60,6 +66,7 @@ public class PlayerInputController : NetworkBehaviour
         controls.Player.Interact.performed -= HandleInteract;
         controls.Player.InteractAlternate.performed -= HandleInteractAlternate;
         controls.Player.Throw.performed -= HandleThrow;
+        controls.Player.Escape.performed -= HandleEscape;
         
         controls.UI.Cancel.performed -= HandleCancel;
         controls.UI.InteractAlternate.performed -= HandleInteractAlternateUI;
@@ -86,7 +93,7 @@ public class PlayerInputController : NetworkBehaviour
             controls.Player.Disable();
             controls.UI.Enable();
             cursorVisibilityManager.CursorVisibilityPossible = true;
-            yield return !controls.UI.Submit.IsPressed();
+            yield return !controls.UI.Submit.IsPressed() && !controls.UI.Cancel.IsPressed();
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
         else
@@ -148,5 +155,11 @@ public class PlayerInputController : NetworkBehaviour
     private void HandleThrow(InputAction.CallbackContext ctx)
     {
         OnThrow?.Invoke();
+    }
+
+    private void HandleEscape(InputAction.CallbackContext ctx)
+    {
+        if(pauseMenu)
+            pauseMenu.TogglePause();
     }
 }

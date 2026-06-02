@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenuUI : MonoBehaviour
 {
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject optionsMenu;
@@ -10,7 +12,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button settingsButton;
     private bool isPaused = false;
-
+    public PlayerInputController Controls { get; set; }
+    
     void Start()
     {
         if (pausePanel != null)
@@ -34,12 +37,6 @@ public class PauseMenu : MonoBehaviour
             Resume();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            TogglePause();
-    }
-
     public void TogglePause()
     {
         if (isPaused)
@@ -55,6 +52,8 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(true);
         Time.timeScale = 0f;
         //AudioListener.pause = true;
+        Controls.SetUIMode(true);
+        Controls.OnCancel += TogglePause;
     }
 
     public void OpenSettings()
@@ -69,6 +68,8 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
+        Controls.SetUIMode(false);
+        Controls.OnCancel -= TogglePause;
         //AudioListener.pause = false;
     }
 
