@@ -149,7 +149,9 @@ public class OrderManager : NetworkBehaviour
         if (orderProgress == null) return;
 
         orderProgress.Complete();
-        
+
+        SoundManager.PlaySound(SoundType.DeliveryComplete);
+
         activeOrders.Remove(orderProgress);
 
         TryFillOrderSlot();

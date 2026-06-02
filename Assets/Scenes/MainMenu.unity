@@ -314,10 +314,28 @@ MonoBehaviour:
   - type: 0
     clip: {fileID: 8300000, guid: edb93be7689cd914d9a8f2339f66f127, type: 3}
     volume: 1
+  - type: 1
+    clip: {fileID: 8300000, guid: 987fc7d09b1476f489fc442991aa9830, type: 3}
+    volume: 1
+  - type: 2
+    clip: {fileID: 8300000, guid: 828ed6b8611dd3940bdc875e6adc7719, type: 3}
+    volume: 1
+  - type: 3
+    clip: {fileID: 8300000, guid: cd1be25c3ae4ffd4994a587383d788c0, type: 3}
+    volume: 1
+  - type: 5
+    clip: {fileID: 8300000, guid: 9dae777052ecd6044a7e8623eb3f245c, type: 3}
+    volume: 1
+  - type: 4
+    clip: {fileID: 8300000, guid: 9f802870ba13b074c810855f80517322, type: 3}
+    volume: 1
+  - type: 6
+    clip: {fileID: 8300000, guid: 6f16aa99413b47046b7a37ac8c9e8ae8, type: 3}
+    volume: 1
   musicTracks:
   - type: 0
     clip: {fileID: 8300000, guid: d343186fbc3609f49a4b8979ff9d405e, type: 3}
-    volume: 1
+    volume: 0.5
 --- !u!82 &78777031
 AudioSource:
   m_ObjectHideFlags: 0

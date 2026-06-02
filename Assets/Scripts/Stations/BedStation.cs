@@ -80,6 +80,11 @@ public class BedStation : BaseStation, ITiredness
         TriggerInteract(); // particles on every client
         
         player.StartSleeping(sleepDuration, transform.position);
+
+        if (player.IsLocalPlayer)
+        {
+            SoundManager.PlayLoopingSound(SoundType.Sleep);
+        }
     }
 
     [ClientRpc]
@@ -92,6 +97,11 @@ public class BedStation : BaseStation, ITiredness
         if (player == null) return;
 
         player.StopSleeping();
+
+        if (player.IsLocalPlayer)
+        {
+            SoundManager.StopLoopingSound(SoundType.Sleep);
+        }
     }
 
     private IEnumerator HandleSleepRoutine(PlayerStatusController player, float duration, float totalEnergy)

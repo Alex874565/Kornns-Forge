@@ -30,6 +30,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
     [SerializeField] private float energy;
 
     private bool isProcessing;
+    private bool isFurnaceSoundPlaying = false;
 
     private void Start()
     {
@@ -68,6 +69,12 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         isProcessing = true;
         TriggerStartProcessing();
+
+        if (!isFurnaceSoundPlaying)
+        {
+            SoundManager.PlayLoopingSound(SoundType.FurnanceBurning);
+            isFurnaceSoundPlaying = true;
+        }
     }
 
     private void StopProcessing()
@@ -76,6 +83,12 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         isProcessing = false;
         TriggerStopProcessing();
+
+        if (isFurnaceSoundPlaying)
+        {
+            SoundManager.StopLoopingSound(SoundType.FurnanceBurning);
+            isFurnaceSoundPlaying = false;
+        }
     }
 
     // ---------------- INTERACTION ----------------

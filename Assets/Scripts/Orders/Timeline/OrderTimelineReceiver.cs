@@ -40,5 +40,6 @@ public class OrderTimelineReceiver : NetworkBehaviour
         }
 
         orderManager.AddOrder(order, timer, points);
+        SoundManager.PlaySound(SoundType.OrderReceived);
     }
 }

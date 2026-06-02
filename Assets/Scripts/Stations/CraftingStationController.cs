@@ -121,6 +121,8 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
 
         Craft();
 
+        SoundManager.PlaySound(SoundType.ItemCrafted);
+
         bool success = TakeCraftedResult(player);
 
         if (success)
