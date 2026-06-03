@@ -45,6 +45,7 @@ public class KornnGameManager : MonoBehaviour
             remainingTime = 0f;
             isGameRunning = false;
 
+            SaveStars();
             UnlockNextLevel();
 
             OnTimeChanged?.Invoke(remainingTime);
@@ -89,5 +90,33 @@ public class KornnGameManager : MonoBehaviour
     public bool IsGameRunning()
     {
         return isGameRunning;
+    }
+
+    private void SaveStars()
+    {
+        int score = ScoreManager.Instance.GetScore();
+
+        int stars = 0;
+
+        if (score >= 100)
+            stars = 1;
+
+        if (score >= 200)
+            stars = 2;
+
+        if (score >= 300)
+            stars = 3;
+
+
+        string key = "Level" + levelNumber + "Stars";
+
+        int previousStars = PlayerPrefs.GetInt(key, 0);
+
+        // Only keep the best result
+        if (stars > previousStars)
+        {
+            PlayerPrefs.SetInt(key, stars);
+            PlayerPrefs.Save();
+        }
     }
 }
