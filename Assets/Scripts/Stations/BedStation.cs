@@ -17,8 +17,9 @@ public class BedStation : BaseStation, ITiredness
 
     private bool IsOccupied => occupantId.Value != ulong.MaxValue;
     private Coroutine sleepCoroutine;
+    private AudioSource sleepSoundSource;
 
-    
+
     public override bool CanInteract(PlayerStatusController player)
     {
         if (player == null) return false;
@@ -81,9 +82,9 @@ public class BedStation : BaseStation, ITiredness
         
         player.StartSleeping(sleepDuration, transform.position);
 
-        if (player.IsLocalPlayer)
+        if (player.IsLocalPlayer && sleepSoundSource == null)
         {
-            SoundManager.PlayLoopingSound(SoundType.Sleep);
+            sleepSoundSource = SoundManager.PlayLoopingSound(SoundType.Sleep);
         }
     }
 
@@ -98,9 +99,10 @@ public class BedStation : BaseStation, ITiredness
 
         player.StopSleeping();
 
-        if (player.IsLocalPlayer)
+        if (player.IsLocalPlayer && sleepSoundSource != null)
         {
-            SoundManager.StopLoopingSound(SoundType.Sleep);
+            SoundManager.StopLoopingSound(sleepSoundSource);
+            sleepSoundSource = null;
         }
     }
 
