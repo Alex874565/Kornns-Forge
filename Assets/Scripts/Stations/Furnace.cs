@@ -5,6 +5,7 @@ using System;
 public class Furnace : BaseStation, IHasProgress, ITiredness
 {
     public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+    private AudioSource furnaceSoundSource;
 
     private enum State
     {
@@ -78,7 +79,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         if (!isFurnaceSoundPlaying)
         {
-            SoundManager.PlayLoopingSound(SoundType.FurnanceBurning);
+            furnaceSoundSource = SoundManager.PlayLoopingSound(SoundType.FurnanceBurning);
             isFurnaceSoundPlaying = true;
         }
     }
@@ -92,7 +93,8 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
         if (isFurnaceSoundPlaying)
         {
-            SoundManager.StopLoopingSound(SoundType.FurnanceBurning);
+            SoundManager.StopLoopingSound(furnaceSoundSource);
+            furnaceSoundSource = null;
             isFurnaceSoundPlaying = false;
         }
     }

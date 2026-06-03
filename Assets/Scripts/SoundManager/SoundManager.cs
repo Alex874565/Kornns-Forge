@@ -36,7 +36,7 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<SoundType, SoundData> soundDictionary;
     private Dictionary<MusicType, MusicData> musicDictionary;
-    private Dictionary<SoundType, AudioSource> activeLoopingSounds = new Dictionary<SoundType, AudioSource>();
+    private Dictionary<SoundType, HashSet<AudioSource>> activeLoopingSounds = new Dictionary<SoundType, HashSet<AudioSource>>();
 
     private Queue<AudioSource> sfxPool = new Queue<AudioSource>();
 
@@ -128,7 +128,9 @@ public class SoundManager : MonoBehaviour
             source.loop = true;
             source.Play();
 
-            Instance.activeLoopingSounds[type] = source;
+            if (!Instance.activeLoopingSounds.ContainsKey(type))
+                Instance.activeLoopingSounds[type] = new HashSet<AudioSource>();
+            Instance.activeLoopingSounds[type].Add(source);
 
             return source;
         }
@@ -139,16 +141,21 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public static void StopLoopingSound(SoundType type)
+    public static void StopLoopingSound(AudioSource source)
     {
-        if (Instance.activeLoopingSounds.TryGetValue(type, out AudioSource source))
+        if (source == null) return;
+
+        foreach (var kvp in Instance.activeLoopingSounds)
         {
-            source.Stop();
-            source.loop = false;
-            source.clip = null;
-            source.gameObject.SetActive(false);
-            Instance.sfxPool.Enqueue(source);
-            Instance.activeLoopingSounds.Remove(type);
+            if (kvp.Value.Remove(source))
+            {
+                source.Stop();
+                source.loop = false;
+                source.clip = null;
+                source.gameObject.SetActive(false);
+                Instance.sfxPool.Enqueue(source);
+                break;
+            }
         }
     }
 
