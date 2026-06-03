@@ -3119,7 +3119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2638971
+      value: 4076856912
       objectReference: {fileID: 0}
     - target: {fileID: 4923309115016475922, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
       propertyPath: m_SortingLayer
@@ -3472,7 +3472,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.671875
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5439,7 +5439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4516869690726873748, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3827984584
+      value: 2050988564
       objectReference: {fileID: 0}
     - target: {fileID: 4923309115016475922, guid: e863f5dc3e2de5340affe0007cca25df, type: 3}
       propertyPath: m_SortingLayer

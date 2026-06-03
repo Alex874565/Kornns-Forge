@@ -14,6 +14,9 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         Burnt,
     }
 
+    [SerializeField] private Transform warningSpawnPoint;
+    [SerializeField] private UIWarning warningPrefab;
+    
     [Header("Recipes")]
     [SerializeField] private FurnaceRecipeSO[] furnaceRecipeSOArray;
     [SerializeField] private BurningRecipeSO[] burningRecipeSOArray;
@@ -25,6 +28,9 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
 
     private float burningTimer;
     private BurningRecipeSO burningRecipeSO;
+    
+    
+    private UIWarning activeWarning;
 
     //TIREDNESS
     [SerializeField] private float energy;
@@ -214,7 +220,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         burningRecipeSO = null;
 
         StopProcessing();
-
+        HideBurningWarningClientRpc();
         ProgressChangedClientRpc(0f);
     }
 
@@ -260,6 +266,10 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         {
             StopProcessing();
         }
+        else
+        {
+            ShowBurningWarningClientRpc();
+        }
     }
 
     private void TickBurning()
@@ -287,7 +297,8 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
         Ingredient.SpawnIngredient(burntOutput, this);
 
         state = State.Burnt;
-
+        
+        HideBurningWarningClientRpc();
         StopProcessing();
 
         Debug.Log("Object burnt");
@@ -329,5 +340,39 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
     public float GetEnegy(float energy_points)
     {
         return 0;
+    }
+    
+    // WARNING
+    private void ShowBurningWarningClient()
+    {
+        if (activeWarning != null) return;
+
+        activeWarning = Instantiate(
+            warningPrefab,
+            warningSpawnPoint.position,
+            Quaternion.identity
+        );
+    
+        activeWarning.ShowFlicker();
+    }
+
+    private void HideBurningWarningClient()
+    {
+        if (activeWarning == null) return;
+
+        activeWarning.Hide();
+        activeWarning = null;
+    }
+
+    [ClientRpc]
+    private void ShowBurningWarningClientRpc()
+    {
+        ShowBurningWarningClient();
+    }
+
+    [ClientRpc]
+    private void HideBurningWarningClientRpc()
+    {
+        HideBurningWarningClient();
     }
 }
