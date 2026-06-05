@@ -1,70 +1,114 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 public class PlayerSpawner : NetworkBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform[] spawnPoints;
 
+    [Header("Spawn Safety")]
+    [SerializeField] private float spawnDelayAfterSceneLoad = 0.5f;
+
+    private readonly HashSet<ulong> spawnedClients = new HashSet<ulong>();
+
     public override void OnNetworkSpawn()
     {
-        if (!IsServer) return;
+        if (!IsServer)
+            return;
 
-        // Listen for when clients finish loading the scene
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
-        
-        // Also check if we should spawn for the host immediately if the scene is already loaded
-        // However, OnLoadEventCompleted usually covers the host too.
+        NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
+
+        StartCoroutine(DelayedSpawnAllConnectedClients());
     }
 
-    private void OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    private void OnLoadEventCompleted(
+        string sceneName,
+        LoadSceneMode loadSceneMode,
+        List<ulong> clientsCompleted,
+        List<ulong> clientsTimedOut)
     {
-        if (!IsServer) return;
+        if (!IsServer)
+            return;
 
-        Debug.Log($"[PlayerSpawner] Scene load completed for {clientsCompleted.Count} clients. Starting manual spawn.");
+        StartCoroutine(DelayedSpawnAllConnectedClients());
+    }
 
-        foreach (var clientId in clientsCompleted)
+    private void HandleClientConnected(ulong clientId)
+    {
+        if (!IsServer)
+            return;
+
+        StartCoroutine(DelayedSpawnClient(clientId));
+    }
+
+    private IEnumerator DelayedSpawnAllConnectedClients()
+    {
+        yield return new WaitForSecondsRealtime(spawnDelayAfterSceneLoad);
+
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             SpawnPlayerForClient(clientId);
         }
     }
 
+    private IEnumerator DelayedSpawnClient(ulong clientId)
+    {
+        yield return new WaitForSecondsRealtime(spawnDelayAfterSceneLoad);
+
+        SpawnPlayerForClient(clientId);
+    }
+
     private void SpawnPlayerForClient(ulong clientId)
     {
-        // Check if player already exists for this client to avoid duplicates
-        if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+        if (spawnedClients.Contains(clientId))
+            return;
+
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+            return;
+
+        if (client.PlayerObject != null)
         {
-            if (client.PlayerObject != null)
-            {
-                Debug.Log($"[PlayerSpawner] Client {clientId} already has a player object. Skipping.");
-                return;
-            }
-
-            Vector3 spawnPos = Vector3.zero;
-            if (spawnPoints != null && spawnPoints.Length > 0)
-            {
-                spawnPos = spawnPoints[(int)clientId % spawnPoints.Length].position;
-            }
-
-            GameObject playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-            NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
-            
-            // This is the manual spawn command that marks this object as the player's main avatar
-            networkObject.SpawnAsPlayerObject(clientId, true);
-            
-            Debug.Log($"[PlayerSpawner] Manually spawned player for Client {clientId} at {spawnPos}");
+            Debug.Log($"[PlayerSpawner] Client {clientId} already has PlayerObject. Skipping.");
+            spawnedClients.Add(clientId);
+            return;
         }
+
+        Vector3 spawnPos = GetSpawnPosition(clientId);
+
+        GameObject playerInstance = Instantiate(
+            playerPrefab,
+            spawnPos,
+            Quaternion.identity
+        );
+
+        NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
+
+        networkObject.SpawnAsPlayerObject(clientId, true);
+
+        spawnedClients.Add(clientId);
+
+        Debug.Log($"[PlayerSpawner] Spawned player for client {clientId}");
     }
 
-    public override void OnDestroy()
+    private Vector3 GetSpawnPosition(ulong clientId)
     {
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
+        if (spawnPoints == null || spawnPoints.Length == 0)
+            return Vector3.zero;
+
+        int index = spawnedClients.Count % spawnPoints.Length;
+        return spawnPoints[index].position;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnLoadEventCompleted;
+            NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
         }
-        base.OnDestroy();
     }
 }
-

@@ -689,6 +689,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  interactPrompt:
+    keyboard: E
+    gamepad: v
+  alternateInteractPrompt:
+    keyboard: Space
+    gamepad: <
+  cancelPrompt:
+    keyboard: Esc
+    gamepad: '>'
   cursorVisibilityManager: {fileID: 0}
 --- !u!114 &-2149446090037716325
 MonoBehaviour:

@@ -1872,6 +1872,7 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 1175132131}
   - {fileID: 1943283232}
+  spawnDelayAfterSceneLoad: 0.5
 --- !u!4 &278988421
 Transform:
   m_ObjectHideFlags: 0
@@ -2795,7 +2796,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.109375
+  orthographic size: 5.046875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

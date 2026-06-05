@@ -28,6 +28,7 @@
         public override void OnNetworkSpawn()
         {
             _isFacingRight = true;
+
             _ctx = new PlayerMovementContext
             {
                 Rb = GetComponent<Rigidbody2D>(),
@@ -41,15 +42,19 @@
 
             _fsm = new MovementFSM(_ctx, this);
 
-            _ctx.Input.enabled = IsOwner;
+            if (!IsOwner)
+                return;
 
             _ctx.Input.OnMove += TryToRotate;
             _ctx.Input.OnJumpPressed += HandleJumpPressed;
             _ctx.Input.OnJumpReleased += HandleJumpReleased;
         }
 
-        private void OnDestroy()
+        public override void OnNetworkDespawn()
         {
+            if (_ctx == null || _ctx.Input == null)
+                return;
+
             _ctx.Input.OnMove -= TryToRotate;
             _ctx.Input.OnJumpPressed -= HandleJumpPressed;
             _ctx.Input.OnJumpReleased -= HandleJumpReleased;
@@ -58,6 +63,11 @@
         private void Update()
         {
             if (!IsOwner) return;
+            if (!KornnGameManager.Instance.IsGameRunning())
+            {
+                _ctx.Rb.linearVelocity = Vector3.zero;
+                return;
+            }
 
             UpdateTimers();
 
@@ -67,6 +77,7 @@
         private void FixedUpdate()
         {
             if (!IsOwner) return;
+            if (!KornnGameManager.Instance.IsGameRunning()) return;
 
             _fsm?.FixedUpdate();
         }

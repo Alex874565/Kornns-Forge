@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class MultiplayerMenuFocusFix : MonoBehaviour
+public class LobbyFocusFix : MonoBehaviour
 {
     [SerializeField] private GameObject fallbackButton;
 

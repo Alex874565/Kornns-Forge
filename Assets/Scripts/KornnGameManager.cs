@@ -51,8 +51,6 @@ public class KornnGameManager : MonoBehaviour
             OnTimeChanged?.Invoke(remainingTime);
             OnGameEnded?.Invoke();
 
-            Time.timeScale = 0f;
-
             Debug.Log("LEVEL COMPLETE");
         }
     }

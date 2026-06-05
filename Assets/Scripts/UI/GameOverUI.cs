@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameOverUI : MonoBehaviour
+public class GameOverUI : NetworkBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
@@ -16,32 +16,34 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private int threeStarScore = 500;
 
     [SerializeField] private Color unlockedStarColor = Color.white;
-    [SerializeField] private Color lockedStarColor = new Color(1, 1, 1, 0.25f);
-
+    [SerializeField] private Color lockedStarColor = new Color(1f, 1f, 1f, 0.25f);
 
     private void Start()
     {
-        gameOverPanel.SetActive(false);
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
 
-        KornnGameManager.Instance.OnGameEnded += ShowGameOver;
+        if (KornnGameManager.Instance != null)
+            KornnGameManager.Instance.OnGameEnded += ShowGameOver;
 
-        restartButton?.onClick.AddListener(RestartGame);
-        levelSelectButton?.onClick.AddListener(LoadLevelSelect);
+        if (restartButton != null)
+            restartButton.onClick.AddListener(RestartGame);
+
+        if (levelSelectButton != null)
+            levelSelectButton.onClick.AddListener(LoadLevelSelect);
     }
-
 
     private void ShowGameOver()
     {
-        gameOverPanel.SetActive(true);
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
 
         UpdateStars();
     }
 
-
     private void UpdateStars()
     {
         int score = GetScore();
-
         int starCount = 0;
 
         if (score >= oneStarScore)
@@ -53,51 +55,77 @@ public class GameOverUI : MonoBehaviour
         if (score >= threeStarScore)
             starCount = 3;
 
-
         for (int i = 0; i < stars.Length; i++)
         {
-            if (i < starCount)
-                stars[i].color = unlockedStarColor;
-            else
-                stars[i].color = lockedStarColor;
+            if (stars[i] == null)
+                continue;
+
+            stars[i].color = i < starCount
+                ? unlockedStarColor
+                : lockedStarColor;
         }
     }
 
-
     private int GetScore()
     {
+        if (ScoreManager.Instance == null)
+            return 0;
+
         return ScoreManager.Instance.GetScore();
     }
 
+    private void RestartGame()
+    {
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            RequestRestartServerRpc();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
 
     private void LoadLevelSelect()
     {
-        Time.timeScale = 1f;
-
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
-            NetworkManager.Singleton.SceneManager.LoadScene("LevelSelect", LoadSceneMode.Single);
+        {
+            RequestLevelSelectServerRpc();
+        }
         else
+        {
             SceneManager.LoadScene("LevelSelect");
+        }
     }
 
-
-    private void RestartGame()
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
     {
-        Time.timeScale = 1f;
-
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
-            NetworkManager.Singleton.SceneManager.LoadScene(
-                SceneManager.GetActiveScene().name,
-                LoadSceneMode.Single
-            );
-        else
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name,
+            LoadSceneMode.Single
+        );
     }
-
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestLevelSelectServerRpc()
+    {
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            "LevelSelect",
+            LoadSceneMode.Single
+        );
+    }
 
     private void OnDestroy()
     {
         if (KornnGameManager.Instance != null)
             KornnGameManager.Instance.OnGameEnded -= ShowGameOver;
+
+        if (restartButton != null)
+            restartButton.onClick.RemoveListener(RestartGame);
+
+        if (levelSelectButton != null)
+            levelSelectButton.onClick.RemoveListener(LoadLevelSelect);
     }
 }

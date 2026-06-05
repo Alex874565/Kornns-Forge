@@ -26,6 +26,8 @@ public class OrderManager : NetworkBehaviour
 
     private void Update()
     {
+        if(!KornnGameManager.Instance.IsGameRunning()) return;
+        
         if (IsServer)
         {
             UpdateServerOrders();
