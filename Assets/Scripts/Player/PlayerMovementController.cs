@@ -63,7 +63,7 @@
         private void Update()
         {
             if (!IsOwner) return;
-            if (!KornnGameManager.Instance.IsGameRunning())
+            if (KornnGameManager.Instance.IsPaused.Value)
             {
                 _ctx.Rb.linearVelocity = Vector3.zero;
                 return;
@@ -77,7 +77,7 @@
         private void FixedUpdate()
         {
             if (!IsOwner) return;
-            if (!KornnGameManager.Instance.IsGameRunning()) return;
+            if (KornnGameManager.Instance.IsPaused.Value) return;
 
             _fsm?.FixedUpdate();
         }

@@ -48,7 +48,7 @@ public class Furnace : BaseStation, IHasProgress, ITiredness
     {
         if (!IsServer) return;
         if (!HasIngredient()) return;
-        if(!KornnGameManager.Instance.IsGameRunning()) return;
+        if(KornnGameManager.Instance.IsPaused.Value) return;
 
         switch (state)
         {

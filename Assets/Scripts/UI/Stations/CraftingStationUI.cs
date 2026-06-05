@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class CraftingStationUI : MonoBehaviour
@@ -9,10 +10,13 @@ public class CraftingStationUI : MonoBehaviour
     private CraftingStationController station;
     private PlayerStatusController player;
     private PlayerInputController input;
-
+    
+    [Header("Images")]
+    [SerializeField] private List<Image> materialIconImages;
+    [SerializeField] private Image resultImage;
+    
     [Header("Buttons")]
     [SerializeField] private List<Button> materialButtons;
-    [SerializeField] private Button resultButton;
     [SerializeField] private Button craftButton;
     [SerializeField] private Button closeButton;
 
@@ -158,37 +162,15 @@ public class CraftingStationUI : MonoBehaviour
 
                     HoverCraft();
                 },
-                () => ClearText(craftButton)
+                () => {}
             );
 
             AddSelection(
                 craftButton,
                 HoverCraft,
-                () => ClearText(craftButton)
+                () => { }
             );
         }
-
-        if (resultButton != null)
-        {
-            AddHover(
-                resultButton,
-                () =>
-                {
-                    if (eventSystem != null)
-                        eventSystem.SetSelectedGameObject(resultButton.gameObject);
-
-                    HoverResult();
-                },
-                () => ClearText(resultButton)
-            );
-
-            AddSelection(
-                resultButton,
-                HoverResult,
-                () => ClearText(resultButton)
-            );
-        }
-
         Subscribe();
     }
 
@@ -207,29 +189,27 @@ public class CraftingStationUI : MonoBehaviour
     {
         for (int i = 0; i < materialButtons.Count; i++)
         {
-            Button button = materialButtons[i];
-            if (button == null)
+            if (i >= materialIconImages.Count)
                 continue;
 
-            Image image = button.GetComponent<Image>();
+            Image iconImage = materialIconImages[i];
+            if (iconImage == null)
+                continue;
+
             IngredientSO ingredientSO = station.GetIngredient(i);
-
-            if (image == null)
-                continue;
 
             if (ingredientSO != null)
             {
-                image.sprite = ingredientSO.sprite;
+                iconImage.sprite = ingredientSO.sprite;
+                iconImage.enabled = true;
             }
             else
             {
-                // Do not overwrite the prefab-configured sprite at runtime when there's
-                // no ingredient. Leaving the sprite intact preserves the editor preview
-                // and prevents it from being replaced with null during Play mode.
-                // (If you want an explicit placeholder, set it via the inspector.)
+                iconImage.sprite = null;
+                iconImage.enabled = false;
             }
 
-            ClearText(button);
+            ClearText(materialButtons[i]);
         }
 
         HoverMaterial(clickedMaterialIndex);
@@ -237,10 +217,10 @@ public class CraftingStationUI : MonoBehaviour
 
     private void RefreshResult()
     {
-        if (resultButton == null)
+        if (resultImage == null)
             return;
 
-        Image image = resultButton.GetComponent<Image>();
+        Image image = resultImage.GetComponent<Image>();
         if (image == null)
             return;
 
@@ -251,30 +231,23 @@ public class CraftingStationUI : MonoBehaviour
         {
             image.sprite = craftedOrder.sprite;
             image.color = Color.white;
-            resultButton.interactable = true;
         }
         else if (previewOrder != null)
         {
             image.sprite = previewOrder.sprite;
             image.color = Color.white;
-            resultButton.interactable = false;
         }
         else
         {
             // Keep the configured sprite and only adjust visibility if needed.
             // Avoid setting the sprite to null which removes the prefab image.
             image.color = new Color(1f, 1f, 1f, 0f);
-            resultButton.interactable = false;
         }
 
         if (eventSystem != null &&
-            eventSystem.currentSelectedGameObject == resultButton.gameObject)
+            eventSystem.currentSelectedGameObject == resultImage.gameObject)
         {
             HoverResult();
-        }
-        else
-        {
-            ClearText(resultButton);
         }
     }
 
@@ -292,10 +265,14 @@ public class CraftingStationUI : MonoBehaviour
         {
             HoverCraft();
         }
-        else
-        {
-            ClearText(craftButton);
-        }
+        
+        TextMeshProUGUI text =
+            craftButton.GetComponentInChildren<TextMeshProUGUI>();
+        string craftPrompt = input != null
+            ? input.GetAlternateInteractPrompt()
+            : "R";
+
+        text.text = FormatPrompt("Craft", craftPrompt);
     }
 
     private void RefreshCloseText()
@@ -366,21 +343,15 @@ public class CraftingStationUI : MonoBehaviour
 
         if (text == null)
             return;
-
-        string craftPrompt = input != null
-            ? input.GetAlternateInteractPrompt()
-            : "R";
-
-        text.text = FormatPrompt("Craft", craftPrompt);
     }
 
     private void HoverResult()
     {
-        if (station == null || player == null || resultButton == null)
+        if (station == null || player == null || resultImage == null)
             return;
 
         TextMeshProUGUI text =
-            resultButton.GetComponentInChildren<TextMeshProUGUI>();
+            resultImage.GetComponentInChildren<TextMeshProUGUI>();
 
         if (text == null)
             return;

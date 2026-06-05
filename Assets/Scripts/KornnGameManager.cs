@@ -1,19 +1,30 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class KornnGameManager : MonoBehaviour
+public class KornnGameManager : NetworkBehaviour
 {
     public static KornnGameManager Instance { get; private set; }
 
-    [SerializeField] private float gameDuration = 120f; // seconds
+    [SerializeField] private float gameDuration = 120f;
     [SerializeField] private int levelNumber;
 
-    private float remainingTime;
-    private bool isGameRunning;
-    
+    private readonly NetworkVariable<float> remainingTime = new(
+        0f,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
+    public readonly NetworkVariable<bool> IsPaused = new(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     public event Action<float> OnTimeChanged;
     public event Action OnGameEnded;
+
+    private bool gameEndedInvoked;
 
     private void Awake()
     {
@@ -27,32 +38,72 @@ public class KornnGameManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        StartGame();
+        remainingTime.OnValueChanged += HandleTimeChanged;
+        IsPaused.OnValueChanged += HandleGameRunningChanged;
+
+        OnTimeChanged?.Invoke(remainingTime.Value);
+
+        if (IsServer)
+            StartGame();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        remainingTime.OnValueChanged -= HandleTimeChanged;
+        IsPaused.OnValueChanged -= HandleGameRunningChanged;
     }
 
     private void Update()
     {
-        if (!isGameRunning) return;
+        if (!IsServer) return;
+        if (IsPaused.Value) return;
 
-        remainingTime -= Time.deltaTime;
+        remainingTime.Value -= Time.deltaTime;
 
-        OnTimeChanged?.Invoke(remainingTime);
-
-        if (remainingTime <= 0f)
+        if (remainingTime.Value <= 0f)
         {
-            remainingTime = 0f;
-            isGameRunning = false;
+            remainingTime.Value = 0f;
+            IsPaused.Value = true;
 
             SaveStars();
             UnlockNextLevel();
 
-            OnTimeChanged?.Invoke(remainingTime);
-            OnGameEnded?.Invoke();
+            EndGameClientRpc();
 
             Debug.Log("LEVEL COMPLETE");
         }
+    }
+
+    private void HandleTimeChanged(float oldValue, float newValue)
+    {
+        OnTimeChanged?.Invoke(newValue);
+    }
+
+    private void HandleGameRunningChanged(bool oldValue, bool newValue)
+    {
+        if (newValue)
+            gameEndedInvoked = false;
+    }
+
+    [ClientRpc]
+    private void EndGameClientRpc()
+    {
+        if (gameEndedInvoked) return;
+
+        gameEndedInvoked = true;
+        OnTimeChanged?.Invoke(remainingTime.Value);
+        OnGameEnded?.Invoke();
+    }
+
+    public void StartGame()
+    {
+        if (!IsServer) return;
+
+        gameEndedInvoked = false;
+        remainingTime.Value = gameDuration;
+        IsPaused.Value = false;
     }
 
     private void UnlockNextLevel()
@@ -72,45 +123,20 @@ public class KornnGameManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
-    {
-        remainingTime = gameDuration;
-        isGameRunning = true;
-
-        OnTimeChanged?.Invoke(remainingTime);
-    }
-
-    public float GetRemainingTime()
-    {
-        return remainingTime;
-    }
-
-    public bool IsGameRunning()
-    {
-        return isGameRunning;
-    }
-
     private void SaveStars()
     {
         int score = ScoreManager.Instance.GetScore();
 
         int stars = 0;
 
-        if (score >= 100)
-            stars = 1;
-
-        if (score >= 200)
-            stars = 2;
-
-        if (score >= 300)
-            stars = 3;
-
+        if (score >= 100) stars = 1;
+        if (score >= 200) stars = 2;
+        if (score >= 300) stars = 3;
 
         string key = "Level" + levelNumber + "Stars";
 
         int previousStars = PlayerPrefs.GetInt(key, 0);
 
-        // Only keep the best result
         if (stars > previousStars)
         {
             PlayerPrefs.SetInt(key, stars);

@@ -27,6 +27,7 @@ public class MovingTile : NetworkBehaviour
     private void FixedUpdate()
     {
         if (!IsServer) return;
+        if (KornnGameManager.Instance.IsPaused.Value) return;
 
         if (waypoints == null || waypoints.Length == 0)
             return;

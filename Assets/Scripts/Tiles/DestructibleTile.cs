@@ -41,6 +41,7 @@ public class DestructibleTile : NetworkBehaviour
     // Client/other code should call this to request damage; server applies it.
     public void RequestDamage(int amount = 1)
     {
+        if(KornnGameManager.Instance.IsPaused.Value) return;
         // If running as server or Netcode is not active, apply immediately.
         if (IsServer || NetworkManager.Singleton == null)
         {

@@ -1939,6 +1939,7 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 1175132131}
   - {fileID: 1943283232}
+  spawnDelayAfterSceneLoad: 0.5
 --- !u!4 &278988421
 Transform:
   m_ObjectHideFlags: 0
@@ -2258,6 +2259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <CursorVisibilityPossible>k__BackingField: 0
+  mouseMoveThreshold: 0.1
 --- !u!1001 &468612593
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2661,7 +2663,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.109375
+  orthographic size: 5.046875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3989,6 +3991,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1092541101}
+  - component: {fileID: 1092541103}
   - component: {fileID: 1092541102}
   m_Layer: 0
   m_Name: -----MANAGERS-----
@@ -4029,8 +4032,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 601c2753033c08d4ca3784f177c9d328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   gameDuration: 300
   levelNumber: 3
+--- !u!114 &1092541103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1092541100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2634089410
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1102801287
 GameObject:
   m_ObjectHideFlags: 0

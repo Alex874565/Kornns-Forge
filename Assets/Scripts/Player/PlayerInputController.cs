@@ -116,6 +116,7 @@ public class PlayerInputController : NetworkBehaviour
         controls.UI.Submit.performed += DetectInputDevice;
         controls.UI.Cancel.performed += DetectInputDevice;
         controls.UI.InteractAlternate.performed += DetectInputDevice;
+        controls.UI.Navigate.performed += DetectInputDevice;
 
         controls.Player.Move.performed += HandleMove;
         controls.Player.Jump.performed += HandleJumpPressed;
@@ -144,6 +145,7 @@ public class PlayerInputController : NetworkBehaviour
         controls.UI.Submit.performed -= DetectInputDevice;
         controls.UI.Cancel.performed -= DetectInputDevice;
         controls.UI.InteractAlternate.performed -= DetectInputDevice;
+        controls.UI.Navigate.performed -= DetectInputDevice;
 
         controls.Player.Move.performed -= HandleMove;
         controls.Player.Jump.performed -= HandleJumpPressed;

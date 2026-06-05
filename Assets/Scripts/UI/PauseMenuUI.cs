@@ -1,23 +1,25 @@
-using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PauseMenuUI : MonoBehaviour
+public class PauseMenuUI : NetworkBehaviour
 {
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject optionsMenu;
 
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button settingsButton;
-    private bool isPaused = false;
+
     public PlayerInputController Controls { get; set; }
-    
-    void Start()
+
+    private void Start()
     {
         if (pausePanel != null)
             pausePanel.SetActive(false);
+
+        if (optionsMenu != null)
+            optionsMenu.SetActive(false);
 
         if (resumeButton != null)
             resumeButton.onClick.AddListener(Resume);
@@ -28,63 +30,96 @@ public class PauseMenuUI : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         if (KornnGameManager.Instance != null)
+        {
+            KornnGameManager.Instance.IsPaused.OnValueChanged += OnPauseChanged;
             KornnGameManager.Instance.OnGameEnded += ForceUnpause;
-    }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (isPaused)
-            Resume();
+            ApplyPauseState(KornnGameManager.Instance.IsPaused.Value);
+        }
     }
 
     public void TogglePause()
     {
-        if (isPaused)
-            Resume();
-        else
-            Pause();
-    }
+        if (KornnGameManager.Instance == null) return;
 
-    public void Pause()
-    {
-        if (isPaused) return;
-        isPaused = true;
-        pausePanel.SetActive(true);
-        Time.timeScale = 0f;
-        //AudioListener.pause = true;
-        Controls.SetUIMode(true);
-        Controls.OnCancel += TogglePause;
-    }
-
-    public void OpenSettings()
-    {
-        pausePanel.SetActive(false);
-        optionsMenu.SetActive(true);
+        SetPausedServerRpc(!KornnGameManager.Instance.IsPaused.Value);
     }
 
     public void Resume()
     {
-        if (!isPaused) return;
-        isPaused = false;
-        pausePanel.SetActive(false);
-        Time.timeScale = 1f;
-        Controls.SetUIMode(false);
-        Controls.OnCancel -= TogglePause;
-        //AudioListener.pause = false;
+        SetPausedServerRpc(false);
+    }
+
+    public void OpenSettings()
+    {
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        if (optionsMenu != null)
+            optionsMenu.SetActive(true);
     }
 
     private void ForceUnpause()
     {
-        if (isPaused)
-            Resume();
+        SetPausedServerRpc(false);
     }
 
-    void OnDestroy()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SetPausedServerRpc(false);
+    }
+
+    private void OnPauseChanged(bool oldValue, bool newValue)
+    {
+        ApplyPauseState(newValue);
+    }
+
+    private void ApplyPauseState(bool paused)
+    {
+        if (pausePanel != null)
+            pausePanel.SetActive(paused);
+
+        if (!paused && optionsMenu != null)
+            optionsMenu.SetActive(false);
+
+        Time.timeScale = paused ? 0f : 1f;
+
+        if (Controls != null && Controls.IsOwner)
+        {
+            Controls.SetUIMode(paused);
+
+            Controls.OnCancel -= TogglePause;
+
+            if (paused)
+                Controls.OnCancel += TogglePause;
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPausedServerRpc(bool paused)
+    {
+        if (KornnGameManager.Instance == null) return;
+
+        KornnGameManager.Instance.IsPaused.Value = paused;
+    }
+
+    private void OnDestroy()
     {
         if (resumeButton != null)
             resumeButton.onClick.RemoveListener(Resume);
 
+        if (settingsButton != null)
+            settingsButton.onClick.RemoveListener(OpenSettings);
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
         if (KornnGameManager.Instance != null)
+        {
+            KornnGameManager.Instance.IsPaused.OnValueChanged -= OnPauseChanged;
             KornnGameManager.Instance.OnGameEnded -= ForceUnpause;
+        }
+
+        if (Controls != null)
+            Controls.OnCancel -= TogglePause;
     }
 }
