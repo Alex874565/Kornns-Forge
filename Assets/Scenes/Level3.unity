@@ -2663,7 +2663,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5.046875
+  orthographic size: 8.4375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5244,6 +5244,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 132445407}
     m_Modifications:
+    - target: {fileID: 3536283038103577680, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3085914135
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536283038103577680, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3362989270
+      objectReference: {fileID: 0}
     - target: {fileID: 3878390059948448323, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
       propertyPath: m_Name
       value: PauseMenu
@@ -6639,6 +6647,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 132445407}
     m_Modifications:
+    - target: {fileID: -6760606954882100780, guid: eae0b1b721bf73144a38acde73f64b53, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 80967023
+      objectReference: {fileID: 0}
+    - target: {fileID: -6760606954882100780, guid: eae0b1b721bf73144a38acde73f64b53, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -6760606954882100780, guid: eae0b1b721bf73144a38acde73f64b53, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2224374229
+      objectReference: {fileID: 0}
     - target: {fileID: 385047935491631267, guid: eae0b1b721bf73144a38acde73f64b53, type: 3}
       propertyPath: m_Name
       value: GameOverUI

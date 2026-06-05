@@ -54,12 +54,7 @@ public class PlayerInputController : NetworkBehaviour
 
     private void Awake()
     {
-        cursorVisibilityManager = FindObjectOfType<CursorVisibilityManager>();
         controls = new InputSystem_Actions();
-
-        pauseMenu = FindFirstObjectByType<PauseMenuUI>();
-        if (pauseMenu != null)
-            pauseMenu.Controls = this;
     }
 
     public override void OnNetworkSpawn()
@@ -72,8 +67,15 @@ public class PlayerInputController : NetworkBehaviour
             return;
         }
 
-        if (cursorVisibilityManager == null)
-            cursorVisibilityManager = FindFirstObjectByType<CursorVisibilityManager>();
+        cursorVisibilityManager = FindFirstObjectByType<CursorVisibilityManager>();
+
+        pauseMenu = FindFirstObjectByType<PauseMenuUI>(FindObjectsInactive.Include);
+        if (pauseMenu != null)
+            pauseMenu.Controls = this;
+
+        GameOverUI gameOverMenu = FindFirstObjectByType<GameOverUI>(FindObjectsInactive.Include);
+        if (gameOverMenu != null)
+            gameOverMenu.Controls = this;
 
         if (Mouse.current != null)
             lastMousePosition = Mouse.current.position.ReadValue();

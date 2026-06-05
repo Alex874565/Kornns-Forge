@@ -86,7 +86,7 @@ public class PauseMenuUI : NetworkBehaviour
 
         if (Controls != null && Controls.IsOwner)
         {
-            Controls.SetUIMode(paused);
+            Controls.SetUIMode(paused, resumeButton.gameObject);
 
             Controls.OnCancel -= TogglePause;
 

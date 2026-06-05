@@ -7,6 +7,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerStatusController))]
 public class PlayerUIController : NetworkBehaviour
 {
+    [SerializeField] private Canvas ui;
     [SerializeField] private Slider energy_bar;
 
     private PlayerStatusController statusController;
@@ -21,6 +22,7 @@ public class PlayerUIController : NetworkBehaviour
     private void Awake()
     {
         originalScale = energy_bar.transform.localScale;
+        ui = GetComponentInChildren<Canvas>();
     }
     
     public override void OnNetworkSpawn()
@@ -37,6 +39,17 @@ public class PlayerUIController : NetworkBehaviour
         statusController.OnEnergyChanged += HandleEnergyChanged;
         statusController.OnGetEnergyLevel += HandleGetEnergyLevel;
         HandleEnergyChanged(0f, statusController.GetEnergyLevel());
+        KornnGameManager.Instance.OnGameEnded += Hide;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        KornnGameManager.Instance.OnGameEnded -= Hide;
+    }
+
+    private void Hide()
+    {
+        ui.gameObject.SetActive(false);
     }
     
     private void HandleEnergyChanged(float oldValue, float newValue)

@@ -17,6 +17,8 @@ public class GameOverUI : NetworkBehaviour
 
     [SerializeField] private Color unlockedStarColor = Color.white;
     [SerializeField] private Color lockedStarColor = new Color(1f, 1f, 1f, 0.25f);
+    
+    public PlayerInputController Controls { get; set; }
 
     private void Start()
     {
@@ -36,7 +38,10 @@ public class GameOverUI : NetworkBehaviour
     private void ShowGameOver()
     {
         if (gameOverPanel != null)
+        {
             gameOverPanel.SetActive(true);
+            Controls.SetUIMode(true, levelSelectButton.gameObject);
+        }
 
         UpdateStars();
     }

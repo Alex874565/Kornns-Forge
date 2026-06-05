@@ -73,8 +73,7 @@ public class CraftingStationController : NetworkBehaviour, IPlayerInteractable
     {
         if (craftingUI == null)
         {
-            Debug.LogWarning("Crafting UI not assigned!");
-            return;
+            craftingUI = FindFirstObjectByType<CraftingStationUI>();
         }
 
         craftingUI.Show(this, player);
