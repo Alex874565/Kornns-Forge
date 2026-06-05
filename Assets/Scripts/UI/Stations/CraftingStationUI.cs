@@ -17,7 +17,8 @@ public class CraftingStationUI : MonoBehaviour
     [SerializeField] private Button closeButton;
 
     private EventSystem eventSystem;
-    private int clickedMaterialIndex;
+
+    private int clickedMaterialIndex = 0;
 
     public void Show(CraftingStationController s, PlayerStatusController p)
     {
@@ -38,10 +39,12 @@ public class CraftingStationUI : MonoBehaviour
 
     private void EnterUIMode()
     {
-        eventSystem = EventSystem.current;
+        if (eventSystem == null)
+        {
+            eventSystem = EventSystem.current;
+        }
 
-        if (input != null && materialButtons.Count > 0 && materialButtons[0] != null)
-            input.SetUIMode(true, materialButtons[0].gameObject);
+        input.SetUIMode(true, materialButtons[0].gameObject);
     }
 
     public void Hide()
@@ -84,6 +87,8 @@ public class CraftingStationUI : MonoBehaviour
         Refresh();
     }
 
+    // ---------------- SETUP ----------------
+
     private void SetupButtons()
     {
         clickedMaterialIndex = 0;
@@ -123,8 +128,7 @@ public class CraftingStationUI : MonoBehaviour
                 () => ClearText(button)
             );
 
-            AddSelection(
-                button,
+            AddSelection(button,
                 () =>
                 {
                     clickedMaterialIndex = index;
@@ -133,6 +137,8 @@ public class CraftingStationUI : MonoBehaviour
                 () => ClearText(button)
             );
         }
+
+        HoverMaterial(0);
 
         if (craftButton != null)
         {
@@ -217,7 +223,10 @@ public class CraftingStationUI : MonoBehaviour
             }
             else
             {
-                image.sprite = null;
+                // Do not overwrite the prefab-configured sprite at runtime when there's
+                // no ingredient. Leaving the sprite intact preserves the editor preview
+                // and prevents it from being replaced with null during Play mode.
+                // (If you want an explicit placeholder, set it via the inspector.)
             }
 
             ClearText(button);
@@ -252,7 +261,8 @@ public class CraftingStationUI : MonoBehaviour
         }
         else
         {
-            image.sprite = null;
+            // Keep the configured sprite and only adjust visibility if needed.
+            // Avoid setting the sprite to null which removes the prefab image.
             image.color = new Color(1f, 1f, 1f, 0f);
             resultButton.interactable = false;
         }
