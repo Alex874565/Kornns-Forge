@@ -214,12 +214,10 @@ public class CraftingStationUI : MonoBehaviour
             if (ingredientSO != null)
             {
                 image.sprite = ingredientSO.sprite;
-                image.color = Color.white;
             }
             else
             {
                 image.sprite = null;
-                image.color = new Color(1f, 1f, 1f, 0f);
             }
 
             ClearText(button);
@@ -363,10 +361,7 @@ public class CraftingStationUI : MonoBehaviour
             ? input.GetAlternateInteractPrompt()
             : "R";
 
-        if (craftButton.interactable)
-            text.text = FormatPrompt("Craft", craftPrompt);
-        else
-            text.text = "";
+        text.text = FormatPrompt("Craft", craftPrompt);
     }
 
     private void HoverResult()
