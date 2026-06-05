@@ -16,11 +16,11 @@ public class CraftingStationUI : MonoBehaviour
     [SerializeField] private Button resultButton;
     [SerializeField] private Button craftButton;
     [SerializeField] private Button closeButton;
-    
+
     private EventSystem eventSystem;
 
     private int clickedMaterialIndex = 0;
-    
+
     public void Show(CraftingStationController s, PlayerStatusController p)
     {
         Unsubscribe();
@@ -32,9 +32,9 @@ public class CraftingStationUI : MonoBehaviour
             : null;
 
         gameObject.SetActive(true);
-        
+
         EnterUIMode();
-        
+
         SetupButtons();
 
         Refresh();
@@ -46,10 +46,10 @@ public class CraftingStationUI : MonoBehaviour
         {
             eventSystem = EventSystem.current;
         }
-        
+
         input.SetUIMode(true, materialButtons[0].gameObject);
     }
-    
+
     public void Hide()
     {
         input.SetUIMode(false);
@@ -59,7 +59,7 @@ public class CraftingStationUI : MonoBehaviour
 
     private void Subscribe()
     {
-        if(station != null)
+        if (station != null)
         {
             station.OnCraftingChanged += Refresh;
         }
@@ -86,17 +86,17 @@ public class CraftingStationUI : MonoBehaviour
     }
 
     // ---------------- SETUP ----------------
-    
+
     private void SetupButtons()
     {
         clickedMaterialIndex = 0;
-        
+
         if (closeButton != null)
         {
             closeButton.onClick.RemoveAllListeners();
             closeButton.onClick.AddListener(Hide);
         }
-        
+
         for (int i = 0; i < materialButtons.Count; i++)
         {
             int index = i;
@@ -109,7 +109,7 @@ public class CraftingStationUI : MonoBehaviour
             {
                 if (station != null && player != null)
                     station.RequestToggleIngredientSlot(index, player);
-                
+
                 clickedMaterialIndex = index;
             });
 
@@ -122,8 +122,8 @@ public class CraftingStationUI : MonoBehaviour
                 },
                 () => ClearText(button)
             );
-            
-            AddSelection(button, 
+
+            AddSelection(button,
                 () =>
                 {
                     HoverMaterial(index);
@@ -131,7 +131,7 @@ public class CraftingStationUI : MonoBehaviour
                 () => ClearText(button)
             );
         }
-        
+
         HoverMaterial(0);
 
         if (craftButton != null)
@@ -142,14 +142,14 @@ public class CraftingStationUI : MonoBehaviour
                 if (station != null && player != null)
                     station.RequestCraft(player);
             });
-            
+
             AddHover(
                 craftButton,
                 () => eventSystem.SetSelectedGameObject(craftButton.gameObject),
                 () => { }
             );
         }
-        
+
         Subscribe();
     }
 
@@ -183,12 +183,15 @@ public class CraftingStationUI : MonoBehaviour
             }
             else
             {
-                image.sprite = null;
+                // Do not overwrite the prefab-configured sprite at runtime when there's
+                // no ingredient. Leaving the sprite intact preserves the editor preview
+                // and prevents it from being replaced with null during Play mode.
+                // (If you want an explicit placeholder, set it via the inspector.)
             }
 
             ClearText(button);
         }
-        
+
         HoverMaterial(clickedMaterialIndex);
     }
 
@@ -221,7 +224,8 @@ public class CraftingStationUI : MonoBehaviour
         }
         else
         {
-            image.sprite = null;
+            // Keep the configured sprite and only adjust visibility if needed.
+            // Avoid setting the sprite to null which removes the prefab image.
             image.color = new Color(1f, 1f, 1f, 0f);
             resultButton.interactable = false;
         }
@@ -257,7 +261,7 @@ public class CraftingStationUI : MonoBehaviour
             text.text = "Remove (E)";
         else
             text.text = "";
-        
+
         Navigation craftNav = craftButton.navigation;
         craftNav.mode = Navigation.Mode.Explicit;
         craftNav.selectOnUp = materialButtons[index];
@@ -267,7 +271,7 @@ public class CraftingStationUI : MonoBehaviour
         closeNav.mode = Navigation.Mode.Explicit;
         closeNav.selectOnDown = materialButtons[index];
         closeButton.navigation = closeNav;
-        
+
         Debug.Log($"Hovering material slot {index}");
     }
 
@@ -314,9 +318,9 @@ public class CraftingStationUI : MonoBehaviour
     private void AddSelection(Button button, System.Action select, System.Action deselect)
     {
         UIButtonHandler btnHandler = button.GetComponent<UIButtonHandler>();
-        
+
         btnHandler.ClearSelection();
-        
+
         btnHandler.OnSelectAction += select;
         btnHandler.OnDeselectAction += deselect;
     }
