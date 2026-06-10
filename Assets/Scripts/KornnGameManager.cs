@@ -108,12 +108,13 @@ public class KornnGameManager : NetworkBehaviour
     {
         if (newValue)
             gameEndedInvoked = false;
-        
-        Debug.Log(newValue ? "ON" : "OFF");
-        if(newValue)
-            _ordersTimeline.Resume();
-        else
+
+        if (_ordersTimeline == null) return;
+
+        if (newValue)
             _ordersTimeline.Pause();
+        else
+            _ordersTimeline.Resume();
     }
     
     [ServerRpc(RequireOwnership = false)]
@@ -153,7 +154,14 @@ public class KornnGameManager : NetworkBehaviour
         gameEndedInvoked = false;
         remainingTime.Value = gameDuration;
         IsPaused.Value = false;
-        _ordersTimeline.Play();
+
+        if (_ordersTimeline != null)
+        {
+            _ordersTimeline.Stop();
+            _ordersTimeline.time = 0;
+            _ordersTimeline.Evaluate();
+            _ordersTimeline.Play();
+        }
     }
 
     private void UnlockNextLevel()
