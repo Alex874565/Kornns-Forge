@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3099888910
+  GlobalObjectIdHash: 3085914135
   InScenePlacedSourceGlobalObjectIdHash: 3362989270
   DeferredDespawnTick: 0
   Ownership: 1
@@ -195,6 +195,8 @@ MonoBehaviour:
   optionsMenu: {fileID: 0}
   resumeButton: {fileID: 2465706303700824683}
   settingsButton: {fileID: 587386370617219325}
+  firstPauseButton: {fileID: 7420597905452884355}
+  firstOptionsButton: {fileID: 0}
   levelSelectScene: LevelSelect
 --- !u!1 &4506592629789245313
 GameObject:

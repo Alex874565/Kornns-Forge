@@ -2872,7 +2872,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.671875
+  orthographic size: 8.4375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3257,6 +3257,10 @@ PrefabInstance:
       propertyPath: optionsMenu
       value: 
       objectReference: {fileID: 1190202804}
+    - target: {fileID: 4846362134701432436, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
+      propertyPath: firstOptionsButton
+      value: 
+      objectReference: {fileID: 1190202805}
     - target: {fileID: 7354881646516675663, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3352,6 +3356,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1225062135558120814, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
   m_PrefabInstance: {fileID: 667610653}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &667610656 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4846362134701432436, guid: 6082df60c1ae9df44a2e347989b2aa07, type: 3}
+  m_PrefabInstance: {fileID: 667610653}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75e2ae78ca5ebc43a60927784258892, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &689525341
 GameObject:
   m_ObjectHideFlags: 0
@@ -5268,6 +5283,22 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 847874970000841393, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 667610656}
+    - target: {fileID: 847874970000841393, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: CloseSettings
+      objectReference: {fileID: 0}
+    - target: {fileID: 847874970000841393, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: PauseMenuUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 847874970000841393, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4403424236781026846, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -5401,6 +5432,11 @@ RectTransform:
 --- !u!1 &1190202804 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6877410048233492101, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
+  m_PrefabInstance: {fileID: 1190202802}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1190202805 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1176190077116617804, guid: 569270fddfc6d2340a713451ec4b0e44, type: 3}
   m_PrefabInstance: {fileID: 1190202802}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1220737927

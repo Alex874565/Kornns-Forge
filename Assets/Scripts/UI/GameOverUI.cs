@@ -2,12 +2,16 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GameOverUI : NetworkBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
     [SerializeField] private Button levelSelectButton;
+
+    [Header("Selection")]
+    [SerializeField] private GameObject firstGameOverButton;
 
     [Header("Stars")]
     [SerializeField] private Image[] stars;
@@ -17,7 +21,7 @@ public class GameOverUI : NetworkBehaviour
 
     [SerializeField] private Color unlockedStarColor = Color.white;
     [SerializeField] private Color lockedStarColor = new Color(1f, 1f, 1f, 0.25f);
-    
+
     public PlayerInputController Controls { get; set; }
 
     private void Start()
@@ -38,12 +42,27 @@ public class GameOverUI : NetworkBehaviour
     private void ShowGameOver()
     {
         if (gameOverPanel != null)
-        {
             gameOverPanel.SetActive(true);
-            Controls.SetUIMode(true, levelSelectButton.gameObject);
-        }
+
+        GameObject selectedButton = firstGameOverButton != null
+            ? firstGameOverButton
+            : levelSelectButton.gameObject;
+
+        SelectButton(selectedButton);
+
+        if (Controls != null && Controls.IsOwner)
+            Controls.SetUIMode(true, selectedButton);
 
         UpdateStars();
+    }
+
+    private void SelectButton(GameObject button)
+    {
+        if (button == null || EventSystem.current == null)
+            return;
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(button);
     }
 
     private void UpdateStars()
@@ -82,9 +101,7 @@ public class GameOverUI : NetworkBehaviour
     private void RestartGame()
     {
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
-        {
             RequestRestartServerRpc();
-        }
         else
         {
             Time.timeScale = 1f;
@@ -95,13 +112,9 @@ public class GameOverUI : NetworkBehaviour
     private void LoadLevelSelect()
     {
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
-        {
             RequestLevelSelectServerRpc();
-        }
         else
-        {
             SceneManager.LoadScene("LevelSelect");
-        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -112,7 +125,7 @@ public class GameOverUI : NetworkBehaviour
             LoadSceneMode.Single
         );
     }
-    
+
     [ServerRpc(RequireOwnership = false)]
     private void RequestLevelSelectServerRpc()
     {

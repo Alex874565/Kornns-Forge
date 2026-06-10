@@ -2,6 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PauseMenuUI : NetworkBehaviour
 {
@@ -11,8 +12,12 @@ public class PauseMenuUI : NetworkBehaviour
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button settingsButton;
 
+    [Header("First Selected Buttons")]
+    [SerializeField] private GameObject firstPauseButton;
+    [SerializeField] private GameObject firstOptionsButton;
+
     public PlayerInputController Controls { get; set; }
-    
+
     [SerializeField] private string levelSelectScene = "LevelSelect";
 
     private void Start()
@@ -39,21 +44,73 @@ public class PauseMenuUI : NetworkBehaviour
             ApplyPauseState(KornnGameManager.Instance.IsPaused.Value);
         }
     }
-    
-    public void ReturnToLevelSelect()
+
+    public void OpenSettings()
     {
         SoundManager.PlaySound(SoundType.ButtonClick);
 
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        if (optionsMenu != null)
+            optionsMenu.SetActive(true);
+
+        SelectButton(firstOptionsButton);
+
+        if (Controls != null && Controls.IsOwner)
+            Controls.SetUIMode(true, firstOptionsButton);
+    }
+
+    private void ApplyPauseState(bool paused)
+    {
+        if (KornnGameManager.Instance.TutorialOn.Value) return;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(paused);
+
+        if (!paused && optionsMenu != null)
+            optionsMenu.SetActive(false);
+
+        Time.timeScale = paused ? 0f : 1f;
+
+        if (Controls != null && Controls.IsOwner)
+        {
+            GameObject selectedButton = paused
+                ? (firstPauseButton != null ? firstPauseButton : resumeButton.gameObject)
+                : null;
+
+            Controls.SetUIMode(paused, selectedButton);
+
+            if (paused)
+                SelectButton(selectedButton);
+
+            Controls.OnCancel -= TogglePause;
+
+            if (paused)
+                Controls.OnCancel += TogglePause;
+        }
+    }
+
+    private void SelectButton(GameObject button)
+    {
+        if (button == null || EventSystem.current == null)
+            return;
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(button);
+    }
+
+    public void ReturnToLevelSelect()
+    {
+        SoundManager.PlaySound(SoundType.ButtonClick);
         ReturnToLevelSelectServerRpc();
     }
-    
+
     [ServerRpc(RequireOwnership = false)]
     private void ReturnToLevelSelectServerRpc()
     {
         if (KornnGameManager.Instance != null)
-        {
             KornnGameManager.Instance.IsPaused.Value = false;
-        }
 
         NetworkManager.Singleton.SceneManager.LoadScene(
             levelSelectScene,
@@ -70,16 +127,8 @@ public class PauseMenuUI : NetworkBehaviour
 
     public void Resume()
     {
+        SoundManager.PlaySound(SoundType.ButtonClick);
         SetPausedServerRpc(false);
-    }
-
-    public void OpenSettings()
-    {
-        if (pausePanel != null)
-            pausePanel.SetActive(false);
-
-        if (optionsMenu != null)
-            optionsMenu.SetActive(true);
     }
 
     private void ForceUnpause()
@@ -97,35 +146,12 @@ public class PauseMenuUI : NetworkBehaviour
         ApplyPauseState(newValue);
     }
 
-    private void ApplyPauseState(bool paused)
-    {
-        if(KornnGameManager.Instance.TutorialOn.Value) return;
-        
-        if (pausePanel != null)
-            pausePanel.SetActive(paused);
-
-        if (!paused && optionsMenu != null)
-            optionsMenu.SetActive(false);
-
-        Time.timeScale = paused ? 0f : 1f;
-
-        if (Controls != null && Controls.IsOwner)
-        {
-            Controls.SetUIMode(paused, resumeButton.gameObject);
-
-            Controls.OnCancel -= TogglePause;
-
-            if (paused)
-                Controls.OnCancel += TogglePause;
-        }
-    }
-
     [ServerRpc(RequireOwnership = false)]
     private void SetPausedServerRpc(bool paused)
     {
         if (KornnGameManager.Instance == null) return;
         if (KornnGameManager.Instance.TutorialOn.Value) return;
-        
+
         KornnGameManager.Instance.IsPaused.Value = paused;
     }
 
@@ -147,5 +173,18 @@ public class PauseMenuUI : NetworkBehaviour
 
         if (Controls != null)
             Controls.OnCancel -= TogglePause;
+    }
+
+    public void CloseSettings()
+    {
+        SoundManager.PlaySound(SoundType.ButtonClick);
+
+        optionsMenu.SetActive(false);
+        pausePanel.SetActive(true);
+
+        SelectButton(firstPauseButton);
+
+        if (Controls != null && Controls.IsOwner)
+            Controls.SetUIMode(true, firstPauseButton);
     }
 }
