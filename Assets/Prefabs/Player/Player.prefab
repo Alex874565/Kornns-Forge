@@ -810,7 +810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  secondaryColor: {r: 0.4433962, g: 0.3738377, b: 0.34091312, a: 1}
+  secondaryColor: {r: 1, g: 0.5882353, b: 0, a: 1}
   animator: {fileID: 0}
   spriteRenderers:
   - {fileID: 7916670844922127062}
@@ -1362,6 +1362,22 @@ PrefabInstance:
     - target: {fileID: -1406736754831263328, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -93.59
+      objectReference: {fileID: 0}
+    - target: {fileID: -825289701315894021, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -825289701315894021, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -825289701315894021, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -825289701315894021, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -825289701315894021, guid: b5e5fb9db2d308d42a291d1db675a09e, type: 3}
       propertyPath: m_SortingLayer

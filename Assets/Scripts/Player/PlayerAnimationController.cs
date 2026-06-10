@@ -72,7 +72,7 @@ public class PlayerAnimationController : NetworkBehaviour
 
     private void SetColor(int playerIndex)
     {
-        Color color = playerIndex == 0 ? Color.white : secondaryColor;
+        Color color = playerIndex == 1 ? Color.white : secondaryColor;
 
         foreach (var spriteRenderer in spriteRenderers)
         {
