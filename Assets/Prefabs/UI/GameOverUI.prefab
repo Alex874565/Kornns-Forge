@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 300
+  m_text: 1500
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
   m_sharedMaterial: {fileID: 3644888119481098101, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4108839881
+  GlobalObjectIdHash: 4294426498
   InScenePlacedSourceGlobalObjectIdHash: 2224374229
   DeferredDespawnTick: 0
   Ownership: 1
@@ -361,9 +361,9 @@ MonoBehaviour:
   - {fileID: 3491986251778861229}
   - {fileID: 5506609060529720210}
   - {fileID: 2857440958052133616}
-  oneStarScore: 100
-  twoStarScore: 200
-  threeStarScore: 300
+  oneStarScore: 500
+  twoStarScore: 1000
+  threeStarScore: 1500
   unlockedStarColor: {r: 1, g: 1, b: 1, a: 1}
   lockedStarColor: {r: 1, g: 1, b: 1, a: 0.25}
 --- !u!1 &862608735231123881
@@ -616,7 +616,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 200
+  m_text: 1000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
   m_sharedMaterial: {fileID: 3644888119481098101, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
@@ -1577,7 +1577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 500
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
   m_sharedMaterial: {fileID: 3644888119481098101, guid: 8e8f5aff6f06ee5498c66a8d2e375e99, type: 2}
