@@ -46,6 +46,10 @@ public class LevelMenu : NetworkBehaviour
 
     public void LoadLevel(string sceneName)
     {
+        if (sceneName == "MainMenu")
+        {
+            MainMenu.OpenMultiplayerOnLoad = true;
+        }
         if (NetworkManager.Singleton.IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene(

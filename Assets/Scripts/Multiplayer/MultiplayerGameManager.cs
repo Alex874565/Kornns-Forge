@@ -11,7 +11,10 @@ public class MultiplayerGameManager : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] private Button startGameButton;
-
+    [SerializeField] private GameObject firstMainMenuButton;
+    [SerializeField] private GameObject multiplayerCanvas;
+    [SerializeField] private GameObject mainMenuCanvas;
+    
     private void Awake()
     {
         if (startGameButton != null)
@@ -57,6 +60,15 @@ public class MultiplayerGameManager : MonoBehaviour
             // Set a flag or state if needed, but NGO's SceneManager handles the sync
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Single);
         }
+    }
+
+    public void OnLeftMultiplayer()
+    {
+        multiplayerCanvas.SetActive(false);
+        mainMenuCanvas.SetActive(true);
+
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstMainMenuButton);
     }
 }
 

@@ -1461,6 +1461,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 23285370550747053, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
   m_PrefabInstance: {fileID: 4263636455363755947}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2138501447 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 370376086512953644, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+  m_PrefabInstance: {fileID: 4263636455363755947}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138501444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14706aea3d9b7e74f8d40ecb12843819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &48226943886004779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1996,6 +2007,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 370376086512953644, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: mainMenuCanvas
+      value: 
+      objectReference: {fileID: 1720870332}
+    - target: {fileID: 370376086512953644, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: multiplayerCanvas
+      value: 
+      objectReference: {fileID: 2138501444}
+    - target: {fileID: 370376086512953644, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: firstMainMenuButton
+      value: 
+      objectReference: {fileID: 1064850440}
     - target: {fileID: 562971374754198681, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -2011,6 +2034,34 @@ PrefabInstance:
     - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
       propertyPath: m_Navigation.m_SelectOnDown
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2138501447}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnLeftMultiplayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MultiplayerGameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1345140070041045626, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1449430472326456356, guid: edc19133ade2d134fafc89eb94c22ae2, type: 3}
       propertyPath: m_AnchorMax.y

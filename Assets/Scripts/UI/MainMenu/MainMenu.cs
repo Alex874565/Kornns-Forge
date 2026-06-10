@@ -50,7 +50,6 @@ public class MainMenu : MonoBehaviour
 
         if (multiplayerMenu != null)
         {
-            OpenMultiplayerOnLoad = true;
             multiplayerMenu.SetActive(true);
             gameObject.SetActive(false);
 
