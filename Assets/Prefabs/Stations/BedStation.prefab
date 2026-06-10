@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3135658648
+      value: 1330892320
       objectReference: {fileID: 0}
     - target: {fileID: 5537363319840508481, guid: 23f876fcab836934b852ebe67e0234e8, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -177,7 +177,7 @@ MonoBehaviour:
   stationTopPoint: {fileID: 7798953320393853962}
   selectedVisual: {fileID: 3139009584545331205}
   sprite: {fileID: 297185087686264632, guid: ba5e371e00f1b5048842648e99e76873, type: 3}
-  energy: 25
+  energy: 75
   sleepDuration: 5
 --- !u!114 &3139009584545331205 stripped
 MonoBehaviour:
