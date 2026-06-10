@@ -85,6 +85,8 @@ public class PlayerSpawner : NetworkBehaviour
             Quaternion.identity
         );
 
+        playerInstance.gameObject.GetComponent<PlayerAnimationController>().SetColor(spawnedClients.Count);
+
         NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
 
         networkObject.SpawnAsPlayerObject(clientId, true);

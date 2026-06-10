@@ -1,12 +1,15 @@
-﻿using DG.Tweening;
+﻿using System.Collections.Generic;
+using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovementController))]
 public class PlayerAnimationController : NetworkBehaviour
 {
+    [SerializeField] private Color secondaryColor;
     [Header("References")]
     [SerializeField] private Animator animator;
+    [SerializeField] private List<SpriteRenderer> spriteRenderers;
 
     [SerializeField] private Transform visualTransform;
 
@@ -51,6 +54,23 @@ public class PlayerAnimationController : NetworkBehaviour
         status.OnStopSleeping -= HandleStopSleeping;
     }
 
+    public void SetColor(int playerIndex)
+    {
+        Color color;
+        if (playerIndex == 0)
+        {
+            color = Color.white;
+        }
+        else
+        {
+            color = secondaryColor;
+        }
+        foreach (var spriteRenderer in spriteRenderers)
+        {
+            spriteRenderer.color = color;
+        }
+    }
+    
     private void HandleInitiateJump()
     {
         if (!IsOwner) return;

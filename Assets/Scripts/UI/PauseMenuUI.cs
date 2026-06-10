@@ -12,6 +12,8 @@ public class PauseMenuUI : NetworkBehaviour
     [SerializeField] private Button settingsButton;
 
     public PlayerInputController Controls { get; set; }
+    
+    [SerializeField] private string levelSelectScene = "LevelSelect";
 
     private void Start()
     {
@@ -36,6 +38,27 @@ public class PauseMenuUI : NetworkBehaviour
 
             ApplyPauseState(KornnGameManager.Instance.IsPaused.Value);
         }
+    }
+    
+    public void ReturnToLevelSelect()
+    {
+        SoundManager.PlaySound(SoundType.ButtonClick);
+
+        ReturnToLevelSelectServerRpc();
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void ReturnToLevelSelectServerRpc()
+    {
+        if (KornnGameManager.Instance != null)
+        {
+            KornnGameManager.Instance.IsPaused.Value = false;
+        }
+
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            levelSelectScene,
+            LoadSceneMode.Single
+        );
     }
 
     public void TogglePause()
