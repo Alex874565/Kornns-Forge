@@ -41,6 +41,7 @@ public class GameOverUI : NetworkBehaviour
 
     private void ShowGameOver()
     {
+        Debug.Log("show game over");
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
 
