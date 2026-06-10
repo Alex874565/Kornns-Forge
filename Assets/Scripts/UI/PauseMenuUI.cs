@@ -76,6 +76,8 @@ public class PauseMenuUI : NetworkBehaviour
 
     private void ApplyPauseState(bool paused)
     {
+        if(KornnGameManager.Instance.TutorialOn.Value) return;
+        
         if (pausePanel != null)
             pausePanel.SetActive(paused);
 
@@ -99,7 +101,8 @@ public class PauseMenuUI : NetworkBehaviour
     private void SetPausedServerRpc(bool paused)
     {
         if (KornnGameManager.Instance == null) return;
-
+        if (KornnGameManager.Instance.TutorialOn.Value) return;
+        
         KornnGameManager.Instance.IsPaused.Value = paused;
     }
 

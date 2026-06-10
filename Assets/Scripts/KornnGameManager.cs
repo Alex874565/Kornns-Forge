@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class KornnGameManager : NetworkBehaviour
 {
@@ -8,6 +9,10 @@ public class KornnGameManager : NetworkBehaviour
 
     [SerializeField] private float gameDuration = 120f;
     [SerializeField] private int levelNumber;
+    [SerializeField] private GameObject tutorial;
+    public GameObject tutorialInitialButton;
+
+    private PlayableDirector _ordersTimeline;
 
     private readonly NetworkVariable<float> remainingTime = new(
         0f,
@@ -20,6 +25,12 @@ public class KornnGameManager : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
+
+    public readonly NetworkVariable<bool> TutorialOn = new(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+        );
 
     public event Action<float> OnTimeChanged;
     public event Action OnGameEnded;
@@ -36,6 +47,8 @@ public class KornnGameManager : NetworkBehaviour
         }
 
         Instance = this;
+        
+        _ordersTimeline = FindObjectOfType<PlayableDirector>();
     }
 
     public override void OnNetworkSpawn()
@@ -46,7 +59,17 @@ public class KornnGameManager : NetworkBehaviour
         OnTimeChanged?.Invoke(remainingTime.Value);
 
         if (IsServer)
-            StartGame();
+        {
+            if (tutorial)
+            {
+                TutorialOn.Value = true;
+                StartTutorialClientRpc();
+            }
+            else
+            {
+                StartGame();
+            }
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -85,6 +108,32 @@ public class KornnGameManager : NetworkBehaviour
     {
         if (newValue)
             gameEndedInvoked = false;
+        
+        Debug.Log(newValue ? "ON" : "OFF");
+        if(newValue)
+            _ordersTimeline.Resume();
+        else
+            _ordersTimeline.Pause();
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void FinishTutorialServerRpc()
+    {
+        TutorialOn.Value = false;
+        StartGame();
+        FinishTutorialClientRpc();
+    }
+
+    [ClientRpc]
+    private void FinishTutorialClientRpc()
+    {
+        PlayerInputController playerInputController =
+            NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerInputController>();
+
+        playerInputController.SetUIMode(false);
+
+        if (tutorial != null)
+            tutorial.SetActive(false);
     }
 
     [ClientRpc]
@@ -104,6 +153,7 @@ public class KornnGameManager : NetworkBehaviour
         gameEndedInvoked = false;
         remainingTime.Value = gameDuration;
         IsPaused.Value = false;
+        _ordersTimeline.Play();
     }
 
     private void UnlockNextLevel()
@@ -141,6 +191,15 @@ public class KornnGameManager : NetworkBehaviour
         {
             PlayerPrefs.SetInt(key, stars);
             PlayerPrefs.Save();
+        }
+    }
+    
+    [ClientRpc]
+    private void StartTutorialClientRpc()
+    {
+        if (tutorial != null)
+        {
+            tutorial.SetActive(true);
         }
     }
 }

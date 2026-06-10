@@ -26,8 +26,6 @@ public class OrderManager : NetworkBehaviour
 
     private void Update()
     {
-        if(KornnGameManager.Instance.IsPaused.Value) return;
-        
         if (IsServer)
         {
             UpdateServerOrders();
