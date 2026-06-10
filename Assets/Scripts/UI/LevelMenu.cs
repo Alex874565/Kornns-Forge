@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Unity.Netcode;
 
-public class LevelMenu : MonoBehaviour
+public class LevelMenu : NetworkBehaviour
 {
     [SerializeField] private Button[] levelButtons;
     [SerializeField] private LevelStarDisplay[] starDisplays;
@@ -46,9 +46,23 @@ public class LevelMenu : MonoBehaviour
 
     public void LoadLevel(string sceneName)
     {
+        if (NetworkManager.Singleton.IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene(
+                sceneName,
+                LoadSceneMode.Single);
+        }
+        else
+        {
+            LoadLevelServerRpc(sceneName);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void LoadLevelServerRpc(string sceneName)
+    {
         NetworkManager.Singleton.SceneManager.LoadScene(
             sceneName,
-            LoadSceneMode.Single
-        );
+            LoadSceneMode.Single);
     }
 }

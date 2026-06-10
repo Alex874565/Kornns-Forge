@@ -13,6 +13,12 @@ public class PlayerAnimationController : NetworkBehaviour
 
     [SerializeField] private Transform visualTransform;
 
+    private readonly NetworkVariable<int> playerIndex = new(
+        0,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    
     private PlayerMovementController movement;
     private PlayerStatusController status;
 
@@ -32,6 +38,9 @@ public class PlayerAnimationController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        playerIndex.OnValueChanged += OnPlayerIndexChanged;
+        SetColor(playerIndex.Value);
+
         movement.OnInitiateJump += HandleInitiateJump;
         movement.OnLand += HandleLand;
         movement.OnStartWalking += HandleStartWalking;
@@ -44,6 +53,8 @@ public class PlayerAnimationController : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        playerIndex.OnValueChanged -= OnPlayerIndexChanged;
+
         movement.OnInitiateJump -= HandleInitiateJump;
         movement.OnLand -= HandleLand;
         movement.OnStartWalking -= HandleStartWalking;
@@ -54,21 +65,28 @@ public class PlayerAnimationController : NetworkBehaviour
         status.OnStopSleeping -= HandleStopSleeping;
     }
 
-    public void SetColor(int playerIndex)
+    private void OnPlayerIndexChanged(int oldValue, int newValue)
     {
-        Color color;
-        if (playerIndex == 0)
-        {
-            color = Color.white;
-        }
-        else
-        {
-            color = secondaryColor;
-        }
+        SetColor(newValue);
+    }
+
+    private void SetColor(int playerIndex)
+    {
+        Color color = playerIndex == 0 ? Color.white : secondaryColor;
+
         foreach (var spriteRenderer in spriteRenderers)
         {
-            spriteRenderer.color = color;
+            if (spriteRenderer != null)
+                spriteRenderer.color = color;
         }
+    }
+    
+    public void SetPlayerIndex(int index)
+    {
+        if (!IsServer) return;
+
+        playerIndex.Value = index;
+        SetColor(index);
     }
     
     private void HandleInitiateJump()
