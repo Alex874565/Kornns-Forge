@@ -81,7 +81,10 @@ public class PlayerInputController : NetworkBehaviour
             lastMousePosition = Mouse.current.position.ReadValue();
 
         SubscribeInput();
-        SetUIMode(false);
+        if(!KornnGameManager.Instance.IsPaused.Value)
+            SetUIMode(false);
+        else
+            SetUIMode(true, KornnGameManager.Instance.tutorialInitialButton);
     }
 
     public override void OnNetworkDespawn()

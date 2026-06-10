@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,12 +18,14 @@ public class Tutorial : MonoBehaviour
     // If null, this GameObject's transform will be used.
     public Transform displayParent;
 
+    [SerializeField] private GameObject initialButton;
+    
     // Keep original parents so we can restore them when switching slides.
     private List<Transform> originalParents = new List<Transform>();
 
     private int currentIndex = -1;
-
-    void Start()
+    
+    private void OnEnable()
     {
         // Capture original parents for every slide so we can restore them later.
         originalParents.Clear();
@@ -32,7 +36,14 @@ public class Tutorial : MonoBehaviour
         }
 
         if (slides.Count > 0)
+        {
+            if (NetworkManager.Singleton.IsServer)
+            {
+                KornnGameManager.Instance.IsPaused.Value = true;
+            }
+            
             ShowSlide(0);
+        }
     }
 
     // Call this from a UI Button onClick to advance the tutorial.
@@ -42,29 +53,13 @@ public class Tutorial : MonoBehaviour
         int next = currentIndex + 1;
         if (next >= slides.Count)
         {
-            // Reached the end of slides: try to load the next scene if configured.
-            if (!string.IsNullOrEmpty(nextSceneName))
-            {
-                SceneManager.LoadScene(nextSceneName);
-                return;
-            }
-
-            // If no scene name provided, attempt to load the next build index if available.
-            var active = SceneManager.GetActiveScene();
-            int nextIndex = active.buildIndex + 1;
-            if (nextIndex < SceneManager.sceneCountInBuildSettings)
-            {
-                SceneManager.LoadScene(nextIndex);
-                return;
-            }
-
-            // No next scene configured or available; stop at last slide.
+            KornnGameManager.Instance.FinishTutorialServerRpc();
             return;
         }
 
         ShowSlide(next);
     }
-
+    
     // Optional: call to go back one slide
     public void Previous()
     {
