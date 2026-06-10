@@ -2872,7 +2872,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8.4375
+  orthographic size: 4.671875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3657,6 +3657,7 @@ MonoBehaviour:
   _clients:
   - {fileID: 7002182794813143985, guid: 168d4f239e38b0f4ba01c5bac94dfa1a, type: 3}
   - {fileID: 7002182794813143985, guid: 04ad9446ee1765c4f87328f1755c4dbf, type: 3}
+  - {fileID: 6036042810625998405, guid: aaa812c55a90a724d82a9522b3e3df30, type: 3}
 --- !u!1001 &827906008
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4934,6 +4935,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   gameDuration: 300
   levelNumber: 2
+  tutorial: {fileID: 0}
+  tutorialInitialButton: {fileID: 0}
 --- !u!114 &1092541103
 MonoBehaviour:
   m_ObjectHideFlags: 0
